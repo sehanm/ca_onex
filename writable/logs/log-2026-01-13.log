@@ -1,0 +1,32 @@
+ERROR - 2026-01-13 12:58:53 --> mysqli_sql_exception: Table 'roles' already exists in C:\xampp\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php(327): mysqli->query('CREATE TABLE `r...', 0)
+#1 C:\xampp\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('CREATE TABLE `r...')
+#2 C:\xampp\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('CREATE TABLE `r...')
+#3 C:\xampp\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\Forge.php(570): CodeIgniter\Database\BaseConnection->query('CREATE TABLE `r...')
+#4 C:\xampp\htdocs\ca_onex\app\Database\Migrations\2026-01-13-182200_InitialSetup.php(29): CodeIgniter\Database\Forge->createTable('roles')
+#5 C:\xampp\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\MigrationRunner.php(874): App\Database\Migrations\InitialSetup->up()
+#6 C:\xampp\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\MigrationRunner.php(180): CodeIgniter\Database\MigrationRunner->migrate('up', Object(stdClass))
+#7 C:\xampp\htdocs\ca_onex\vendor\codeigniter4\framework\system\Commands\Database\Migrate.php(85): CodeIgniter\Database\MigrationRunner->latest(NULL)
+#8 C:\xampp\htdocs\ca_onex\vendor\codeigniter4\framework\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\Migrate->run(Array)
+#9 C:\xampp\htdocs\ca_onex\vendor\codeigniter4\framework\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate', Array)
+#10 C:\xampp\htdocs\ca_onex\vendor\codeigniter4\framework\system\Boot.php(388): CodeIgniter\CLI\Console->run()
+#11 C:\xampp\htdocs\ca_onex\vendor\codeigniter4\framework\system\Boot.php(133): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#12 C:\xampp\htdocs\ca_onex\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#13 {main}
+ERROR - 2026-01-13 12:58:53 --> mysqli_sql_exception: Unknown column 'role_type' in 'field list' in C:\xampp\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php(327): mysqli->query('INSERT INTO `ro...', 0)
+#1 C:\xampp\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `ro...')
+#2 C:\xampp\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `ro...')
+#3 C:\xampp\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\BaseBuilder.php(1841): CodeIgniter\Database\BaseConnection->query('INSERT INTO `ro...', NULL, false)
+#4 C:\xampp\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\BaseBuilder.php(2230): CodeIgniter\Database\BaseBuilder->batchExecute('_insertBatch', 100)
+#5 C:\xampp\htdocs\ca_onex\app\Database\Seeds\RoleSeeder.php(24): CodeIgniter\Database\BaseBuilder->insertBatch(Array)
+#6 C:\xampp\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\Seeder.php(149): App\Database\Seeds\RoleSeeder->run()
+#7 C:\xampp\htdocs\ca_onex\vendor\codeigniter4\framework\system\Commands\Database\Seed.php(79): CodeIgniter\Database\Seeder->call('App\\Database\\Se...')
+#8 C:\xampp\htdocs\ca_onex\vendor\codeigniter4\framework\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\Seed->run(Array)
+#9 C:\xampp\htdocs\ca_onex\vendor\codeigniter4\framework\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('db:seed', Array)
+#10 C:\xampp\htdocs\ca_onex\vendor\codeigniter4\framework\system\Boot.php(388): CodeIgniter\CLI\Console->run()
+#11 C:\xampp\htdocs\ca_onex\vendor\codeigniter4\framework\system\Boot.php(133): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#12 C:\xampp\htdocs\ca_onex\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#13 {main}
