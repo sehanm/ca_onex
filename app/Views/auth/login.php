@@ -6,6 +6,7 @@
     <title>Login - CA OnEx</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="<?= base_url('assets/css/style.css') ?>">
 </head>
 <body>
@@ -54,5 +55,17 @@
         </div>
     </div>
 
+    <script src="<?= base_url('assets/js/toast.js') ?>"></script>
+    <script>
+        <?php if (session()->getFlashdata('error')): ?>
+            showToast("<?= esc(session()->getFlashdata('error')) ?>", 'error');
+        <?php endif; ?>
+        <?php if (session()->getFlashdata('success')): ?>
+            showToast("<?= esc(session()->getFlashdata('success')) ?>", 'success');
+        <?php endif; ?>
+        <?php if (session()->getFlashdata('msg')): ?>
+            showToast("<?= esc(session()->getFlashdata('msg')) ?>", 'info');
+        <?php endif; ?>
+    </script>
 </body>
 </html>

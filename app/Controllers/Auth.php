@@ -36,7 +36,7 @@ class Auth extends BaseController
                     'isLoggedIn' => TRUE
                 ];
                 $session->set($ses_data);
-                return redirect()->to('/dashboard');
+                return redirect()->to('/dashboard')->with('success', 'Successfully logged');
             } else {
                 return redirect()->back()->with('error', 'Invalid password.');
             }

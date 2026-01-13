@@ -169,4 +169,25 @@ class Admin extends BaseController
 
         return view('admin/audit_logs', $data);
     }
+
+    public function delete($id)
+    {
+        if (!$this->checkAdmin()) return redirect()->to('dashboard');
+
+        $user = $this->userModel->find($id);
+        if ($user) {
+            // Delete user details first due to foreign key constraints if not set to cascade, 
+            // but my migration set ON DELETE CASCADE for user_details.user_id, so deleting user is enough.
+            // Wait, strict mode might require deleting details explicitly? 
+            // The migration said: $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'CASCADE');
+            // So deleting from 'users' table is sufficient.
+            
+            $this->userModel->delete($id);
+            $this->auditModel->log('User Deleted', "Deleted user: {$user['username']} (ID: $id)");
+            
+            return redirect()->to('admin/users')->with('success', 'User deleted successfully');
+        }
+
+        return redirect()->to('admin/users')->with('error', 'User not found');
+    }
 }

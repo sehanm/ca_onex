@@ -10,7 +10,7 @@
 
 <div class="card">
     <div class="table-responsive">
-        <table class="table">
+        <table class="table datatable">
             <thead>
                 <tr>
                     <th>Username</th>
@@ -32,7 +32,8 @@
                     </td>
                     <td><?= esc($user['department_name'] ?? 'N/A') ?></td>
                     <td>
-                        <a href="<?= base_url('admin/users/edit/'.$user['id']) ?>" class="btn-icon"><i class="fa-solid fa-pen"></i></a>
+                        <a href="<?= base_url('admin/users/edit/'.$user['id']) ?>" class="btn-icon" title="Edit"><i class="fa-solid fa-pen"></i></a>
+                        <a href="<?= base_url('admin/users/delete/'.$user['id']) ?>" class="btn-icon btn-delete" onclick="return confirm('Are you sure you want to delete this user?');" title="Delete"><i class="fa-solid fa-trash"></i></a>
                     </td>
                 </tr>
                 <?php endforeach; ?>

@@ -9,7 +9,7 @@
 
 <div class="card">
     <div class="table-responsive">
-        <table class="table">
+        <table class="table datatable">
             <thead>
                 <tr>
                     <th>Timestamp</th>

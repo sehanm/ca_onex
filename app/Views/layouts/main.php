@@ -13,6 +13,9 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="<?= base_url('assets/css/style.css') ?>">
     <link rel="stylesheet" href="<?= base_url('assets/css/dashboard.css') ?>">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 </head>
 <body>
     
@@ -104,6 +107,32 @@
         </div>
     </div>
 
+    <!-- jQuery and DataTables JS -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="<?= base_url('assets/js/dashboard.js') ?>"></script>
+    <script src="<?= base_url('assets/js/toast.js') ?>"></script>
+    <script>
+        <?php if (session()->getFlashdata('error')): ?>
+            showToast("<?= esc(session()->getFlashdata('error')) ?>", 'error');
+        <?php endif; ?>
+        <?php if (session()->getFlashdata('success')): ?>
+            showToast("<?= esc(session()->getFlashdata('success')) ?>", 'success');
+        <?php endif; ?>
+        <?php if (session()->getFlashdata('msg')): ?>
+            showToast("<?= esc(session()->getFlashdata('msg')) ?>", 'info');
+        <?php endif; ?>
+
+        // Initialize DataTables
+        $(document).ready(function() {
+            $('.datatable').DataTable({
+                "pageLength": 10,
+                "lengthChange": false,
+                "language": {
+                    "search": "Filter records:"
+                }
+            });
+        });
+    </script>
 </body>
 </html>

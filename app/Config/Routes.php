@@ -16,5 +16,6 @@ $routes->group('admin', ['filter' => 'auth'], function($routes) {
     $routes->post('users/store', 'Admin::store');
     $routes->get('users/edit/(:num)', 'Admin::edit/$1');
     $routes->post('users/update/(:num)', 'Admin::update/$1');
+    $routes->get('users/delete/(:num)', 'Admin::delete/$1');
     $routes->get('audit-logs', 'Admin::auditLogs');
 });
