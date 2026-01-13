@@ -9,3 +9,12 @@ $routes->get('/', 'Auth::login');
 $routes->post('auth/attemptLogin', 'Auth::attemptLogin');
 $routes->get('dashboard', 'Dashboard::index');
 $routes->get('logout', 'Auth::logout');
+
+$routes->group('admin', ['filter' => 'auth'], function($routes) {
+    $routes->get('users', 'Admin::index');
+    $routes->get('users/create', 'Admin::create');
+    $routes->post('users/store', 'Admin::store');
+    $routes->get('users/edit/(:num)', 'Admin::edit/$1');
+    $routes->post('users/update/(:num)', 'Admin::update/$1');
+    $routes->get('audit-logs', 'Admin::auditLogs');
+});

@@ -34,7 +34,21 @@
                             <span>Dashboard</span>
                         </a>
                     </li>
-                    <!-- Add more dynamic menu items based on role later -->
+                    <?php if (session()->get('role') === 'Super Admin'): ?>
+                    <li class="<?= uri_string() == 'admin/users' ? 'active' : '' ?>">
+                        <a href="<?= base_url('admin/users') ?>">
+                            <i class="fa-solid fa-users-gear"></i>
+                            <span>User Management</span>
+                        </a>
+                    </li>
+                    <li class="<?= uri_string() == 'admin/audit-logs' ? 'active' : '' ?>">
+                        <a href="<?= base_url('admin/audit-logs') ?>">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                            <span>Audit Logs</span>
+                        </a>
+                    </li>
+                    <?php endif; ?>
+                    
                     <li>
                         <a href="#">
                             <i class="fa-solid fa-users"></i>
