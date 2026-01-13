@@ -18,14 +18,37 @@ class Auth extends BaseController
 
     public function attemptLogin()
     {
-        // Placeholder for login logic
-        // validate input, check credentials, set session
+        $session = session();
+        $model = new \App\Models\UserModel();
+        
         $username = $this->request->getPost('username');
         $password = $this->request->getPost('password');
         
-        // For demonstration, just redirect back with a success message or error
-        // Ideally, check DB
+        $user = $model->getUserWithDetails($username);
         
-        return redirect()->to('/')->with('msg', 'Login functionality to be implemented');
+        if ($user) {
+            if (password_verify($password, $user['password'])) {
+                $ses_data = [
+                    'id'       => $user['id'],
+                    'username' => $user['username'],
+                    'full_name'=> $user['full_name'],
+                    'role'     => $user['system_role'],
+                    'isLoggedIn' => TRUE
+                ];
+                $session->set($ses_data);
+                return redirect()->to('/dashboard');
+            } else {
+                return redirect()->back()->with('error', 'Invalid password.');
+            }
+        } else {
+            return redirect()->back()->with('error', 'Username not found.');
+        }
+    }
+
+    public function logout()
+    {
+        $session = session();
+        $session->destroy();
+        return redirect()->to('/');
     }
 }

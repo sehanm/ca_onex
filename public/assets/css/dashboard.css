@@ -1,0 +1,297 @@
+/* Dashboard Layout */
+:root {
+    --sidebar-width: 260px;
+    --topbar-height: 70px;
+    --sidebar-bg: #1a1a1a;
+    --sidebar-text: #e5e7eb;
+    --sidebar-active: rgba(128, 0, 0, 0.2);
+    --sidebar-hover: rgba(255, 255, 255, 0.05);
+}
+
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+    background-color: var(--bg-color);
+}
+
+/* Sidebar Styling */
+.sidebar {
+    width: var(--sidebar-width);
+    background-color: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    z-index: 100;
+    transition: all 0.3s ease;
+}
+
+.sidebar-header {
+    height: var(--topbar-height);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--white);
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.brand-logo img {
+    height: 32px;
+    width: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.sidebar-nav {
+    flex: 1;
+    padding: 24px 0;
+    overflow-y: auto;
+}
+
+.sidebar-nav ul {
+    list-style: none;
+}
+
+.sidebar-nav li a {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 24px;
+    color: #9ca3af;
+    text-decoration: none;
+    transition: all 0.2s;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.sidebar-nav li a:hover {
+    background-color: var(--sidebar-hover);
+    color: var(--white);
+}
+
+.sidebar-nav li.active a {
+    background-color: var(--sidebar-active);
+    color: var(--primary-color);
+    /* Using brand red here might be too dark required contrast, maybe lighten it or use white with red border */
+    color: #ffcccc;
+    border-right: 3px solid var(--primary-color);
+}
+
+.sidebar-nav li i {
+    width: 20px;
+    text-align: center;
+}
+
+.sidebar-footer {
+    padding: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logout-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #ef4444;
+    /* Red for logout */
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: opacity 0.2s;
+}
+
+.logout-link:hover {
+    opacity: 0.8;
+}
+
+/* Main Content Wrapper */
+.main-wrapper {
+    flex: 1;
+    margin-left: var(--sidebar-width);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    transition: all 0.3s ease;
+}
+
+/* Topbar */
+.topbar {
+    height: var(--topbar-height);
+    background-color: var(--white);
+    padding: 0 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--gray-200);
+    position: sticky;
+    top: 0;
+    z-index: 90;
+}
+
+.toggle-sidebar {
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: var(--secondary-color);
+    display: none;
+    /* Hidden on desktop */
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-left: auto;
+    /* Pushes content to the right */
+}
+
+.user-info {
+    text-align: right;
+}
+
+.user-name {
+    display: block;
+    font-weight: 600;
+    color: var(--secondary-color);
+    font-size: 0.95rem;
+}
+
+.user-role {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--gray-500);
+}
+
+.user-avatar {
+    height: 40px;
+    width: 40px;
+    background-color: var(--primary-color);
+    color: var(--white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+/* Content Area */
+.content-area {
+    padding: 32px;
+    flex: 1;
+}
+
+.welcome-banner {
+    margin-bottom: 32px;
+}
+
+.welcome-banner h1 {
+    font-size: 1.8rem;
+    color: var(--text-color);
+    margin-bottom: 8px;
+}
+
+.welcome-banner p {
+    color: var(--gray-500);
+}
+
+/* Stats Cards */
+.dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+.stat-card {
+    background: var(--white);
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.stat-icon {
+    height: 54px;
+    width: 54px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.stats-blue {
+    background: #e0f2fe;
+    color: #0284c7;
+}
+
+.stats-green {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.stats-red {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.stats-orange {
+    background: #ffedd5;
+    color: #ea580c;
+}
+
+.stat-details h3 {
+    font-size: 0.9rem;
+    color: var(--gray-500);
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.stat-details p {
+    font-size: 1.5rem;
+    color: var(--text-color);
+    font-weight: 700;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    :root {
+        --sidebar-width: 0px;
+    }
+
+    .sidebar {
+        transform: translateX(-100%);
+        width: 260px;
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+    }
+
+    .toggle-sidebar {
+        display: block;
+    }
+
+    .main-wrapper {
+        margin-left: 0;
+    }
+}
