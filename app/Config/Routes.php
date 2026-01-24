@@ -33,4 +33,5 @@ $routes->group('onboarding', ['filter' => 'auth'], function($routes) {
     $routes->post('update-ict-assets', 'Onboarding::updateIctAssets');
     $routes->get('fill-form/(:num)', 'Onboarding::fillForm/$1');
     $routes->post('save-form/(:num)', 'Onboarding::saveForm/$1');
+    $routes->get('download-policy/(:num)', 'Onboarding::downloadPolicy/$1');
 });

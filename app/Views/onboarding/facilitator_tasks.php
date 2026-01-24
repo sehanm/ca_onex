@@ -75,6 +75,9 @@
                                 <button class="btn-icon" style="background-color: var(--primary-light); color: white;" onclick="openIctModal(<?= htmlspecialchars(json_encode($req)) ?>)" title="Update Asset Details">
                                     <i class="fa-solid fa-laptop-medical"></i>
                                 </button>
+                                <a href="<?= base_url('onboarding/download-policy/'.$req['request_id']) ?>" class="btn-icon" style="background-color: #16a34a; color: white;" title="Download IT Policy Form">
+                                    <i class="fa-solid fa-file-pdf"></i>
+                                </a>
                             <?php endif; ?>
                         </div>
                     </td>

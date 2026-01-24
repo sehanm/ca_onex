@@ -8,6 +8,8 @@ use App\Models\DepartmentModel;
 use App\Models\UserModel;
 
 use App\Models\OnboardingDetailsModel;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 class Onboarding extends BaseController
 {
@@ -271,5 +273,51 @@ class Onboarding extends BaseController
         $this->detailsModel->where('request_id', $requestId)->set($data)->update();
 
         return $this->response->setJSON(['success' => true]);
+    }
+
+    public function downloadPolicy($id)
+    {
+        $request = $this->onboardingModel->select('onboarding_requests.*, departments.department_name, onboarding_details.*')
+                    ->join('departments', 'departments.id = onboarding_requests.department_id')
+                    ->join('onboarding_details', 'onboarding_details.request_id = onboarding_requests.id')
+                    ->where('onboarding_requests.id', $id)
+                    ->first();
+
+        if (!$request) {
+            return redirect()->back()->with('error', 'Request details not found.');
+        }
+
+        // Prepare software list
+        $softwares = [];
+        if ($request['soft_smms']) $softwares[] = 'SMMS';
+        if ($request['soft_receipt']) $softwares[] = 'Receipt Module';
+        if ($request['soft_training']) $softwares[] = 'Training Module';
+        if ($request['soft_ecole']) $softwares[] = 'Ecole';
+        if ($request['soft_pronto']) $softwares[] = 'Pronto (' . ($request['pronto_previous_user'] ?? 'N/A') . ')';
+        if ($request['soft_ims']) $softwares[] = 'IMS';
+        if ($request['soft_sap']) $softwares[] = 'SAP Business One';
+        if ($request['soft_imeet']) $softwares[] = 'Imeet-Venue Booking';
+
+        $data = [
+            'r' => $request,
+            'softwares' => $softwares
+        ];
+
+        // PDF Generation
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', true);
+        
+        $dompdf = new Dompdf($options);
+        $html = view('onboarding/policy_pdf', $data);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $filename = 'IT_Policy_' . str_replace(' ', '_', $request['candidate_name']) . '.pdf';
+        
+        return $this->response->setHeader('Content-Type', 'application/pdf')
+                             ->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
+                             ->setBody($dompdf->output());
     }
 }
