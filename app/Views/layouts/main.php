@@ -58,7 +58,7 @@
                             <span>Employees</span>
                         </a>
                     </li>
-                    <li>
+                    <li class="<?= uri_string() == 'admin/departments' ? 'active' : '' ?>">
                         <a href="<?= base_url('admin/departments') ?>">
                             <i class="fa-solid fa-building"></i>
                             <span>Departments</span>

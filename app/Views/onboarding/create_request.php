@@ -34,7 +34,7 @@
                     <select name="department_id" id="department_id" class="form-control" required>
                         <option value="">Select Department</option>
                         <?php foreach ($departments as $dept): ?>
-                            <option value="<?= $dept['id'] ?>" <?= old('department_id') == $dept['id'] ? 'selected' : '' ?>>
+                            <option value="<?= $dept['id'] ?>" data-manager-id="<?= esc($dept['manager_id']) ?>" data-manager-name="<?= esc($dept['manager_name'] ?? 'Unassigned') ?>" <?= old('department_id') == $dept['id'] ? 'selected' : '' ?>>
                                 <?= esc($dept['department_name']) ?>
                             </option>
                         <?php endforeach; ?>
@@ -43,16 +43,9 @@
             </div>
             <div class="col">
                  <div class="form-group">
-                    <label for="hod_user_id">Assign HOD/Manager</label>
-                    <select name="hod_user_id" id="hod_user_id" class="form-control" required>
-                        <option value="">Select Manager</option>
-                        <?php foreach ($users as $user): ?>
-                            <option value="<?= $user['id'] ?>" <?= old('hod_user_id') == $user['id'] ? 'selected' : '' ?>>
-                                <?= esc($user['full_name']) ?> (<?= esc($user['role_name']) ?>)
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                    <small class="text-muted">Select the HOD who needs to fill the facility request.</small>
+                    <label for="manager_name_display">Assign HOD/Manager</label>
+                    <input type="text" id="manager_name_display" class="form-control" readonly placeholder="Auto-populated based on Department">
+                    <input type="hidden" name="hod_user_id" id="hod_user_id">
                 </div>
             </div>
         </div>
@@ -84,5 +77,31 @@
     .form-control:focus {
         border-color: var(--primary-color);
     }
+    .form-control[readonly] {
+        background-color: #f3f4f6;
+        color: #6b7280;
+    }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const departmentSelect = document.getElementById('department_id');
+        const managerDisplay = document.getElementById('manager_name_display');
+        const managerIdInput = document.getElementById('hod_user_id');
+
+        departmentSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const managerId = selectedOption.getAttribute('data-manager-id');
+            const managerName = selectedOption.getAttribute('data-manager-name');
+
+            if (managerId) {
+                managerIdInput.value = managerId;
+                managerDisplay.value = managerName;
+            } else {
+                managerIdInput.value = "";
+                managerDisplay.value = "Unassigned";
+            }
+        });
+    });
+</script>
 <?= $this->endSection() ?>

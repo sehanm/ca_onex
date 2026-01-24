@@ -30,7 +30,10 @@ class Onboarding extends BaseController
         }
         
         $data = [
-            'departments' => $this->departmentModel->findAll(),
+            'departments' => $this->departmentModel->select('departments.*, user_details.full_name as manager_name')
+                        ->join('users', 'users.id = departments.manager_id', 'left')
+                        ->join('user_details', 'user_details.user_id = users.id', 'left')
+                        ->findAll(),
             'users' => $this->userModel->select('users.id, user_details.full_name, r.role_name')
                         ->join('user_details', 'user_details.user_id = users.id')
                         ->join('roles r', 'r.id = users.system_role_id OR r.id = users.divisional_role_id') // Get role name
