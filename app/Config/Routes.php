@@ -18,4 +18,13 @@ $routes->group('admin', ['filter' => 'auth'], function($routes) {
     $routes->post('users/update/(:num)', 'Admin::update/$1');
     $routes->get('users/delete/(:num)', 'Admin::delete/$1');
     $routes->get('audit-logs', 'Admin::auditLogs');
+    
+    // Department Management
+    $routes->get('departments', 'Departments::index');
+    $routes->post('departments/update-manager', 'Departments::updateManager');
+});
+
+$routes->group('onboarding', ['filter' => 'auth'], function($routes) {
+    $routes->get('create', 'Onboarding::create');
+    $routes->post('store', 'Onboarding::store');
 });

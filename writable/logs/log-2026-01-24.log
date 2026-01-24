@@ -216,3 +216,80 @@ WHERE `user_id` = :user_id:', [...], false)
 10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
 11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
 12 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp-new\\htdocs\\ca_onex\\public\\index.php')
+ERROR - 2026-01-24 10:57:52 --> mysqli_sql_exception: Cannot add or update a child row: a foreign key constraint fails (`ca_onex`.`user_details`, CONSTRAINT `user_details_department_id_foreign` FOREIGN KEY (`department_id`) REFERENCES `departments` (`id`) ON DELETE SET NULL ON UPDATE CASCADE) in C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php(327): mysqli->query('UPDATE `user_de...', 0)
+#1 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('UPDATE `user_de...')
+#2 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('UPDATE `user_de...')
+#3 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\BaseBuilder.php(2521): CodeIgniter\Database\BaseConnection->query('UPDATE `user_de...', Array, false)
+#4 C:\xampp-new\htdocs\ca_onex\app\Controllers\Admin.php(150): CodeIgniter\Database\BaseBuilder->update(Array)
+#5 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\CodeIgniter.php(933): App\Controllers\Admin->update('4')
+#6 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin))
+#7 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#9 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#10 C:\xampp-new\htdocs\ca_onex\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#11 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\rewrite.php(44): require_once('C:\\xampp-new\\ht...')
+#12 {main}
+CRITICAL - 2026-01-24 10:57:52 --> CodeIgniter\Database\Exceptions\DatabaseException: Cannot add or update a child row: a foreign key constraint fails (`ca_onex`.`user_details`, CONSTRAINT `user_details_department_id_foreign` FOREIGN KEY (`department_id`) REFERENCES `departments` (`id`) ON DELETE SET NULL ON UPDATE CASCADE)
+[Method: POST, Route: admin/users/update/4]
+in SYSTEMPATH\Database\BaseConnection.php on line 684.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(2521): CodeIgniter\Database\BaseConnection->query('UPDATE `user_details` SET `full_name` = :full_name:, `epf_number` = :epf_number:, `email` = :email:, `department_id` = :department_id:
+WHERE `user_id` = :user_id:', [...], false)
+ 2 APPPATH\Controllers\Admin.php(150): CodeIgniter\Database\BaseBuilder->update([...])
+ 3 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin->update('4')
+ 4 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin))
+ 5 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 7 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 8 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ 9 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp-new\\htdocs\\ca_onex\\public\\index.php')
+CRITICAL - 2026-01-24 10:57:52 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Cannot add or update a child row: a foreign key constraint fails (`ca_onex`.`user_details`, CONSTRAINT `user_details_department_id_foreign` FOREIGN KEY (`department_id`) REFERENCES `departments` (`id`) ON DELETE SET NULL ON UPDATE CASCADE)
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('UPDATE `user_details` SET `full_name` = \'Super Administrator\', `epf_number` = \'001\', `email` = \'superadmin@caonex1.com\', `department_id` = \'\'
+WHERE `user_id` = \'4\'')
+ 2 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('UPDATE `user_details` SET `full_name` = \'Super Administrator\', `epf_number` = \'001\', `email` = \'superadmin@caonex1.com\', `department_id` = \'\'
+WHERE `user_id` = \'4\'')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(2521): CodeIgniter\Database\BaseConnection->query('UPDATE `user_details` SET `full_name` = :full_name:, `epf_number` = :epf_number:, `email` = :email:, `department_id` = :department_id:
+WHERE `user_id` = :user_id:', [...], false)
+ 4 APPPATH\Controllers\Admin.php(150): CodeIgniter\Database\BaseBuilder->update([...])
+ 5 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin->update('4')
+ 6 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin))
+ 7 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+10 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+11 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp-new\\htdocs\\ca_onex\\public\\index.php')
+CRITICAL - 2026-01-24 10:57:52 --> [Caused by] mysqli_sql_exception: Cannot add or update a child row: a foreign key constraint fails (`ca_onex`.`user_details`, CONSTRAINT `user_details_department_id_foreign` FOREIGN KEY (`department_id`) REFERENCES `departments` (`id`) ON DELETE SET NULL ON UPDATE CASCADE)
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('UPDATE `user_details` SET `full_name` = \'Super Administrator\', `epf_number` = \'001\', `email` = \'superadmin@caonex1.com\', `department_id` = \'\'
+WHERE `user_id` = \'4\'', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('UPDATE `user_details` SET `full_name` = \'Super Administrator\', `epf_number` = \'001\', `email` = \'superadmin@caonex1.com\', `department_id` = \'\'
+WHERE `user_id` = \'4\'')
+ 3 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('UPDATE `user_details` SET `full_name` = \'Super Administrator\', `epf_number` = \'001\', `email` = \'superadmin@caonex1.com\', `department_id` = \'\'
+WHERE `user_id` = \'4\'')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(2521): CodeIgniter\Database\BaseConnection->query('UPDATE `user_details` SET `full_name` = :full_name:, `epf_number` = :epf_number:, `email` = :email:, `department_id` = :department_id:
+WHERE `user_id` = :user_id:', [...], false)
+ 5 APPPATH\Controllers\Admin.php(150): CodeIgniter\Database\BaseBuilder->update([...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin->update('4')
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+12 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp-new\\htdocs\\ca_onex\\public\\index.php')
+ERROR - 2026-01-24 11:44:38 --> mysqli_sql_exception: Duplicate entry 'superadmin' for key 'username' in C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php(327): mysqli->query('INSERT INTO `us...', 0)
+#1 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `us...')
+#2 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `us...')
+#3 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\BaseBuilder.php(2345): CodeIgniter\Database\BaseConnection->query('INSERT INTO `us...', Array, false)
+#4 C:\xampp-new\htdocs\ca_onex\app\Database\Seeds\UserSeeder.php(69): CodeIgniter\Database\BaseBuilder->insert(Array)
+#5 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\Seeder.php(149): App\Database\Seeds\UserSeeder->run()
+#6 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\Commands\Database\Seed.php(79): CodeIgniter\Database\Seeder->call('App\\Database\\Se...')
+#7 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\Seed->run(Array)
+#8 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('db:seed', Array)
+#9 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\Boot.php(388): CodeIgniter\CLI\Console->run()
+#10 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\Boot.php(133): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#11 C:\xampp-new\htdocs\ca_onex\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#12 {main}

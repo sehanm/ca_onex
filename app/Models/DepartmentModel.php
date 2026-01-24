@@ -10,5 +10,5 @@ class DepartmentModel extends Model
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
-    protected $allowedFields    = ['department_name', 'created_at'];
+    protected $allowedFields    = ['department_name', 'manager_id', 'created_at'];
 }

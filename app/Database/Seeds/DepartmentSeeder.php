@@ -8,14 +8,46 @@ class DepartmentSeeder extends Seeder
 {
     public function run()
     {
-        $data = [
-            ['department_name' => 'Human Resources', 'created_at' => date('Y-m-d H:i:s')],
-            ['department_name' => 'Information Technology', 'created_at' => date('Y-m-d H:i:s')],
-            ['department_name' => 'Finance', 'created_at' => date('Y-m-d H:i:s')],
-            ['department_name' => 'Operations', 'created_at' => date('Y-m-d H:i:s')],
-            ['department_name' => 'Marketing', 'created_at' => date('Y-m-d H:i:s')],
+        $departments = [
+            'CEO/Secretariat',
+            'Legal',
+            'Examination',
+            'Examination Technical',
+            'APFASL',
+            'Student Services',
+            'Practical Training',
+            'Education',
+            'Library',
+            'Business School',
+            'TAX',
+            'IT Training',
+            'MELC',
+            'Internal Audit',
+            'Finance',
+            'Member Relations',
+            'Marketing',
+            'Technical',
+            'ICT',
+            'HR',
+            'Administration & Events'
         ];
 
-        $this->db->table('departments')->insertBatch($data);
+        $data = [];
+        $time = date('Y-m-d H:i:s');
+
+        foreach ($departments as $dept) {
+            // Check if department already exists to avoid duplicates if seeder is run multiple times
+            $exists = $this->db->table('departments')->where('department_name', $dept)->countAllResults();
+            if ($exists == 0) {
+                $data[] = [
+                    'department_name' => $dept,
+                    'created_at' => $time
+                ];
+            }
+        }
+
+        if (!empty($data)) {
+            $this->db->table('departments')->insertBatch($data);
+        }
     }
 }

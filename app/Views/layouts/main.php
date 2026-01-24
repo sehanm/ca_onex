@@ -59,7 +59,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#">
+                        <a href="<?= base_url('admin/departments') ?>">
                             <i class="fa-solid fa-building"></i>
                             <span>Departments</span>
                         </a>
@@ -70,6 +70,14 @@
                             <span>Clearance</span>
                         </a>
                     </li>
+                    <?php if (session()->get('role') === 'Super Admin' || session()->get('role') === 'HR Admin'): ?>
+                    <li class="<?= uri_string() == 'onboarding/create' ? 'active' : '' ?>">
+                        <a href="<?= base_url('onboarding/create') ?>">
+                            <i class="fa-solid fa-user-plus"></i>
+                            <span>Initiate Onboarding</span>
+                        </a>
+                    </li>
+                    <?php endif; ?>
                 </ul>
             </nav>
 
