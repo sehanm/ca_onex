@@ -24,6 +24,8 @@ class OnboardingDetailsModel extends Model
         'hr_mobile', 'hr_sim', 'hr_status',
         // ICT
         'ict_desktop_laptop', 'ict_printer',
+        'ict_model', 'ict_serial_number', 'ict_asset_code', 
+        'ict_monitor_model', 'ict_monitor_serial', 'ict_monitor_asset',
         // Software
         'soft_smms', 'soft_receipt', 'soft_training', 'soft_ecole', 
         'soft_pronto', 'pronto_previous_user',

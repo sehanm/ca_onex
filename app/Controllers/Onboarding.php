@@ -254,4 +254,22 @@ class Onboarding extends BaseController
 
         return $this->response->setJSON(['success' => true]);
     }
+
+    public function updateIctAssets()
+    {
+        $requestId = $this->request->getPost('request_id');
+        $data = [
+            'ict_desktop_laptop' => $this->request->getPost('ict_desktop_laptop'),
+            'ict_model'          => $this->request->getPost('ict_model'),
+            'ict_serial_number'  => $this->request->getPost('ict_serial_number'),
+            'ict_asset_code'     => $this->request->getPost('ict_asset_code'),
+            'ict_monitor_model'  => $this->request->getPost('ict_monitor_model'),
+            'ict_monitor_serial' => $this->request->getPost('ict_monitor_serial'),
+            'ict_monitor_asset'  => $this->request->getPost('ict_monitor_asset'),
+        ];
+
+        $this->detailsModel->where('request_id', $requestId)->set($data)->update();
+
+        return $this->response->setJSON(['success' => true]);
+    }
 }

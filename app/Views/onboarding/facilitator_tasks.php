@@ -67,14 +67,82 @@
                         <span class="badge badge-role"><?= esc($req['status']) ?></span>
                     </td>
                     <td>
-                        <button class="btn-icon" onclick="viewDetails(<?= htmlspecialchars(json_encode($req)) ?>)" title="View Required Facilities">
-                            <i class="fa-solid fa-rectangle-list"></i>
-                        </button>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn-icon" onclick="viewDetails(<?= htmlspecialchars(json_encode($req)) ?>)" title="View Required Facilities">
+                                <i class="fa-solid fa-rectangle-list"></i>
+                            </button>
+                            <?php if (in_array('ICT', $roles) && $req['ict_desktop_laptop'] !== 'None'): ?>
+                                <button class="btn-icon" style="background-color: var(--primary-light); color: white;" onclick="openIctModal(<?= htmlspecialchars(json_encode($req)) ?>)" title="Update Asset Details">
+                                    <i class="fa-solid fa-laptop-medical"></i>
+                                </button>
+                            <?php endif; ?>
+                        </div>
                     </td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
+    </div>
+</div>
+
+<!-- Modal for ICT Asset Details -->
+<div id="ictAssetModal" class="modal" style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; padding-top: 50px; background-color: rgba(0,0,0,0.4);">
+    <div class="modal-content" style="background-color: #fefefe; margin: auto; padding: 30px; border-radius: 12px; border: 1px solid #888; width: 500px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
+        <h3 style="margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 15px;">Update Hardware Details</h3>
+        
+        <form id="ictAssetForm">
+            <input type="hidden" name="request_id" id="ict_request_id">
+            
+            <div class="form-group-premium">
+                <label>Assigned Device</label>
+                <div class="select-wrapper">
+                    <select name="ict_desktop_laptop" id="ict_device_type">
+                        <option value="None">None</option>
+                        <option value="Desktop">Desktop</option>
+                        <option value="Laptop">Laptop</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group-premium">
+                <label>Model</label>
+                <input type="text" name="ict_model" id="ict_model_input" class="form-control" placeholder="e.g. Dell Latitude 5420">
+            </div>
+
+            <div class="form-group-premium">
+                <label>Serial Number</label>
+                <input type="text" name="ict_serial_number" id="ict_serial_input" class="form-control" placeholder="Enter Serial Number">
+            </div>
+
+            <div class="form-group-premium">
+                <label>Asset Code</label>
+                <input type="text" name="ict_asset_code" id="ict_asset_input" class="form-control" placeholder="Enter Asset Tag/Code">
+            </div>
+
+            <div id="monitor_details_group" class="form-group-premium animate-in" style="display:none; border: 1px solid #f1f5f9; padding: 15px; border-radius: 12px; background: #fafafa;">
+                <label style="color: var(--primary-color);">Monitor Information</label>
+                
+                <div class="monitor-input-grid">
+                    <div style="margin-bottom: 10px;">
+                        <label style="font-size: 0.75rem; color: #64748b;">Monitor Model</label>
+                        <input type="text" name="ict_monitor_model" id="ict_monitor_model_input" class="form-control" placeholder="e.g. Dell P2419H">
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <label style="font-size: 0.75rem; color: #64748b;">Monitor Serial Number</label>
+                        <input type="text" name="ict_monitor_serial" id="ict_monitor_serial_input" class="form-control" placeholder="SN-202X-YYY">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.75rem; color: #64748b;">Monitor Asset Code</label>
+                        <input type="text" name="ict_monitor_asset" id="ict_monitor_asset_input" class="form-control" placeholder="ASSET-MON-001">
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: right; margin-top: 25px; display: flex; gap: 10px; justify-content: flex-end;">
+                <button type="button" onclick="closeIctModal()" class="btn-secondary">Cancel</button>
+                <button type="submit" class="btn-primary">Save Details</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -180,6 +248,49 @@
         document.getElementById('facilityModal').style.display = 'block';
     }
 
+    function openIctModal(req) {
+        document.getElementById('ict_request_id').value = req.request_id;
+        document.getElementById('ict_device_type').value = req.ict_desktop_laptop;
+        document.getElementById('ict_model_input').value = req.ict_model || '';
+        document.getElementById('ict_serial_input').value = req.ict_serial_number || '';
+        document.getElementById('ict_asset_input').value = req.ict_asset_code || '';
+        document.getElementById('ict_monitor_model_input').value = req.ict_monitor_model || '';
+        document.getElementById('ict_monitor_serial_input').value = req.ict_monitor_serial || '';
+        document.getElementById('ict_monitor_asset_input').value = req.ict_monitor_asset || '';
+        
+        toggleMonitorField(req.ict_desktop_laptop);
+        document.getElementById('ictAssetModal').style.display = 'block';
+    }
+
+    function closeIctModal() {
+        document.getElementById('ictAssetModal').style.display = 'none';
+    }
+
+    function toggleMonitorField(device) {
+        const group = document.getElementById('monitor_details_group');
+        group.style.display = (device === 'Desktop') ? 'block' : 'none';
+    }
+
+    document.getElementById('ict_device_type').addEventListener('change', function() {
+        toggleMonitorField(this.value);
+    });
+
+    $('#ictAssetForm').on('submit', function(e) {
+        e.preventDefault();
+        const data = $(this).serialize();
+        
+        $.post("<?= base_url('onboarding/update-ict-assets') ?>", data, function(res) {
+            if(res.success) {
+                showToast("Hardware details saved", "success");
+                closeIctModal();
+                // Optionally reload or update row
+                setTimeout(() => location.reload(), 800);
+            } else {
+                showToast("Error saving details", "error");
+            }
+        });
+    });
+
     function closeModal() {
         document.getElementById('facilityModal').style.display = 'none';
     }
@@ -188,6 +299,39 @@
         if (event.target == document.getElementById('facilityModal')) {
             closeModal();
         }
+        if (event.target == document.getElementById('ictAssetModal')) {
+            closeIctModal();
+        }
     }
 </script>
+
+<style>
+    .form-group-premium { margin-bottom: 20px; }
+    .form-group-premium label { display: block; margin-bottom: 8px; font-weight: 600; color: #475569; font-size: 0.9rem; }
+    .form-group-premium .form-control { width: 100%; padding: 10px 15px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.95rem; }
+    .form-group-premium .form-control:focus { border-color: var(--primary-color); outline: none; box-shadow: 0 0 0 3px rgba(128, 0, 0, 0.1); }
+    
+    .select-wrapper { position: relative; }
+    .select-wrapper::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        right: 15px;
+        width: 8px;
+        height: 8px;
+        border-right: 2px solid #94a3b8;
+        border-bottom: 2px solid #94a3b8;
+        transform: translateY(-70%) rotate(45deg);
+        pointer-events: none;
+    }
+    .select-wrapper select {
+        width: 100%;
+        padding: 10px 35px 10px 15px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        appearance: none;
+        background: white;
+        cursor: pointer;
+    }
+</style>
 <?= $this->endSection() ?>
