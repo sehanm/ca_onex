@@ -78,4 +78,21 @@ class Onboarding extends BaseController
             return redirect()->back()->withInput()->with('error', 'Failed to create request.');
         }
     }
+
+    public function pending()
+    {
+        $userId = session()->get('id');
+        
+        $data = [
+            'requests' => $this->onboardingModel->select('onboarding_requests.*, departments.department_name, ud.full_name as hr_name')
+                        ->join('departments', 'departments.id = onboarding_requests.department_id')
+                        ->join('user_details ud', 'ud.user_id = onboarding_requests.hr_user_id', 'left')
+                        ->where('hod_user_id', $userId)
+                        ->orderBy('onboarding_requests.created_at', 'DESC')
+                        ->findAll(),
+            'page_title' => 'Onboarding Tasks'
+        ];
+
+        return view('onboarding/pending_requests', $data);
+    }
 }

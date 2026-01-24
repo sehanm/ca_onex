@@ -78,6 +78,17 @@
                         </a>
                     </li>
                     <?php endif; ?>
+                    <?php 
+                        $isHod = (new \App\Models\DepartmentModel())->where('manager_id', session()->get('id'))->countAllResults() > 0;
+                        if ($isHod): 
+                    ?>
+                    <li class="<?= uri_string() == 'onboarding/pending' ? 'active' : '' ?>">
+                        <a href="<?= base_url('onboarding/pending') ?>">
+                            <i class="fa-solid fa-list-check"></i>
+                            <span>Onboarding Tasks</span>
+                        </a>
+                    </li>
+                    <?php endif; ?>
                 </ul>
             </nav>
 

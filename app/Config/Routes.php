@@ -27,4 +27,5 @@ $routes->group('admin', ['filter' => 'auth'], function($routes) {
 $routes->group('onboarding', ['filter' => 'auth'], function($routes) {
     $routes->get('create', 'Onboarding::create');
     $routes->post('store', 'Onboarding::store');
+    $routes->get('pending', 'Onboarding::pending');
 });

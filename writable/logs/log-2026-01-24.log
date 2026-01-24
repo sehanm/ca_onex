@@ -461,3 +461,17 @@ Class "Locale" not found
 [Method: GET, Route: onboarding/create]
 in SYSTEMPATH\Helpers\number_helper.php on line 142.
  1 [internal function]: CodeIgniter\Debug\Exceptions->shutdownHandler()
+CRITICAL - 2026-01-24 12:21:53 --> ParseError: syntax error, unexpected token "endif", expecting end of file
+[Method: GET, Route: admin/departments]
+in APPPATH\Views\layouts\main.php on line 81.
+ 1 SYSTEMPATH\View\View.php(229): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 2 SYSTEMPATH\View\View.php(242): CodeIgniter\View\View->render('layouts/main', [], true)
+ 3 SYSTEMPATH\Common.php(1199): CodeIgniter\View\View->render('admin/department_manage', [], true)
+ 4 APPPATH\Controllers\Departments.php(44): view('admin/department_manage', [...])
+ 5 SYSTEMPATH\CodeIgniter.php(935): App\Controllers\Departments->index()
+ 6 SYSTEMPATH\CodeIgniter.php(509): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Departments))
+ 7 SYSTEMPATH\CodeIgniter.php(356): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+10 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+11 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp-new\\htdocs\\ca_onex\\public\\index.php')
