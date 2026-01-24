@@ -79,13 +79,31 @@
                     </li>
                     <?php endif; ?>
                     <?php 
-                        $isHod = (new \App\Models\DepartmentModel())->where('manager_id', session()->get('id'))->countAllResults() > 0;
+                        $managedDepts = (new \App\Models\DepartmentModel())->where('manager_id', session()->get('id'))->findAll();
+                        $isHod = count($managedDepts) > 0;
+                        
+                        $facilitatorRoles = [];
+                        foreach ($managedDepts as $dept) {
+                            if ($dept['department_name'] == 'Administration & Events') $facilitatorRoles[] = 'Admin';
+                            if ($dept['department_name'] == 'HR') $facilitatorRoles[] = 'HR';
+                            if ($dept['department_name'] == 'ICT') $facilitatorRoles[] = 'ICT';
+                        }
+                        
                         if ($isHod): 
                     ?>
                     <li class="<?= uri_string() == 'onboarding/pending' ? 'active' : '' ?>">
                         <a href="<?= base_url('onboarding/pending') ?>">
                             <i class="fa-solid fa-list-check"></i>
                             <span>Onboarding Tasks</span>
+                        </a>
+                    </li>
+                    <?php endif; ?>
+
+                    <?php if (!empty($facilitatorRoles)): ?>
+                    <li class="<?= uri_string() == 'onboarding/facility-tasks' ? 'active' : '' ?>">
+                        <a href="<?= base_url('onboarding/facility-tasks') ?>">
+                            <i class="fa-solid fa-screwdriver-wrench"></i>
+                            <span>Facility Tasks</span>
                         </a>
                     </li>
                     <?php endif; ?>

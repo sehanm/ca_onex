@@ -28,4 +28,8 @@ $routes->group('onboarding', ['filter' => 'auth'], function($routes) {
     $routes->get('create', 'Onboarding::create');
     $routes->post('store', 'Onboarding::store');
     $routes->get('pending', 'Onboarding::pending');
+    $routes->get('facility-tasks', 'Onboarding::facilitatorTasks');
+    $routes->post('update-section-status', 'Onboarding::updateSectionStatus');
+    $routes->get('fill-form/(:num)', 'Onboarding::fillForm/$1');
+    $routes->post('save-form/(:num)', 'Onboarding::saveForm/$1');
 });
