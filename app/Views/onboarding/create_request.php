@@ -25,6 +25,12 @@
                     <input type="text" name="designation" id="designation" class="form-control" required value="<?= old('designation') ?>">
                 </div>
             </div>
+            <div class="col">
+                <div class="form-group">
+                    <label for="joining_date">Date of Join</label>
+                    <input type="date" name="joining_date" id="joining_date" class="form-control" required value="<?= old('joining_date') ?>">
+                </div>
+            </div>
         </div>
 
         <div class="row">

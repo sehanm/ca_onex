@@ -14,6 +14,7 @@
                 <tr>
                     <th>Candidate</th>
                     <th>Designation</th>
+                    <th>Date of Join</th>
                     <th>Department</th>
                     <th>Requested By</th>
                     <th>Status</th>
@@ -28,6 +29,9 @@
                         <div style="font-weight: 500;"><?= esc($req['candidate_name']) ?></div>
                     </td>
                     <td><?= esc($req['designation']) ?></td>
+                    <td>
+                        <?= !empty($req['joining_date']) ? date('M d, Y', strtotime($req['joining_date'])) : '-' ?>
+                    </td>
                     <td><?= esc($req['department_name']) ?></td>
                     <td><?= esc($req['hr_name']) ?></td>
                     <td>
@@ -56,7 +60,7 @@
                 <?php endforeach; ?>
                 <?php if (empty($requests)): ?>
                 <tr>
-                    <td colspan="7" style="text-align: center; color: #777;">No onboarding requests assigned to you.</td>
+                    <td colspan="8" style="text-align: center; color: #777;">No onboarding requests assigned to you.</td>
                 </tr>
                 <?php endif; ?>
             </tbody>

@@ -13,7 +13,7 @@ class OnboardingRequestModel extends Model
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        'candidate_name', 'designation', 'department_id', 'hod_user_id', 
+        'candidate_name', 'designation', 'joining_date', 'department_id', 'hod_user_id', 
         'status', 'hr_user_id', 'created_at', 'updated_at'
     ];
 
@@ -25,6 +25,7 @@ class OnboardingRequestModel extends Model
     protected $validationRules      = [
         'candidate_name' => 'required|min_length[3]|max_length[200]',
         'designation'    => 'required|min_length[2]|max_length[150]',
+        'joining_date'   => 'required|valid_date',
         'department_id'  => 'required|integer',
         'hod_user_id'    => 'required|integer',
     ];

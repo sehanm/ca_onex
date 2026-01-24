@@ -54,6 +54,7 @@ class Onboarding extends BaseController
         $rules = [
             'candidate_name' => 'required|min_length[3]',
             'designation' => 'required',
+            'joining_date' => 'required',
             'department_id' => 'required',
             'hod_user_id' => 'required',
         ];
@@ -65,6 +66,7 @@ class Onboarding extends BaseController
         $data = [
             'candidate_name' => $this->request->getPost('candidate_name'),
             'designation' => $this->request->getPost('designation'),
+            'joining_date' => $this->request->getPost('joining_date'),
             'department_id' => $this->request->getPost('department_id'),
             'hod_user_id' => $this->request->getPost('hod_user_id'),
             'hr_user_id' => session()->get('id'), // Authenticated user
