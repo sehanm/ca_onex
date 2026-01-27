@@ -89,8 +89,8 @@
 </div>
 
 <!-- Modal for ICT Asset Details -->
-<div id="ictAssetModal" class="modal" style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; padding-top: 50px; background-color: rgba(0,0,0,0.4);">
-    <div class="modal-content" style="background-color: #fefefe; margin: auto; padding: 30px; border-radius: 12px; border: 1px solid #888; width: 500px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
+<div id="ictAssetModal" class="modal" style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; padding: 20px; background-color: rgba(0,0,0,0.4); overflow-y: auto;">
+    <div class="modal-content" style="background-color: #fefefe; margin: 20px auto; padding: 30px; border-radius: 12px; border: 1px solid #888; width: 100%; max-width: 500px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
         <h3 style="margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 15px;">Update Hardware Details</h3>
         
         <form id="ictAssetForm">
@@ -150,8 +150,8 @@
 </div>
 
 <!-- Modal for Facility Details -->
-<div id="facilityModal" class="modal" style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; padding-top: 100px; background-color: rgba(0,0,0,0.4);">
-    <div class="modal-content" style="background-color: #fefefe; margin: auto; padding: 30px; border-radius: 12px; border: 1px solid #888; width: 600px; max-height: 80vh; overflow-y: auto; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
+<div id="facilityModal" class="modal" style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; padding: 20px; background-color: rgba(0,0,0,0.4); overflow-y: auto;">
+    <div class="modal-content" style="background-color: #fefefe; margin: 20px auto; padding: 30px; border-radius: 12px; border: 1px solid #888; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
         <h3 id="modalTitle" style="margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 15px;">Required Facilities</h3>
         
         <div id="modalBody" class="modal-body-content">
@@ -183,6 +183,12 @@
     .fac-list { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .fac-list li { background: #f1f5f9; padding: 8px 12px; border-radius: 6px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
     .fac-list li i { color: #10b981; }
+
+    @media (max-width: 600px) {
+        .fac-list { grid-template-columns: 1fr; }
+        .modal-content { padding: 20px !important; }
+        .monitor-input-grid { display: block !important; }
+    }
 </style>
 
 <script>

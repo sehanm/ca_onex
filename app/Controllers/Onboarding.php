@@ -80,6 +80,7 @@ class Onboarding extends BaseController
         ];
 
         if ($this->onboardingModel->insert($data)) {
+            $this->logAction('Onboarding Initiated', "Initiated onboarding for {$data['candidate_name']}");
             // Ideally send email to HOD here
             return redirect()->to('dashboard')->with('success', 'Onboarding request initiated successfully. Sent to HOD for approval.');
         } else {
@@ -207,6 +208,8 @@ class Onboarding extends BaseController
         // Update Request Status
         $this->onboardingModel->update($id, ['status' => 'Processing']); // Or 'HOD_Submitted'
 
+        $this->logAction('Facility Request Submitted', "HOD submitted facility request for candidate: {$request['candidate_name']}");
+
         return redirect()->to('onboarding/pending')->with('success', 'Facility Request Submitted Successfully.');
     }
     public function facilitatorTasks()
@@ -254,6 +257,9 @@ class Onboarding extends BaseController
         $column = $section . '_status';
         $this->detailsModel->where('request_id', $requestId)->set([$column => $status])->update();
 
+        $request = $this->onboardingModel->find($requestId);
+        $this->logAction('Facilitator Task Updated', "Updated $section status to $status for candidate: {$request['candidate_name']}");
+
         return $this->response->setJSON(['success' => true]);
     }
 
@@ -271,6 +277,9 @@ class Onboarding extends BaseController
         ];
 
         $this->detailsModel->where('request_id', $requestId)->set($data)->update();
+
+        $request = $this->onboardingModel->find($requestId);
+        $this->logAction('ICT Assets Updated', "Updated ICT asset details for candidate: {$request['candidate_name']}");
 
         return $this->response->setJSON(['success' => true]);
     }
@@ -314,8 +323,10 @@ class Onboarding extends BaseController
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
 
-        $filename = 'IT_Policy_' . str_replace(' ', '_', $request['candidate_name']) . '.pdf';
+        $filename = 'IT_Policy_' . str_replace(' ', '_', $request['candidate_name'] ?? 'Unknown') . '.pdf';
         
+        $this->logAction('Policy Downloaded', "Downloaded IT Policy for candidate: " . ($request['candidate_name'] ?? 'Unknown'));
+
         return $this->response->setHeader('Content-Type', 'application/pdf')
                              ->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
                              ->setBody($dompdf->output());

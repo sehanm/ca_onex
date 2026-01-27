@@ -42,4 +42,10 @@ abstract class BaseController extends Controller
         // Preload any models, libraries, etc, here.
         // $this->session = service('session');
     }
+
+    protected function logAction($action, $details = null)
+    {
+        $auditModel = new \App\Models\AuditLogModel();
+        $auditModel->log($action, $details);
+    }
 }

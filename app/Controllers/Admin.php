@@ -86,7 +86,7 @@ class Admin extends BaseController
         ];
         $this->db->table('user_details')->insert($userDetails);
 
-        $this->auditModel->log('User Created', "Created user $username");
+        $this->logAction('User Created', "Created user $username");
 
         return redirect()->to('admin/users')->with('success', 'User created successfully');
     }
@@ -150,9 +150,9 @@ class Admin extends BaseController
         $this->db->table('user_details')->where('user_id', $id)->update($userDetails);
 
         if (!empty($changes)) {
-            $this->auditModel->log('User Updated', "Updated user {$currentUser['username']}: " . implode(', ', $changes));
+            $this->logAction('User Updated', "Updated user {$currentUser['username']}: " . implode(', ', $changes));
         } else {
-             $this->auditModel->log('User Updated', "Updated details for user {$currentUser['username']}");
+             $this->logAction('User Updated', "Updated details for user {$currentUser['username']}");
         }
 
         return redirect()->to('admin/users')->with('success', 'User updated successfully');
@@ -183,7 +183,7 @@ class Admin extends BaseController
             // So deleting from 'users' table is sufficient.
             
             $this->userModel->delete($id);
-            $this->auditModel->log('User Deleted', "Deleted user: {$user['username']}");
+            $this->logAction('User Deleted', "Deleted user: {$user['username']}");
             
             return redirect()->to('admin/users')->with('success', 'User deleted successfully');
         }

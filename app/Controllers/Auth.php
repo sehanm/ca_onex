@@ -36,6 +36,7 @@ class Auth extends BaseController
                     'isLoggedIn' => TRUE
                 ];
                 $session->set($ses_data);
+                $this->logAction('Login', "User {$user['username']} logged in");
                 return redirect()->to('/dashboard')->with('success', 'Successfully logged');
             } else {
                 return redirect()->back()->with('error', 'Invalid password.');
@@ -48,7 +49,11 @@ class Auth extends BaseController
     public function logout()
     {
         $session = session();
+        $username = $session->get('username');
         $session->destroy();
+        if ($username) {
+            $this->logAction('Logout', "User $username logged out");
+        }
         return redirect()->to('/');
     }
 }

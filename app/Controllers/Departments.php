@@ -57,6 +57,9 @@ class Departments extends BaseController
         $updateData = ['manager_id' => !empty($managerId) ? $managerId : null];
         $this->departmentModel->update($deptId, $updateData);
 
+        $dept = $this->departmentModel->find($deptId);
+        $this->logAction('Department Updated', "Updated manager for department: {$dept['department_name']}");
+
         return redirect()->back()->with('success', 'Department manager updated successfully');
     }
 }
