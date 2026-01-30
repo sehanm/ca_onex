@@ -200,13 +200,27 @@ class Onboarding extends BaseController
             'soft_imeet' => $this->request->getPost('soft_imeet') ? 1 : 0,
             
             'access_copy_user' => $this->request->getPost('access_copy_user'),
+
+            // Section statuses - auto complete if nothing requested
+            'admin_status' => ($this->request->getPost('admin_chair') || $this->request->getPost('admin_table') || $this->request->getPost('admin_phone')) ? 'Pending' : 'Completed',
+            'hr_status'    => ($this->request->getPost('hr_mobile') || $this->request->getPost('hr_sim')) ? 'Pending' : 'Completed',
+            'ict_status'   => ($this->request->getPost('ict_desktop_laptop') !== 'None' || $this->request->getPost('ict_printer') || 
+                                $this->request->getPost('soft_smms') || $this->request->getPost('soft_receipt') || 
+                                $this->request->getPost('soft_training') || $this->request->getPost('soft_ecole') || 
+                                $this->request->getPost('soft_pronto') || $this->request->getPost('soft_ims') || 
+                                $this->request->getPost('soft_sap') || $this->request->getPost('soft_imeet')) ? 'Pending' : 'Completed',
         ];
 
-        // Save details
-        $this->detailsModel->insert($detailsData);
+        // Save details (Upsert)
+        $existing = $this->detailsModel->where('request_id', $id)->first();
+        if ($existing) {
+            $this->detailsModel->update($existing['id'], $detailsData);
+        } else {
+            $this->detailsModel->insert($detailsData);
+        }
 
         // Update Request Status
-        $this->onboardingModel->update($id, ['status' => 'Processing']); // Or 'HOD_Submitted'
+        $this->onboardingModel->update($id, ['status' => 'Processing']);
 
         $this->logAction('Facility Request Submitted', "HOD submitted facility request for candidate: {$request['candidate_name']}");
 
@@ -215,24 +229,60 @@ class Onboarding extends BaseController
     public function facilitatorTasks()
     {
         $userId = session()->get('id');
+        $userRole = session()->get('role');
         
-        $managedDepts = $this->departmentModel->where('manager_id', $userId)->findAll();
-        $roles = [];
-        foreach ($managedDepts as $dept) {
-            if ($dept['department_name'] == 'Administration & Events') $roles[] = 'Admin';
-            if ($dept['department_name'] == 'HR') $roles[] = 'HR';
-            if ($dept['department_name'] == 'ICT') $roles[] = 'ICT';
-        }
+        $roles = $this->checkFacilitatorAccess();
 
         if (empty($roles)) {
             return redirect()->to('dashboard')->with('error', 'You do not have facilitator access.');
         }
 
-        $query = $this->onboardingModel->select('onboarding_requests.*, departments.department_name, onboarding_details.*, ud.full_name as hod_name')
+        $query = $this->onboardingModel->select('onboarding_requests.*, departments.department_name, onboarding_details.*, ud.full_name as hod_name, 
+                    onboarding_details.admin_status, onboarding_details.hr_status, onboarding_details.ict_status')
                     ->join('departments', 'departments.id = onboarding_requests.department_id')
                     ->join('onboarding_details', 'onboarding_details.request_id = onboarding_requests.id')
                     ->join('user_details ud', 'ud.user_id = onboarding_requests.hod_user_id', 'left');
         
+        // Restriction logic: Only show requests that have items for the facilitator's roles
+        if ($userRole !== 'Super Admin') {
+            $query->groupStart();
+            $orUsed = false;
+            
+            if (in_array('Admin', $roles)) {
+                $query->groupStart()
+                      ->where('admin_chair', 1)
+                      ->orWhere('admin_table', 1)
+                      ->orWhere('admin_phone', 1)
+                      ->groupEnd();
+                $orUsed = true;
+            }
+            
+            if (in_array('HR', $roles)) {
+                if ($orUsed) $query->orGroupStart(); else $query->groupStart();
+                $query->where('hr_mobile', 1)
+                      ->orWhere('hr_sim', 1)
+                      ->groupEnd();
+                $orUsed = true;
+            }
+            
+            if (in_array('ICT', $roles)) {
+                if ($orUsed) $query->orGroupStart(); else $query->groupStart();
+                $query->where('ict_desktop_laptop !=', 'None')
+                      ->orWhere('ict_printer', 1)
+                      ->orWhere('soft_smms', 1)
+                      ->orWhere('soft_receipt', 1)
+                      ->orWhere('soft_training', 1)
+                      ->orWhere('soft_ecole', 1)
+                      ->orWhere('soft_pronto', 1)
+                      ->orWhere('soft_ims', 1)
+                      ->orWhere('soft_sap', 1)
+                      ->orWhere('soft_imeet', 1)
+                      ->orWhere('access_copy_user !=', '')
+                      ->groupEnd();
+            }
+            $query->groupEnd();
+        }
+
         $requests = $query->orderBy('onboarding_requests.created_at', 'DESC')->findAll();
 
         $data = [
@@ -244,8 +294,34 @@ class Onboarding extends BaseController
         return view('onboarding/facilitator_tasks', $data);
     }
 
+    private function checkFacilitatorAccess()
+    {
+        $userId = session()->get('id');
+        $userRole = session()->get('role');
+        
+        $managedDepts = $this->departmentModel->where('manager_id', $userId)->findAll();
+        $roles = [];
+        foreach ($managedDepts as $dept) {
+            if ($dept['department_name'] == 'Administration & Events') $roles[] = 'Admin';
+            if ($dept['department_name'] == 'HR') $roles[] = 'HR';
+            if ($dept['department_name'] == 'ICT') $roles[] = 'ICT';
+        }
+
+        // Super Admin gets all facilitator roles by default
+        if ($userRole === 'Super Admin') {
+            return ['Admin', 'HR', 'ICT'];
+        }
+
+        return $roles;
+    }
+
     public function updateSectionStatus()
     {
+        $roles = $this->checkFacilitatorAccess();
+        if (empty($roles)) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Access Denied: Facilitator only.']);
+        }
+
         $requestId = $this->request->getPost('request_id');
         $section = $this->request->getPost('section'); 
         $status = $this->request->getPost('status');
@@ -254,17 +330,62 @@ class Onboarding extends BaseController
             return $this->response->setJSON(['success' => false, 'message' => 'Invalid section']);
         }
 
+        // Extra check: Can they update THIS specific section?
+        $roleMap = ['admin' => 'Admin', 'hr' => 'HR', 'ict' => 'ICT'];
+        if (!in_array($roleMap[$section], $roles)) {
+            return $this->response->setJSON(['success' => false, 'message' => "Access Denied: You cannot update $section tasks."]);
+        }
+
         $column = $section . '_status';
         $this->detailsModel->where('request_id', $requestId)->set([$column => $status])->update();
+
+        // Check if all sections are completed to update the main request status
+        $details = $this->detailsModel->where('request_id', $requestId)->first();
+        
+        // ADMIN Check
+        $adminHasItems = ($details['admin_chair'] == 1 || $details['admin_table'] == 1 || $details['admin_phone'] == 1);
+        $adminDone = ($details['admin_status'] === 'Completed' || !$adminHasItems);
+        
+        // HR Check
+        $hrHasItems = ($details['hr_mobile'] == 1 || $details['hr_sim'] == 1);
+        $hrDone = ($details['hr_status'] === 'Completed' || !$hrHasItems);
+        
+        // ICT Check (Robust)
+        $ictHasItems = ($details['ict_desktop_laptop'] !== 'None' || 
+                        $details['ict_printer'] == 1 || 
+                        $details['soft_smms'] == 1 || 
+                        $details['soft_receipt'] == 1 || 
+                        $details['soft_training'] == 1 || 
+                        $details['soft_ecole'] == 1 || 
+                        $details['soft_pronto'] == 1 || 
+                        $details['soft_ims'] == 1 || 
+                        $details['soft_sap'] == 1 || 
+                        $details['soft_imeet'] == 1 ||
+                        !empty($details['access_copy_user']));
+        
+        $ictDone = ($details['ict_status'] === 'Completed' || !$ictHasItems);
+
+        // Calculate Global Status
+        $mainStatus = ($adminDone && $hrDone && $ictDone) ? 'Completed' : 'Processing';
+
+        $this->onboardingModel->update($requestId, ['status' => $mainStatus]);
 
         $request = $this->onboardingModel->find($requestId);
         $this->logAction('Facilitator Task Updated', "Updated $section status to $status for candidate: {$request['candidate_name']}");
 
-        return $this->response->setJSON(['success' => true]);
+        return $this->response->setJSON([
+            'success' => true,
+            'new_status' => $mainStatus
+        ]);
     }
 
     public function updateIctAssets()
     {
+        $roles = $this->checkFacilitatorAccess();
+        if (!in_array('ICT', $roles)) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Access Denied: ICT only.']);
+        }
+
         $requestId = $this->request->getPost('request_id');
         $data = [
             'ict_desktop_laptop' => $this->request->getPost('ict_desktop_laptop'),
@@ -286,6 +407,11 @@ class Onboarding extends BaseController
 
     public function downloadPolicy($id)
     {
+        $roles = $this->checkFacilitatorAccess();
+        if (!in_array('ICT', $roles)) {
+            return redirect()->back()->with('error', 'Access Denied: ICT only.');
+        }
+
         $request = $this->onboardingModel->select('onboarding_requests.*, departments.department_name, onboarding_details.*')
                     ->join('departments', 'departments.id = onboarding_requests.department_id')
                     ->join('onboarding_details', 'onboarding_details.request_id = onboarding_requests.id')

@@ -13,14 +13,14 @@
             <thead>
                 <tr>
                     <th>Candidate</th>
-                    <th>My Tasks (<?= implode(', ', $roles) ?>)</th>
-                    <th>Request Status</th>
+                    <th>My Tasks Status</th>
+                    <th>Overall Status</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($requests as $req): ?>
-                <tr>
+                <tr data-request-id="<?= $req['request_id'] ?>">
                     <td>
                         <div class="cand-info">
                             <span class="cand-name"><?= esc($req['candidate_name']) ?></span>
@@ -29,7 +29,7 @@
                     </td>
                     <td>
                         <div class="task-badges">
-                            <?php if (in_array('Admin', $roles)): ?>
+                            <?php if (in_array('Admin', $roles) && ($req['admin_chair'] || $req['admin_table'] || $req['admin_phone'])): ?>
                                 <div class="task-group">
                                     <span class="badge badge-admin">Admin</span>
                                     <select onchange="updateSectionStatus(<?= $req['request_id'] ?>, 'admin', this.value)" class="fac-select">
@@ -40,7 +40,7 @@
                                 </div>
                             <?php endif; ?>
                             
-                            <?php if (in_array('HR', $roles)): ?>
+                            <?php if (in_array('HR', $roles) && ($req['hr_mobile'] || $req['hr_sim'])): ?>
                                 <div class="task-group">
                                     <span class="badge badge-hr">HR</span>
                                     <select onchange="updateSectionStatus(<?= $req['request_id'] ?>, 'hr', this.value)" class="fac-select">
@@ -51,7 +51,10 @@
                                 </div>
                             <?php endif; ?>
 
-                            <?php if (in_array('ICT', $roles)): ?>
+                            <?php if (in_array('ICT', $roles) && ($req['ict_desktop_laptop'] !== 'None' || $req['ict_printer'] || 
+                                                           $req['soft_smms'] || $req['soft_receipt'] || $req['soft_training'] || 
+                                                           $req['soft_ecole'] || $req['soft_pronto'] || $req['soft_ims'] || 
+                                                           $req['soft_sap'] || $req['soft_imeet'] || !empty($req['access_copy_user']))): ?>
                                 <div class="task-group">
                                     <span class="badge badge-ict">ICT</span>
                                     <select onchange="updateSectionStatus(<?= $req['request_id'] ?>, 'ict', this.value)" class="fac-select">
@@ -64,7 +67,12 @@
                         </div>
                     </td>
                     <td>
-                        <span class="badge badge-role"><?= esc($req['status']) ?></span>
+                        <?php 
+                            $statusClass = '';
+                            if ($req['status'] === 'Completed') $statusClass = 'badge-success';
+                            else if ($req['status'] === 'Processing') $statusClass = 'badge-processing-pulse';
+                        ?>
+                        <span class="badge badge-role <?= $statusClass ?>" id="status-badge-<?= $req['request_id'] ?>"><?= esc($req['status']) ?></span>
                     </td>
                     <td>
                         <div style="display: flex; gap: 8px;">
@@ -189,6 +197,20 @@
         .modal-content { padding: 20px !important; }
         .monitor-input-grid { display: block !important; }
     }
+
+    /* Pulse animation for Processing status */
+    .badge-processing-pulse {
+        background-color: #e0f2fe;
+        color: #0369a1;
+        border: 1px solid #bae6fd;
+        animation: pulse-blue 2s infinite;
+    }
+
+    @keyframes pulse-blue {
+        0% { box-shadow: 0 0 0 0 rgba(3, 105, 161, 0.4); }
+        70% { box-shadow: 0 0 0 6px rgba(3, 105, 161, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(3, 105, 161, 0); }
+    }
 </style>
 
 <script>
@@ -200,6 +222,15 @@
         }, function(res) {
             if(res.success) {
                 showToast("Status updated successfully", "success");
+                if (res.new_status) {
+                    const badge = $(`#status-badge-${requestId}`);
+                    badge.text(res.new_status);
+                    
+                    // Update classes
+                    badge.removeClass('badge-processing-pulse badge-success');
+                    if (res.new_status === 'Completed') badge.addClass('badge-success');
+                    else if (res.new_status === 'Processing') badge.addClass('badge-processing-pulse');
+                }
             } else {
                 showToast("Failed to update status", "error");
             }
@@ -209,48 +240,72 @@
     function viewDetails(req) {
         const roles = <?= json_encode($roles) ?>;
         let html = `
-            <p><strong>Candidate:</strong> ${req.candidate_name}</p>
-            <p><strong>Joining Date:</strong> ${req.joining_date}</p>
-            <hr style="margin: 20px 0; border: none; border-top: 1px dashed #ddd;">
+            <div class="modal-info-header">
+                <p><strong>Candidate:</strong> ${req.candidate_name}</p>
+                <p><strong>Joining Date:</strong> ${req.joining_date}</p>
+            </div>
+            <hr style="margin: 15px 0; border: none; border-top: 1px dashed #ddd;">
         `;
 
+        let itemsFound = false;
+
+        // Admin Section
         if (roles.includes('Admin')) {
-            html += '<h5>Administration & Events</h5><ul class="fac-list">';
-            if(req.admin_chair) html += '<li>Chair</li>';
-            if(req.admin_table) html += '<li>Table</li>';
-            if(req.admin_phone) html += '<li>Land Phone</li>';
-            html += '</ul>';
+            let adminHtml = '';
+            if(req.admin_chair == 1) adminHtml += '<li><i class="fa-solid fa-chair"></i> Chair</li>';
+            if(req.admin_table == 1) adminHtml += '<li><i class="fa-solid fa-table"></i> Table</li>';
+            if(req.admin_phone == 1) adminHtml += '<li><i class="fa-solid fa-phone"></i> Land Phone</li>';
+            
+            if (adminHtml !== '') {
+                html += '<h5>Administration & Events</h5><ul class="fac-list">' + adminHtml + '</ul>';
+                itemsFound = true;
+            }
         }
 
+        // HR Section
         if (roles.includes('HR')) {
-            html += '<h5>HR Facilities</h5><ul class="fac-list">';
-            if(req.hr_mobile) html += '<li>Mobile Phone</li>';
-            if(req.hr_sim) html += '<li>SIM Card</li>';
-            html += '</ul>';
+            let hrHtml = '';
+            if(req.hr_mobile == 1) hrHtml += '<li><i class="fa-solid fa-mobile-screen"></i> Mobile Phone</li>';
+            if(req.hr_sim == 1) hrHtml += '<li><i class="fa-solid fa-sim-card"></i> SIM Card</li>';
+            
+            if (hrHtml !== '') {
+                html += '<h5>HR Facilities</h5><ul class="fac-list">' + hrHtml + '</ul>';
+                itemsFound = true;
+            }
         }
 
+        // ICT Section
         if (roles.includes('ICT')) {
-            html += '<h5>ICT Hardware</h5><ul class="fac-list">';
-            if(req.ict_desktop_laptop !== 'None') html += `<li>${req.ict_desktop_laptop}</li>`;
-            if(req.ict_printer) html += '<li>Printer Access</li>';
-            html += '</ul>';
-
-            html += '<h5>Software Access</h5><ul class="fac-list">';
-            if(req.soft_smms) html += '<li>SMMS</li>';
-            if(req.soft_receipt) html += '<li>Receipt Module</li>';
-            if(req.soft_training) html += '<li>Training Module</li>';
-            if(req.soft_ecole) html += '<li>Ecole</li>';
-            if(req.soft_pronto) html += `<li>Pronto (Prev User: ${req.pronto_previous_user || 'N/A'})</li>`;
-            if(req.soft_ims) html += '<li>IMS</li>';
-            if(req.soft_sap) html += '<li>SAP Business One</li>';
-            if(req.soft_imeet) html += '<li>Imeet-Venue Booking</li>';
-            html += '</ul>';
+            let ictHtml = '';
+            // Hardware
+            if(req.ict_desktop_laptop !== 'None') ictHtml += `<li><i class="fa-solid fa-laptop"></i> ${req.ict_desktop_laptop}</li>`;
+            if(req.ict_printer == 1) ictHtml += '<li><i class="fa-solid fa-print"></i> Printer Access</li>';
+            
+            // Software
+            if(req.soft_smms == 1) ictHtml += '<li><i class="fa-solid fa-code-branch"></i> SMMS</li>';
+            if(req.soft_receipt == 1) ictHtml += '<li><i class="fa-solid fa-file-invoice"></i> Receipt Module</li>';
+            if(req.soft_training == 1) ictHtml += '<li><i class="fa-solid fa-graduation-cap"></i> Training Module</li>';
+            if(req.soft_ecole == 1) ictHtml += '<li><i class="fa-solid fa-school"></i> Ecole</li>';
+            if(req.soft_pronto == 1) ictHtml += `<li><i class="fa-solid fa-database"></i> Pronto (Prev User: ${req.get_pronto_previous_user || 'N/A'})</li>`;
+            if(req.soft_ims == 1) ictHtml += '<li><i class="fa-solid fa-warehouse"></i> IMS</li>';
+            if(req.soft_sap == 1) ictHtml += '<li><i class="fa-solid fa-briefcase"></i> SAP Business One</li>';
+            if(req.soft_imeet == 1) ictHtml += '<li><i class="fa-solid fa-handshake"></i> Imeet-Venue Booking</li>';
+            
+            if (ictHtml !== '') {
+                html += '<h5>ICT Infrastructure & Software</h5><ul class="fac-list">' + ictHtml + '</ul>';
+                itemsFound = true;
+            }
             
             if(req.access_copy_user) {
-                html += `<p style="margin-top:15px; background: #fffbeb; padding: 10px; border-radius: 8px; border: 1px solid #fde68a;">
+                html += `<p style="margin-top:15px; background: #fffbeb; padding: 10px; border-radius: 8px; border: 1px solid #fde68a; font-size: 0.85rem;">
                             <strong>Note:</strong> Mirror permissions from <u>${req.access_copy_user}</u>
                          </p>`;
+                itemsFound = true;
             }
+        }
+
+        if (!itemsFound) {
+            html += '<p style="text-align:center; color:#94a3b8; padding:20px;">No facilities requested for your department.</p>';
         }
 
         document.getElementById('modalBody').innerHTML = html;
