@@ -1,0 +1,20 @@
+CRITICAL - 2026-01-31 00:11:25 --> Error: Class "App\Models\UserDetailModel" not found
+[Method: GET, Route: inventory/view/1]
+in APPPATH\Controllers\Inventory.php on line 87.
+ 1 SYSTEMPATH\CodeIgniter.php(935): App\Controllers\Inventory->view('1')
+ 2 SYSTEMPATH\CodeIgniter.php(509): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Inventory))
+ 3 SYSTEMPATH\CodeIgniter.php(356): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 5 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 6 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ 7 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp-new\\htdocs\\ca_onex\\public\\index.php')
+CRITICAL - 2026-01-31 00:13:29 --> Error: Class "App\Models\UserDetailModel" not found
+[Method: GET, Route: inventory/view/1]
+in APPPATH\Controllers\Inventory.php on line 87.
+ 1 SYSTEMPATH\CodeIgniter.php(935): App\Controllers\Inventory->view('1')
+ 2 SYSTEMPATH\CodeIgniter.php(509): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Inventory))
+ 3 SYSTEMPATH\CodeIgniter.php(356): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 5 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 6 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ 7 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp-new\\htdocs\\ca_onex\\public\\index.php')

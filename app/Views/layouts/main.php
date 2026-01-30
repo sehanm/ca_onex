@@ -107,6 +107,15 @@
                         </a>
                     </li>
                     <?php endif; ?>
+
+                    <?php if (in_array('ICT', $facilitatorRoles) || session()->get('role') === 'Super Admin'): ?>
+                    <li class="<?= (uri_string() == 'inventory' || strpos(uri_string(), 'inventory') !== false) ? 'active' : '' ?>">
+                        <a href="<?= base_url('inventory') ?>">
+                            <i class="fa-solid fa-boxes-stacked"></i>
+                            <span>Asset Inventory</span>
+                        </a>
+                    </li>
+                    <?php endif; ?>
                 </ul>
             </nav>
 
@@ -141,6 +150,28 @@
             <main class="content-area">
                 <?= $this->renderSection('content') ?>
             </main>
+
+            <script>
+                $(document).ready(function() {
+                    <?php if (session()->getFlashdata('success')): ?>
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: '<?= session()->getFlashdata('success') ?>',
+                            timer: 3000,
+                            showConfirmButton: false
+                        });
+                    <?php endif; ?>
+
+                    <?php if (session()->getFlashdata('error')): ?>
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: '<?= session()->getFlashdata('error') ?>'
+                        });
+                    <?php endif; ?>
+                });
+            </script>
         </div>
     </div>
 

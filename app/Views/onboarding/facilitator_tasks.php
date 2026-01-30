@@ -98,14 +98,14 @@
 
 <!-- Modal for ICT Asset Details -->
 <div id="ictAssetModal" class="modal" style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; padding: 20px; background-color: rgba(0,0,0,0.4); overflow-y: auto;">
-    <div class="modal-content" style="background-color: #fefefe; margin: 20px auto; padding: 30px; border-radius: 12px; border: 1px solid #888; width: 100%; max-width: 500px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
-        <h3 style="margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 15px;">Update Hardware Details</h3>
+    <div class="modal-content" style="background-color: #fefefe; margin: 20px auto; padding: 30px; border-radius: 12px; border: 1px solid #888; width: 100%; max-width: 550px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
+        <h3 style="margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 15px;">Update Hardware Assignment</h3>
         
         <form id="ictAssetForm">
             <input type="hidden" name="request_id" id="ict_request_id">
             
             <div class="form-group-premium">
-                <label>Assigned Device</label>
+                <label>Assigned Device Type</label>
                 <div class="select-wrapper">
                     <select name="ict_desktop_laptop" id="ict_device_type">
                         <option value="None">None</option>
@@ -115,43 +115,76 @@
                 </div>
             </div>
 
-            <div class="form-group-premium">
-                <label>Model</label>
-                <input type="text" name="ict_model" id="ict_model_input" class="form-control" placeholder="e.g. Dell Latitude 5420">
+            <div class="form-group-premium" style="background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                <label style="color: var(--primary-color);">Link from Inventory (Optional)</label>
+                <div class="select-wrapper">
+                    <select name="ict_asset_id" id="ict_asset_select" class="form-control" onchange="autoPopulateAsset('main', this.value)">
+                        <option value="">-- Select from Warehouse --</option>
+                        <?php foreach($available_assets as $asset): ?>
+                        <option value="<?= $asset['id'] ?>" data-model="<?= esc($asset['model']) ?>" data-sn="<?= esc($asset['serial_number']) ?>" data-code="<?= esc($asset['asset_code']) ?>">
+                            <?= esc($asset['model']) ?> (<?= esc($asset['serial_number']) ?>)
+                        </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <p style="font-size: 0.7rem; color: #64748b; margin-top: 5px;">Selecting an asset will auto-fill the fields below.</p>
             </div>
 
-            <div class="form-group-premium">
-                <label>Serial Number</label>
-                <input type="text" name="ict_serial_number" id="ict_serial_input" class="form-control" placeholder="Enter Serial Number">
+            <div class="row">
+                <div class="col">
+                    <div class="form-group-premium">
+                        <label>Asset Model</label>
+                        <input type="text" name="ict_model" id="ict_model_input" class="form-control">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group-premium">
+                        <label>Serial Number</label>
+                        <input type="text" name="ict_serial_number" id="ict_serial_input" class="form-control">
+                    </div>
+                </div>
             </div>
 
             <div class="form-group-premium">
                 <label>Asset Code</label>
-                <input type="text" name="ict_asset_code" id="ict_asset_input" class="form-control" placeholder="Enter Asset Tag/Code">
+                <input type="text" name="ict_asset_code" id="ict_asset_input" class="form-control">
             </div>
 
+            <!-- Monitor Section -->
             <div id="monitor_details_group" class="form-group-premium animate-in" style="display:none; border: 1px solid #f1f5f9; padding: 15px; border-radius: 12px; background: #fafafa;">
-                <label style="color: var(--primary-color);">Monitor Information</label>
+                <label style="color: var(--primary-color); font-weight: bold;">Monitor Assignment</label>
                 
+                <div class="form-group-premium" style="margin-top: 10px;">
+                    <label style="font-size: 0.8rem;">Link Monitor from Inventory</label>
+                    <select name="ict_monitor_id" id="ict_monitor_select" class="form-control" onchange="autoPopulateAsset('monitor', this.value)">
+                        <option value="">-- Select from Warehouse --</option>
+                        <?php foreach($available_assets as $asset): ?>
+                        <option value="<?= $asset['id'] ?>" data-model="<?= esc($asset['model']) ?>" data-sn="<?= esc($asset['serial_number']) ?>" data-code="<?= esc($asset['asset_code']) ?>">
+                            <?= esc($asset['model']) ?> (<?= esc($asset['serial_number']) ?>)
+                        </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
                 <div class="monitor-input-grid">
                     <div style="margin-bottom: 10px;">
                         <label style="font-size: 0.75rem; color: #64748b;">Monitor Model</label>
-                        <input type="text" name="ict_monitor_model" id="ict_monitor_model_input" class="form-control" placeholder="e.g. Dell P2419H">
+                        <input type="text" name="ict_monitor_model" id="ict_monitor_model_input" class="form-control">
                     </div>
                     <div style="margin-bottom: 10px;">
-                        <label style="font-size: 0.75rem; color: #64748b;">Monitor Serial Number</label>
-                        <input type="text" name="ict_monitor_serial" id="ict_monitor_serial_input" class="form-control" placeholder="SN-202X-YYY">
+                        <label style="font-size: 0.75rem; color: #64748b;">Monitor Serial</label>
+                        <input type="text" name="ict_monitor_serial" id="ict_monitor_serial_input" class="form-control">
                     </div>
                     <div>
                         <label style="font-size: 0.75rem; color: #64748b;">Monitor Asset Code</label>
-                        <input type="text" name="ict_monitor_asset" id="ict_monitor_asset_input" class="form-control" placeholder="ASSET-MON-001">
+                        <input type="text" name="ict_monitor_asset" id="ict_monitor_asset_input" class="form-control">
                     </div>
                 </div>
             </div>
 
             <div style="text-align: right; margin-top: 25px; display: flex; gap: 10px; justify-content: flex-end;">
                 <button type="button" onclick="closeIctModal()" class="btn-secondary">Cancel</button>
-                <button type="submit" class="btn-primary">Save Details</button>
+                <button type="submit" class="btn-primary">Save Assignment</button>
             </div>
         </form>
     </div>
@@ -312,12 +345,37 @@
         document.getElementById('facilityModal').style.display = 'block';
     }
 
+    function autoPopulateAsset(type, assetId) {
+        let select = (type === 'main') ? document.getElementById('ict_asset_select') : document.getElementById('ict_monitor_select');
+        let selectedOption = select.options[select.selectedIndex];
+        
+        if (!assetId) return;
+
+        let model = selectedOption.getAttribute('data-model');
+        let sn = selectedOption.getAttribute('data-sn');
+        let code = selectedOption.getAttribute('data-code');
+
+        if (type === 'main') {
+            document.getElementById('ict_model_input').value = model;
+            document.getElementById('ict_serial_input').value = sn;
+            document.getElementById('ict_asset_input').value = code;
+        } else {
+            document.getElementById('ict_monitor_model_input').value = model;
+            document.getElementById('ict_monitor_serial_input').value = sn;
+            document.getElementById('ict_monitor_asset_input').value = code;
+        }
+    }
+
     function openIctModal(req) {
         document.getElementById('ict_request_id').value = req.request_id;
         document.getElementById('ict_device_type').value = req.ict_desktop_laptop;
+        
+        document.getElementById('ict_asset_select').value = req.ict_asset_id || '';
         document.getElementById('ict_model_input').value = req.ict_model || '';
         document.getElementById('ict_serial_input').value = req.ict_serial_number || '';
         document.getElementById('ict_asset_input').value = req.ict_asset_code || '';
+        
+        document.getElementById('ict_monitor_select').value = req.ict_monitor_id || '';
         document.getElementById('ict_monitor_model_input').value = req.ict_monitor_model || '';
         document.getElementById('ict_monitor_serial_input').value = req.ict_monitor_serial || '';
         document.getElementById('ict_monitor_asset_input').value = req.ict_monitor_asset || '';

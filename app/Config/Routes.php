@@ -35,3 +35,13 @@ $routes->group('onboarding', ['filter' => 'auth'], function($routes) {
     $routes->post('save-form/(:num)', 'Onboarding::saveForm/$1');
     $routes->get('download-policy/(:num)', 'Onboarding::downloadPolicy/$1');
 });
+
+$routes->group('inventory', ['filter' => 'auth'], function($routes) {
+    $routes->get('/', 'Inventory::index');
+    $routes->post('store', 'Inventory::store');
+    $routes->get('items', 'Inventory::items');
+    $routes->get('view/(:num)', 'Inventory::view/$1');
+    $routes->post('update', 'Inventory::updateAsset');
+    $routes->get('generate-qr/(:num)', 'Inventory::generateQR/$1');
+    $routes->get('scan', 'Inventory::scan');
+});

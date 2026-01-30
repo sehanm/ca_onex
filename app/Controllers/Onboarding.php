@@ -8,6 +8,7 @@ use App\Models\DepartmentModel;
 use App\Models\UserModel;
 
 use App\Models\OnboardingDetailsModel;
+use App\Models\AssetModel;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
@@ -17,6 +18,7 @@ class Onboarding extends BaseController
     protected $detailsModel;
     protected $departmentModel;
     protected $userModel;
+    protected $assetModel;
     protected $db;
 
     public function __construct()
@@ -25,6 +27,7 @@ class Onboarding extends BaseController
         $this->detailsModel = new OnboardingDetailsModel();
         $this->departmentModel = new DepartmentModel();
         $this->userModel = new UserModel();
+        $this->assetModel = new AssetModel();
         $this->db = \Config\Database::connect();
     }
 
@@ -288,6 +291,7 @@ class Onboarding extends BaseController
         $data = [
             'requests' => $requests,
             'roles' => $roles,
+            'available_assets' => $this->assetModel->where('status', 'In Store')->findAll(),
             'page_title' => 'Facilitator Panel'
         ];
 
@@ -387,11 +391,18 @@ class Onboarding extends BaseController
         }
 
         $requestId = $this->request->getPost('request_id');
+        $oldDetails = $this->detailsModel->where('request_id', $requestId)->first();
+
+        $assetId = $this->request->getPost('ict_asset_id');
+        $monitorId = $this->request->getPost('ict_monitor_id');
+
         $data = [
             'ict_desktop_laptop' => $this->request->getPost('ict_desktop_laptop'),
+            'ict_asset_id'       => $assetId ?: null,
             'ict_model'          => $this->request->getPost('ict_model'),
             'ict_serial_number'  => $this->request->getPost('ict_serial_number'),
             'ict_asset_code'     => $this->request->getPost('ict_asset_code'),
+            'ict_monitor_id'     => $monitorId ?: null,
             'ict_monitor_model'  => $this->request->getPost('ict_monitor_model'),
             'ict_monitor_serial' => $this->request->getPost('ict_monitor_serial'),
             'ict_monitor_asset'  => $this->request->getPost('ict_monitor_asset'),
@@ -399,8 +410,26 @@ class Onboarding extends BaseController
 
         $this->detailsModel->where('request_id', $requestId)->set($data)->update();
 
+        // Update Inventory Status
+        if ($assetId) {
+            $this->assetModel->update($assetId, ['status' => 'Assigned']);
+        }
+        if ($monitorId) {
+            $this->assetModel->update($monitorId, ['status' => 'Assigned']);
+        }
+
+        // Handle replacement: If old asset was different, set old to 'In Store'
+        if ($oldDetails) {
+            if ($oldDetails['ict_asset_id'] && $oldDetails['ict_asset_id'] != $assetId) {
+                $this->assetModel->update($oldDetails['ict_asset_id'], ['status' => 'In Store']);
+            }
+            if ($oldDetails['ict_monitor_id'] && $oldDetails['ict_monitor_id'] != $monitorId) {
+                $this->assetModel->update($oldDetails['ict_monitor_id'], ['status' => 'In Store']);
+            }
+        }
+
         $request = $this->onboardingModel->find($requestId);
-        $this->logAction('ICT Assets Updated', "Updated ICT asset details for candidate: {$request['candidate_name']}");
+        $this->logAction('ICT Assets Updated', "Assigned inventory assets for candidate: {$request['candidate_name']}");
 
         return $this->response->setJSON(['success' => true]);
     }
