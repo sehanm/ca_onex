@@ -558,3 +558,220 @@ in APPPATH\Controllers\Admin.php on line 205.
  5 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
  6 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
  7 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp-new\\htdocs\\ca_onex\\public\\index.php')
+CRITICAL - 2026-01-31 11:14:52 --> ErrorException: Undefined array key "assigned_to"
+[Method: GET, Route: inventory]
+in APPPATH\Views\inventory\items.php on line 99.
+ 1 APPPATH\Views\inventory\items.php(99): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "assigned_to"', 'C:\\xampp-new\\htdocs\\ca_onex\\app\\Views\\inventory\\items.php', 99)
+ 2 SYSTEMPATH\View\View.php(226): include('C:\\xampp-new\\htdocs\\ca_onex\\app\\Views\\inventory\\items.php')
+ 3 SYSTEMPATH\View\View.php(229): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1199): CodeIgniter\View\View->render('inventory/items', [], true)
+ 5 APPPATH\Controllers\Inventory.php(38): view('inventory/items', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(935): App\Controllers\Inventory->index()
+ 7 SYSTEMPATH\CodeIgniter.php(509): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Inventory))
+ 8 SYSTEMPATH\CodeIgniter.php(356): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+12 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp-new\\htdocs\\ca_onex\\public\\index.php')
+CRITICAL - 2026-01-31 11:14:56 --> ErrorException: Undefined array key "assigned_to"
+[Method: GET, Route: inventory]
+in APPPATH\Views\inventory\items.php on line 99.
+ 1 APPPATH\Views\inventory\items.php(99): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "assigned_to"', 'C:\\xampp-new\\htdocs\\ca_onex\\app\\Views\\inventory\\items.php', 99)
+ 2 SYSTEMPATH\View\View.php(226): include('C:\\xampp-new\\htdocs\\ca_onex\\app\\Views\\inventory\\items.php')
+ 3 SYSTEMPATH\View\View.php(229): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1199): CodeIgniter\View\View->render('inventory/items', [], true)
+ 5 APPPATH\Controllers\Inventory.php(38): view('inventory/items', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(935): App\Controllers\Inventory->index()
+ 7 SYSTEMPATH\CodeIgniter.php(509): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Inventory))
+ 8 SYSTEMPATH\CodeIgniter.php(356): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+12 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp-new\\htdocs\\ca_onex\\public\\index.php')
+CRITICAL - 2026-01-31 11:15:10 --> ErrorException: Undefined array key "assigned_to"
+[Method: GET, Route: inventory]
+in APPPATH\Views\inventory\items.php on line 99.
+ 1 APPPATH\Views\inventory\items.php(99): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "assigned_to"', 'C:\\xampp-new\\htdocs\\ca_onex\\app\\Views\\inventory\\items.php', 99)
+ 2 SYSTEMPATH\View\View.php(226): include('C:\\xampp-new\\htdocs\\ca_onex\\app\\Views\\inventory\\items.php')
+ 3 SYSTEMPATH\View\View.php(229): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1199): CodeIgniter\View\View->render('inventory/items', [], true)
+ 5 APPPATH\Controllers\Inventory.php(38): view('inventory/items', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(935): App\Controllers\Inventory->index()
+ 7 SYSTEMPATH\CodeIgniter.php(509): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Inventory))
+ 8 SYSTEMPATH\CodeIgniter.php(356): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+12 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp-new\\htdocs\\ca_onex\\public\\index.php')
+ERROR - 2026-01-31 11:16:15 --> mysqli_sql_exception: Unknown column 'users.full_name' in 'field list' in C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `assets`...', 0)
+#1 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `assets`...')
+#2 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `assets`...')
+#3 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `assets`...', Array, false)
+#4 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+#6 C:\xampp-new\htdocs\ca_onex\app\Controllers\Inventory.php(38): CodeIgniter\BaseModel->findAll()
+#7 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\CodeIgniter.php(935): App\Controllers\Inventory->index()
+#8 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\CodeIgniter.php(509): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Inventory))
+#9 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\CodeIgniter.php(356): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#10 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#11 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#12 C:\xampp-new\htdocs\ca_onex\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#13 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\rewrite.php(44): require_once('C:\\xampp-new\\ht...')
+#14 {main}
+CRITICAL - 2026-01-31 11:16:15 --> CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'users.full_name' in 'field list'
+[Method: GET, Route: inventory]
+in SYSTEMPATH\Database\BaseConnection.php on line 684.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `assets`.*, `departments`.`department_name`, `users`.`full_name` as `assigned_to`
+FROM `assets`
+LEFT JOIN `departments` ON `departments`.`id` = `assets`.`department_id`
+LEFT JOIN `users` ON `users`.`id` = `assets`.`assigned_user_id`', [], false)
+ 2 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 3 SYSTEMPATH\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+ 4 APPPATH\Controllers\Inventory.php(38): CodeIgniter\BaseModel->findAll()
+ 5 SYSTEMPATH\CodeIgniter.php(935): App\Controllers\Inventory->index()
+ 6 SYSTEMPATH\CodeIgniter.php(509): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Inventory))
+ 7 SYSTEMPATH\CodeIgniter.php(356): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+10 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+11 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp-new\\htdocs\\ca_onex\\public\\index.php')
+CRITICAL - 2026-01-31 11:16:15 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'users.full_name' in 'field list'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `assets`.*, `departments`.`department_name`, `users`.`full_name` as `assigned_to`
+FROM `assets`
+LEFT JOIN `departments` ON `departments`.`id` = `assets`.`department_id`
+LEFT JOIN `users` ON `users`.`id` = `assets`.`assigned_user_id`')
+ 2 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `assets`.*, `departments`.`department_name`, `users`.`full_name` as `assigned_to`
+FROM `assets`
+LEFT JOIN `departments` ON `departments`.`id` = `assets`.`department_id`
+LEFT JOIN `users` ON `users`.`id` = `assets`.`assigned_user_id`')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `assets`.*, `departments`.`department_name`, `users`.`full_name` as `assigned_to`
+FROM `assets`
+LEFT JOIN `departments` ON `departments`.`id` = `assets`.`department_id`
+LEFT JOIN `users` ON `users`.`id` = `assets`.`assigned_user_id`', [], false)
+ 4 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 5 SYSTEMPATH\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+ 6 APPPATH\Controllers\Inventory.php(38): CodeIgniter\BaseModel->findAll()
+ 7 SYSTEMPATH\CodeIgniter.php(935): App\Controllers\Inventory->index()
+ 8 SYSTEMPATH\CodeIgniter.php(509): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Inventory))
+ 9 SYSTEMPATH\CodeIgniter.php(356): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+10 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+11 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+12 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+13 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp-new\\htdocs\\ca_onex\\public\\index.php')
+CRITICAL - 2026-01-31 11:16:15 --> [Caused by] mysqli_sql_exception: Unknown column 'users.full_name' in 'field list'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `assets`.*, `departments`.`department_name`, `users`.`full_name` as `assigned_to`
+FROM `assets`
+LEFT JOIN `departments` ON `departments`.`id` = `assets`.`department_id`
+LEFT JOIN `users` ON `users`.`id` = `assets`.`assigned_user_id`', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `assets`.*, `departments`.`department_name`, `users`.`full_name` as `assigned_to`
+FROM `assets`
+LEFT JOIN `departments` ON `departments`.`id` = `assets`.`department_id`
+LEFT JOIN `users` ON `users`.`id` = `assets`.`assigned_user_id`')
+ 3 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `assets`.*, `departments`.`department_name`, `users`.`full_name` as `assigned_to`
+FROM `assets`
+LEFT JOIN `departments` ON `departments`.`id` = `assets`.`department_id`
+LEFT JOIN `users` ON `users`.`id` = `assets`.`assigned_user_id`')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `assets`.*, `departments`.`department_name`, `users`.`full_name` as `assigned_to`
+FROM `assets`
+LEFT JOIN `departments` ON `departments`.`id` = `assets`.`department_id`
+LEFT JOIN `users` ON `users`.`id` = `assets`.`assigned_user_id`', [], false)
+ 5 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 6 SYSTEMPATH\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+ 7 APPPATH\Controllers\Inventory.php(38): CodeIgniter\BaseModel->findAll()
+ 8 SYSTEMPATH\CodeIgniter.php(935): App\Controllers\Inventory->index()
+ 9 SYSTEMPATH\CodeIgniter.php(509): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Inventory))
+10 SYSTEMPATH\CodeIgniter.php(356): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+14 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp-new\\htdocs\\ca_onex\\public\\index.php')
+ERROR - 2026-01-31 11:16:16 --> mysqli_sql_exception: Unknown column 'users.full_name' in 'field list' in C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `assets`...', 0)
+#1 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `assets`...')
+#2 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `assets`...')
+#3 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `assets`...', Array, false)
+#4 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+#6 C:\xampp-new\htdocs\ca_onex\app\Controllers\Inventory.php(38): CodeIgniter\BaseModel->findAll()
+#7 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\CodeIgniter.php(935): App\Controllers\Inventory->index()
+#8 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\CodeIgniter.php(509): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Inventory))
+#9 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\CodeIgniter.php(356): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#10 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#11 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#12 C:\xampp-new\htdocs\ca_onex\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#13 C:\xampp-new\htdocs\ca_onex\vendor\codeigniter4\framework\system\rewrite.php(44): require_once('C:\\xampp-new\\ht...')
+#14 {main}
+CRITICAL - 2026-01-31 11:16:16 --> CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'users.full_name' in 'field list'
+[Method: GET, Route: inventory]
+in SYSTEMPATH\Database\BaseConnection.php on line 684.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `assets`.*, `departments`.`department_name`, `users`.`full_name` as `assigned_to`
+FROM `assets`
+LEFT JOIN `departments` ON `departments`.`id` = `assets`.`department_id`
+LEFT JOIN `users` ON `users`.`id` = `assets`.`assigned_user_id`', [], false)
+ 2 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 3 SYSTEMPATH\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+ 4 APPPATH\Controllers\Inventory.php(38): CodeIgniter\BaseModel->findAll()
+ 5 SYSTEMPATH\CodeIgniter.php(935): App\Controllers\Inventory->index()
+ 6 SYSTEMPATH\CodeIgniter.php(509): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Inventory))
+ 7 SYSTEMPATH\CodeIgniter.php(356): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+10 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+11 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp-new\\htdocs\\ca_onex\\public\\index.php')
+CRITICAL - 2026-01-31 11:16:16 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'users.full_name' in 'field list'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `assets`.*, `departments`.`department_name`, `users`.`full_name` as `assigned_to`
+FROM `assets`
+LEFT JOIN `departments` ON `departments`.`id` = `assets`.`department_id`
+LEFT JOIN `users` ON `users`.`id` = `assets`.`assigned_user_id`')
+ 2 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `assets`.*, `departments`.`department_name`, `users`.`full_name` as `assigned_to`
+FROM `assets`
+LEFT JOIN `departments` ON `departments`.`id` = `assets`.`department_id`
+LEFT JOIN `users` ON `users`.`id` = `assets`.`assigned_user_id`')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `assets`.*, `departments`.`department_name`, `users`.`full_name` as `assigned_to`
+FROM `assets`
+LEFT JOIN `departments` ON `departments`.`id` = `assets`.`department_id`
+LEFT JOIN `users` ON `users`.`id` = `assets`.`assigned_user_id`', [], false)
+ 4 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 5 SYSTEMPATH\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+ 6 APPPATH\Controllers\Inventory.php(38): CodeIgniter\BaseModel->findAll()
+ 7 SYSTEMPATH\CodeIgniter.php(935): App\Controllers\Inventory->index()
+ 8 SYSTEMPATH\CodeIgniter.php(509): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Inventory))
+ 9 SYSTEMPATH\CodeIgniter.php(356): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+10 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+11 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+12 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+13 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp-new\\htdocs\\ca_onex\\public\\index.php')
+CRITICAL - 2026-01-31 11:16:16 --> [Caused by] mysqli_sql_exception: Unknown column 'users.full_name' in 'field list'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `assets`.*, `departments`.`department_name`, `users`.`full_name` as `assigned_to`
+FROM `assets`
+LEFT JOIN `departments` ON `departments`.`id` = `assets`.`department_id`
+LEFT JOIN `users` ON `users`.`id` = `assets`.`assigned_user_id`', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `assets`.*, `departments`.`department_name`, `users`.`full_name` as `assigned_to`
+FROM `assets`
+LEFT JOIN `departments` ON `departments`.`id` = `assets`.`department_id`
+LEFT JOIN `users` ON `users`.`id` = `assets`.`assigned_user_id`')
+ 3 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `assets`.*, `departments`.`department_name`, `users`.`full_name` as `assigned_to`
+FROM `assets`
+LEFT JOIN `departments` ON `departments`.`id` = `assets`.`department_id`
+LEFT JOIN `users` ON `users`.`id` = `assets`.`assigned_user_id`')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `assets`.*, `departments`.`department_name`, `users`.`full_name` as `assigned_to`
+FROM `assets`
+LEFT JOIN `departments` ON `departments`.`id` = `assets`.`department_id`
+LEFT JOIN `users` ON `users`.`id` = `assets`.`assigned_user_id`', [], false)
+ 5 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 6 SYSTEMPATH\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+ 7 APPPATH\Controllers\Inventory.php(38): CodeIgniter\BaseModel->findAll()
+ 8 SYSTEMPATH\CodeIgniter.php(935): App\Controllers\Inventory->index()
+ 9 SYSTEMPATH\CodeIgniter.php(509): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Inventory))
+10 SYSTEMPATH\CodeIgniter.php(356): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+14 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp-new\\htdocs\\ca_onex\\public\\index.php')

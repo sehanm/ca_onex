@@ -24,6 +24,20 @@
         <form action="<?= base_url('inventory/store') ?>" method="post">
             <?= csrf_field() ?>
             <div class="form-group-premium">
+                <label>Device Type</label>
+                <div class="custom-select-v2">
+                    <select name="type" class="form-control" required
+                        style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                        <option value="Laptop">Laptop</option>
+                        <option value="Desktop">Desktop</option>
+                        <option value="Monitor">Monitor</option>
+                        <option value="Printer">Printer</option>
+                        <option value="Accessory">Accessory</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group-premium">
                 <label>Hardware Model</label>
                 <input type="text" name="model" class="form-control" placeholder="e.g. Dell Latitude 5420" required>
             </div>
@@ -73,10 +87,26 @@
                         <td>
                             <div class="item-id-cell">
                                 <div class="item-icon-box">
-                                    <i class="fa-solid fa-laptop-medical"></i>
+                                    <?php if (($item['type'] ?? '') == 'Laptop'): ?>
+                                        <i class="fa-solid fa-laptop"></i>
+                                    <?php elseif (($item['type'] ?? '') == 'Desktop'): ?>
+                                        <i class="fa-solid fa-computer"></i>
+                                    <?php elseif (($item['type'] ?? '') == 'Monitor'): ?>
+                                        <i class="fa-solid fa-tv"></i>
+                                    <?php elseif (($item['type'] ?? '') == 'Printer'): ?>
+                                        <i class="fa-solid fa-print"></i>
+                                    <?php else: ?>
+                                        <i class="fa-solid fa-box-open"></i>
+                                    <?php endif; ?>
                                 </div>
                                 <div class="item-primary-info">
-                                    <span class="item-model"><?= esc($item['model']) ?></span>
+                                    <span class="item-model">
+                                        <?= esc($item['model']) ?>
+                                        <?php if (!empty($item['type'])): ?>
+                                            <span class="badge"
+                                                style="font-size: 0.65rem; background:#f1f5f9; color:#64748b; margin-left:5px; border:1px solid #e2e8f0;"><?= esc($item['type']) ?></span>
+                                        <?php endif; ?>
+                                    </span>
                                     <span class="item-code"><?= esc($item['asset_code'] ?: 'PENDING_CODE') ?></span>
                                 </div>
                             </div>

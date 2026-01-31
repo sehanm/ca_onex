@@ -19,109 +19,89 @@ class Inventory extends BaseController
 {
     protected $assetModel;
     protected $userModel;
-    protected $deptModel;
+    protected $departmentModel;
+    protected $userDetailModel;
 
     public function __construct()
     {
         $this->assetModel = new AssetModel();
         $this->userModel = new UserModel();
-        $this->deptModel = new DepartmentModel();
+        $this->departmentModel = new DepartmentModel();
+        $this->userDetailModel = new UserDetailModel();
     }
 
     public function index()
     {
+        $items = $this->assetModel->select('assets.*, departments.department_name, user_details.full_name as assigned_to')
+            ->join('departments', 'departments.id = assets.department_id', 'left')
+            ->join('user_details', 'user_details.user_id = assets.assigned_user_id', 'left')
+            ->findAll();
+
         $data = [
-            'total_assets' => $this->assetModel->countAll(),
-            'by_status' => $this->assetModel->select('status, COUNT(*) as count')
-                ->groupBy('status')
-                ->findAll(),
-            'page_title' => 'Inventory Overview'
+            'items' => $items
         ];
-        return view('inventory/dashboard', $data);
+        return view('inventory/items', $data);
+    }
+
+    public function items()
+    {
+        return $this->index();
+    }
+
+    public function view($id)
+    {
+        $item = $this->assetModel->find($id);
+        if (!$item) {
+            return redirect()->to('inventory')->with('error', 'Asset not found');
+        }
+
+        $data = [
+            'item' => $item,
+            'departments' => $this->departmentModel->findAll(),
+            'users' => $this->userDetailModel->findAll()
+        ];
+        return view('inventory/view_item', $data);
     }
 
     public function store()
     {
         $rules = [
-            'model' => 'required|min_length[3]',
+            'model' => 'required',
             'serial_number' => 'required|is_unique[assets.serial_number]',
+            'asset_code' => 'required|is_unique[assets.asset_code]'
         ];
 
         if (!$this->validate($rules)) {
-            return redirect()->back()->with('error', 'Invalid data or duplicate serial number.')->withInput();
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
-        $data = [
+        $this->assetModel->save([
+            'type' => $this->request->getPost('type'),
             'model' => $this->request->getPost('model'),
             'serial_number' => $this->request->getPost('serial_number'),
             'asset_code' => $this->request->getPost('asset_code'),
-            'status' => 'In Store'
-        ];
+            'status' => 'In Store',
+            'purchased_date' => date('Y-m-d')
+        ]);
 
-        $this->assetModel->insert($data);
-        return redirect()->to('inventory/items')->with('success', 'Asset registered successfully.');
-    }
-
-    public function items()
-    {
-        $data = [
-            'items' => $this->assetModel->select('assets.*, departments.department_name, user_details.full_name as assigned_to')
-                ->join('departments', 'departments.id = assets.department_id', 'left')
-                ->join('user_details', 'user_details.user_id = assets.assigned_user_id', 'left')
-                ->orderBy('assets.created_at', 'DESC')
-                ->findAll(),
-            'page_title' => 'Central Inventory'
-        ];
-        return view('inventory/items', $data);
-    }
-
-    public function view($id)
-    {
-        $item = $this->assetModel->select('assets.*, departments.department_name, user_details.full_name as assigned_to')
-            ->join('departments', 'departments.id = assets.department_id', 'left')
-            ->join('user_details', 'user_details.user_id = assets.assigned_user_id', 'left')
-            ->find($id);
-
-        if (!$item)
-            return redirect()->to('inventory/items')->with('error', 'Item not found');
-
-        $data = [
-            'item' => $item,
-            'departments' => $this->deptModel->findAll(),
-            'users' => (new UserDetailModel())->select('user_id, full_name')->findAll(),
-            'page_title' => 'Manage Asset: ' . $item['serial_number']
-        ];
-
-        return view('inventory/view_item', $data);
-    }
-
-    public function scan()
-    {
-        return view('inventory/scan', ['page_title' => 'Scan Asset QR']);
+        return redirect()->to('inventory')->with('success', 'Asset created successfully');
     }
 
     public function updateAsset()
     {
         $id = $this->request->getPost('id');
-        if (!$id)
-            return redirect()->back()->with('error', 'Missing asset ID');
-
-        $deptId = $this->request->getPost('department_id');
-        $userId = $this->request->getPost('assigned_user_id');
-
-        // Sanitize IDs for database (empty string to NULL)
-        $newData = [
-            'status' => $this->request->getPost('status'),
-            'department_id' => ($deptId !== "") ? $deptId : null,
-            'assigned_user_id' => ($userId !== "") ? $userId : null,
+        $data = [
             'asset_code' => $this->request->getPost('asset_code'),
+            'status' => $this->request->getPost('status'),
+            'department_id' => $this->request->getPost('department_id') ?: null,
+            'assigned_user_id' => $this->request->getPost('assigned_user_id') ?: null,
             'notes' => $this->request->getPost('notes'),
+            'updated_at' => date('Y-m-d H:i:s')
         ];
 
-        if ($this->assetModel->update($id, $newData)) {
-            return redirect()->back()->with('success', 'Asset record updated successfully');
+        if ($this->assetModel->update($id, $data)) {
+            return redirect()->back()->with('success', 'Asset updated successfully');
         }
-
         return redirect()->back()->with('error', 'Failed to update asset repository');
     }
 
@@ -218,5 +198,14 @@ class Inventory extends BaseController
         } catch (\Exception $e) {
             return $this->response->setStatusCode(500)->setBody("QR Generation Error: " . $e->getMessage());
         }
+    }
+
+    public function getDetails($id)
+    {
+        $item = $this->assetModel->find($id);
+        if ($item) {
+            return $this->response->setJSON(['success' => true, 'data' => $item]);
+        }
+        return $this->response->setJSON(['success' => false, 'message' => 'Asset not found']);
     }
 }

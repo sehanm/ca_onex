@@ -20,76 +20,97 @@
             </thead>
             <tbody>
                 <?php foreach ($requests as $req): ?>
-                <tr data-request-id="<?= $req['request_id'] ?>">
-                    <td>
-                        <div class="cand-info">
-                            <span class="cand-name"><?= esc($req['candidate_name']) ?></span>
-                            <span class="cand-meta"><?= esc($req['department_name']) ?> | <?= date('M d, Y', strtotime($req['joining_date'])) ?></span>
-                        </div>
-                    </td>
-                    <td class="hide-mobile">
-                        <div class="task-badges">
-                            <?php if (in_array('Admin', $roles) && ($req['admin_chair'] || $req['admin_table'] || $req['admin_phone'])): ?>
-                                <div class="task-group">
-                                    <span class="badge badge-admin">Admin</span>
-                                    <select onchange="updateSectionStatus(<?= $req['request_id'] ?>, 'admin', this.value)" class="fac-select">
-                                        <option value="Pending" <?= $req['admin_status'] == 'Pending' ? 'selected' : '' ?>>Pending</option>
-                                        <option value="Processing" <?= $req['admin_status'] == 'Processing' ? 'selected' : '' ?>>Processing</option>
-                                        <option value="Completed" <?= $req['admin_status'] == 'Completed' ? 'selected' : '' ?>>Completed</option>
-                                    </select>
-                                </div>
-                            <?php endif; ?>
-                            
-                            <?php if (in_array('HR', $roles) && ($req['hr_mobile'] || $req['hr_sim'])): ?>
-                                <div class="task-group">
-                                    <span class="badge badge-hr">HR</span>
-                                    <select onchange="updateSectionStatus(<?= $req['request_id'] ?>, 'hr', this.value)" class="fac-select">
-                                        <option value="Pending" <?= $req['hr_status'] == 'Pending' ? 'selected' : '' ?>>Pending</option>
-                                        <option value="Processing" <?= $req['hr_status'] == 'Processing' ? 'selected' : '' ?>>Processing</option>
-                                        <option value="Completed" <?= $req['hr_status'] == 'Completed' ? 'selected' : '' ?>>Completed</option>
-                                    </select>
-                                </div>
-                            <?php endif; ?>
+                    <tr data-request-id="<?= $req['request_id'] ?>">
+                        <td>
+                            <div class="cand-info">
+                                <span class="cand-name"><?= esc($req['candidate_name']) ?></span>
+                                <span class="cand-meta"><?= esc($req['department_name']) ?> |
+                                    <?= date('M d, Y', strtotime($req['joining_date'])) ?></span>
+                            </div>
+                        </td>
+                        <td class="hide-mobile">
+                            <div class="task-badges">
+                                <?php if (in_array('Admin', $roles) && ($req['admin_chair'] || $req['admin_table'] || $req['admin_phone'])): ?>
+                                    <div class="task-group">
+                                        <span class="badge badge-admin">Admin</span>
+                                        <select onchange="updateSectionStatus(<?= $req['request_id'] ?>, 'admin', this.value)"
+                                            class="fac-select">
+                                            <option value="Pending" <?= $req['admin_status'] == 'Pending' ? 'selected' : '' ?>>
+                                                Pending</option>
+                                            <option value="Processing" <?= $req['admin_status'] == 'Processing' ? 'selected' : '' ?>>Processing</option>
+                                            <option value="Completed" <?= $req['admin_status'] == 'Completed' ? 'selected' : '' ?>>
+                                                Completed</option>
+                                        </select>
+                                    </div>
+                                <?php endif; ?>
 
-                            <?php if (in_array('ICT', $roles) && ($req['ict_desktop_laptop'] !== 'None' || $req['ict_printer'] || 
-                                                           $req['soft_smms'] || $req['soft_receipt'] || $req['soft_training'] || 
-                                                           $req['soft_ecole'] || $req['soft_pronto'] || $req['soft_ims'] || 
-                                                           $req['soft_sap'] || $req['soft_imeet'] || !empty($req['access_copy_user']))): ?>
-                                <div class="task-group">
-                                    <span class="badge badge-ict">ICT</span>
-                                    <select onchange="updateSectionStatus(<?= $req['request_id'] ?>, 'ict', this.value)" class="fac-select">
-                                        <option value="Pending" <?= $req['ict_status'] == 'Pending' ? 'selected' : '' ?>>Pending</option>
-                                        <option value="Processing" <?= $req['ict_status'] == 'Processing' ? 'selected' : '' ?>>Processing</option>
-                                        <option value="Completed" <?= $req['ict_status'] == 'Completed' ? 'selected' : '' ?>>Completed</option>
-                                    </select>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                    </td>
-                    <td>
-                        <?php 
+                                <?php if (in_array('HR', $roles) && ($req['hr_mobile'] || $req['hr_sim'])): ?>
+                                    <div class="task-group">
+                                        <span class="badge badge-hr">HR</span>
+                                        <select onchange="updateSectionStatus(<?= $req['request_id'] ?>, 'hr', this.value)"
+                                            class="fac-select">
+                                            <option value="Pending" <?= $req['hr_status'] == 'Pending' ? 'selected' : '' ?>>Pending
+                                            </option>
+                                            <option value="Processing" <?= $req['hr_status'] == 'Processing' ? 'selected' : '' ?>>
+                                                Processing</option>
+                                            <option value="Completed" <?= $req['hr_status'] == 'Completed' ? 'selected' : '' ?>>
+                                                Completed</option>
+                                        </select>
+                                    </div>
+                                <?php endif; ?>
+
+                                <?php if (
+                                    in_array('ICT', $roles) && ($req['ict_desktop_laptop'] !== 'None' || $req['ict_printer'] ||
+                                        $req['soft_smms'] || $req['soft_receipt'] || $req['soft_training'] ||
+                                        $req['soft_ecole'] || $req['soft_pronto'] || $req['soft_ims'] ||
+                                        $req['soft_sap'] || $req['soft_imeet'] || !empty($req['access_copy_user']))
+                                ): ?>
+                                    <div class="task-group">
+                                        <span class="badge badge-ict">ICT</span>
+                                        <select onchange="updateSectionStatus(<?= $req['request_id'] ?>, 'ict', this.value)"
+                                            class="fac-select">
+                                            <option value="Pending" <?= $req['ict_status'] == 'Pending' ? 'selected' : '' ?>>
+                                                Pending</option>
+                                            <option value="Processing" <?= $req['ict_status'] == 'Processing' ? 'selected' : '' ?>>
+                                                Processing</option>
+                                            <option value="Completed" <?= $req['ict_status'] == 'Completed' ? 'selected' : '' ?>>
+                                                Completed</option>
+                                        </select>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </td>
+                        <td>
+                            <?php
                             $statusClass = '';
-                            if ($req['status'] === 'Completed') $statusClass = 'badge-success';
-                            else if ($req['status'] === 'Processing') $statusClass = 'badge-processing-pulse';
-                        ?>
-                        <span class="badge badge-role <?= $statusClass ?>" id="status-badge-<?= $req['request_id'] ?>"><?= esc($req['status']) ?></span>
-                    </td>
-                    <td>
-                        <div style="display: flex; gap: 8px;">
-                            <button class="btn-icon" onclick="viewDetails(<?= htmlspecialchars(json_encode($req)) ?>)" title="View Required Facilities">
-                                <i class="fa-solid fa-rectangle-list"></i>
-                            </button>
-                            <?php if (in_array('ICT', $roles) && $req['ict_desktop_laptop'] !== 'None'): ?>
-                                <button class="btn-icon" style="background-color: var(--primary-light); color: white;" onclick="openIctModal(<?= htmlspecialchars(json_encode($req)) ?>)" title="Update Asset Details">
-                                    <i class="fa-solid fa-laptop-medical"></i>
+                            if ($req['status'] === 'Completed')
+                                $statusClass = 'badge-success';
+                            else if ($req['status'] === 'Processing')
+                                $statusClass = 'badge-processing-pulse';
+                            ?>
+                            <span class="badge badge-role <?= $statusClass ?>"
+                                id="status-badge-<?= $req['request_id'] ?>"><?= esc($req['status']) ?></span>
+                        </td>
+                        <td>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn-icon" onclick="viewDetails(<?= htmlspecialchars(json_encode($req)) ?>)"
+                                    title="View Required Facilities">
+                                    <i class="fa-solid fa-rectangle-list"></i>
                                 </button>
-                                <a href="<?= base_url('onboarding/download-policy/'.$req['request_id']) ?>" class="btn-icon" style="background-color: #16a34a; color: white;" title="Download IT Policy Form">
-                                    <i class="fa-solid fa-file-pdf"></i>
-                                </a>
-                            <?php endif; ?>
-                        </div>
-                    </td>
-                </tr>
+                                <?php if (in_array('ICT', $roles) && $req['ict_desktop_laptop'] !== 'None'): ?>
+                                    <button class="btn-icon" style="background-color: var(--primary-light); color: white;"
+                                        onclick="openIctModal(<?= htmlspecialchars(json_encode($req)) ?>)"
+                                        title="Update Asset Details">
+                                        <i class="fa-solid fa-laptop-medical"></i>
+                                    </button>
+                                    <a href="<?= base_url('onboarding/download-policy/' . $req['request_id']) ?>" class="btn-icon"
+                                        style="background-color: #16a34a; color: white;" title="Download IT Policy Form">
+                                        <i class="fa-solid fa-file-pdf"></i>
+                                    </a>
+                                <?php endif; ?>
+                            </div>
+                        </td>
+                    </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
@@ -97,13 +118,15 @@
 </div>
 
 <!-- Modal for ICT Asset Details -->
-<div id="ictAssetModal" class="modal" style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; padding: 20px; background-color: rgba(0,0,0,0.4); overflow-y: auto;">
-    <div class="modal-content" style="background-color: #fefefe; margin: 20px auto; padding: 30px; border-radius: 12px; border: 1px solid #888; width: 100%; max-width: 550px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
+<div id="ictAssetModal" class="modal"
+    style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; padding: 20px; background-color: rgba(0,0,0,0.4); overflow-y: auto;">
+    <div class="modal-content"
+        style="background-color: #fefefe; margin: 20px auto; padding: 30px; border-radius: 12px; border: 1px solid #888; width: 100%; max-width: 550px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
         <h3 style="margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 15px;">Update Hardware Assignment</h3>
-        
+
         <form id="ictAssetForm">
             <input type="hidden" name="request_id" id="ict_request_id">
-            
+
             <div class="form-group-premium">
                 <label>Assigned Device Type</label>
                 <div class="select-wrapper">
@@ -115,69 +138,80 @@
                 </div>
             </div>
 
-            <div class="form-group-premium" style="background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0;">
-                <label style="color: var(--primary-color);">Link from Inventory (Optional)</label>
-                <div class="select-wrapper">
-                    <select name="ict_asset_id" id="ict_asset_select" class="form-control" onchange="autoPopulateAsset('main', this.value)">
-                        <option value="">-- Select from Warehouse --</option>
-                        <?php foreach($available_assets as $asset): ?>
-                        <option value="<?= $asset['id'] ?>" data-model="<?= esc($asset['model']) ?>" data-sn="<?= esc($asset['serial_number']) ?>" data-code="<?= esc($asset['asset_code']) ?>">
-                            <?= esc($asset['model']) ?> (<?= esc($asset['serial_number']) ?>)
-                        </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <p style="font-size: 0.7rem; color: #64748b; margin-top: 5px;">Selecting an asset will auto-fill the fields below.</p>
+            <!-- Scanner Viewport -->
+            <div id="qr-reader"
+                style="width: 100%; display: none; margin-bottom: 20px; border: 2px solid #3b82f6; border-radius: 12px; overflow: hidden;">
+            </div>
+            <div id="scan_status" style="text-align: center; margin-bottom: 10px; display: none;">
+                <span class="badge badge-processing-pulse">Scanning...</span>
+                <button type="button" onclick="stopScanner()"
+                    style="margin-left: 10px; padding: 2px 8px; font-size: 0.8rem; border: 1px solid #ccc; border-radius: 4px; background: white;">Stop</button>
             </div>
 
-            <div class="row">
-                <div class="col">
-                    <div class="form-group-premium">
-                        <label>Asset Model</label>
-                        <input type="text" name="ict_model" id="ict_model_input" class="form-control">
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="form-group-premium">
-                        <label>Serial Number</label>
-                        <input type="text" name="ict_serial_number" id="ict_serial_input" class="form-control">
-                    </div>
-                </div>
-            </div>
+            <div class="form-group-premium"
+                style="background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                <label style="color: var(--primary-color); margin-bottom: 15px; display: block;">Primary Asset
+                    (CPU/Laptop)</label>
 
-            <div class="form-group-premium">
-                <label>Asset Code</label>
-                <input type="text" name="ict_asset_code" id="ict_asset_input" class="form-control">
+                <button type="button" class="btn-scan" onclick="startScanner('main')">
+                    <i class="fa-solid fa-qrcode"></i> Scan Asset Tag
+                </button>
+
+                <input type="hidden" name="ict_asset_id" id="ict_asset_id">
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="scanned-data-box">
+                            <div class="scanned-label">Asset Model</div>
+                            <input type="text" name="ict_model" id="ict_model_input" class="form-control" readonly
+                                style="border:none; padding:0; height:auto; background:transparent;">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="scanned-data-box">
+                            <div class="scanned-label">Serial Number</div>
+                            <input type="text" name="ict_serial_number" id="ict_serial_input" class="form-control"
+                                readonly style="border:none; padding:0; height:auto; background:transparent;">
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="scanned-data-box">
+                            <div class="scanned-label">Asset Code</div>
+                            <input type="text" name="ict_asset_code" id="ict_asset_input" class="form-control" readonly
+                                style="border:none; padding:0; height:auto; background:transparent;">
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Monitor Section -->
-            <div id="monitor_details_group" class="form-group-premium animate-in" style="display:none; border: 1px solid #f1f5f9; padding: 15px; border-radius: 12px; background: #fafafa;">
-                <label style="color: var(--primary-color); font-weight: bold;">Monitor Assignment</label>
-                
-                <div class="form-group-premium" style="margin-top: 10px;">
-                    <label style="font-size: 0.8rem;">Link Monitor from Inventory</label>
-                    <select name="ict_monitor_id" id="ict_monitor_select" class="form-control" onchange="autoPopulateAsset('monitor', this.value)">
-                        <option value="">-- Select from Warehouse --</option>
-                        <?php foreach($available_assets as $asset): ?>
-                        <option value="<?= $asset['id'] ?>" data-model="<?= esc($asset['model']) ?>" data-sn="<?= esc($asset['serial_number']) ?>" data-code="<?= esc($asset['asset_code']) ?>">
-                            <?= esc($asset['model']) ?> (<?= esc($asset['serial_number']) ?>)
-                        </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
+            <div id="monitor_details_group" class="form-group-premium animate-in"
+                style="display:none; margin-top: 20px; border: 1px solid #f1f5f9; padding: 20px; border-radius: 12px; background: #fafafa;">
+                <label
+                    style="color: var(--primary-color); font-weight: bold; margin-bottom: 15px; display: block;">Monitor
+                    Assignment</label>
+
+                <button type="button" class="btn-scan" onclick="startScanner('monitor')">
+                    <i class="fa-solid fa-qrcode"></i> Scan Monitor Tag
+                </button>
+
+                <input type="hidden" name="ict_monitor_id" id="ict_monitor_id">
 
                 <div class="monitor-input-grid">
-                    <div style="margin-bottom: 10px;">
-                        <label style="font-size: 0.75rem; color: #64748b;">Monitor Model</label>
-                        <input type="text" name="ict_monitor_model" id="ict_monitor_model_input" class="form-control">
+                    <div class="scanned-data-box">
+                        <div class="scanned-label">Monitor Model</div>
+                        <input type="text" name="ict_monitor_model" id="ict_monitor_model_input" class="form-control"
+                            readonly style="border:none; padding:0; height:auto; background:transparent;">
                     </div>
-                    <div style="margin-bottom: 10px;">
-                        <label style="font-size: 0.75rem; color: #64748b;">Monitor Serial</label>
-                        <input type="text" name="ict_monitor_serial" id="ict_monitor_serial_input" class="form-control">
+                    <div class="scanned-data-box">
+                        <div class="scanned-label">Monitor Serial</div>
+                        <input type="text" name="ict_monitor_serial" id="ict_monitor_serial_input" class="form-control"
+                            readonly style="border:none; padding:0; height:auto; background:transparent;">
                     </div>
-                    <div>
-                        <label style="font-size: 0.75rem; color: #64748b;">Monitor Asset Code</label>
-                        <input type="text" name="ict_monitor_asset" id="ict_monitor_asset_input" class="form-control">
+                    <div class="scanned-data-box">
+                        <div class="scanned-label">Monitor Asset Code</div>
+                        <input type="text" name="ict_monitor_asset" id="ict_monitor_asset_input" class="form-control"
+                            readonly style="border:none; padding:0; height:auto; background:transparent;">
                     </div>
                 </div>
             </div>
@@ -191,14 +225,17 @@
 </div>
 
 <!-- Modal for Facility Details -->
-<div id="facilityModal" class="modal" style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; padding: 20px; background-color: rgba(0,0,0,0.4); overflow-y: auto;">
-    <div class="modal-content" style="background-color: #fefefe; margin: 20px auto; padding: 30px; border-radius: 12px; border: 1px solid #888; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
-        <h3 id="modalTitle" style="margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 15px;">Required Facilities</h3>
-        
+<div id="facilityModal" class="modal"
+    style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; padding: 20px; background-color: rgba(0,0,0,0.4); overflow-y: auto;">
+    <div class="modal-content"
+        style="background-color: #fefefe; margin: 20px auto; padding: 30px; border-radius: 12px; border: 1px solid #888; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
+        <h3 id="modalTitle" style="margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 15px;">Required
+            Facilities</h3>
+
         <div id="modalBody" class="modal-body-content">
             <!-- Dynamic Content -->
         </div>
-        
+
         <div style="text-align: right; margin-top: 25px;">
             <button onclick="closeModal()" class="btn-secondary">Close</button>
         </div>
@@ -206,29 +243,106 @@
 </div>
 
 <style>
-    .cand-info { display: flex; flex-direction: column; }
-    .cand-name { font-weight: 600; color: #1e293b; }
-    .cand-meta { font-size: 0.8rem; color: #64748b; }
-    
-    .task-badges { display: flex; gap: 15px; flex-wrap: wrap; }
-    .task-group { display: flex; align-items: center; gap: 8px; background: #f8fafc; padding: 5px 10px; border-radius: 8px; border: 1px solid #e2e8f0; }
-    
-    .badge-admin { background: #0891b2; color: #fff; }
-    .badge-hr { background: #db2777; color: #fff; }
-    .badge-ict { background: #7c3aed; color: #fff; }
-    
-    .fac-select { padding: 4px 8px; border-radius: 4px; border: 1px solid #cbd5e1; font-size: 0.85rem; cursor: pointer; }
-    .fac-select:focus { border-color: var(--primary-color); outline: none; }
+    .cand-info {
+        display: flex;
+        flex-direction: column;
+    }
 
-    .modal-body-content h5 { color: #334155; margin: 20px 0 10px 0; border-left: 3px solid var(--primary-color); padding-left: 10px; }
-    .fac-list { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .fac-list li { background: #f1f5f9; padding: 8px 12px; border-radius: 6px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
-    .fac-list li i { color: #10b981; }
+    .cand-name {
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+    .cand-meta {
+        font-size: 0.8rem;
+        color: #64748b;
+    }
+
+    .task-badges {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .task-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #f8fafc;
+        padding: 5px 10px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .badge-admin {
+        background: #0891b2;
+        color: #fff;
+    }
+
+    .badge-hr {
+        background: #db2777;
+        color: #fff;
+    }
+
+    .badge-ict {
+        background: #7c3aed;
+        color: #fff;
+    }
+
+    .fac-select {
+        padding: 4px 8px;
+        border-radius: 4px;
+        border: 1px solid #cbd5e1;
+        font-size: 0.85rem;
+        cursor: pointer;
+    }
+
+    .fac-select:focus {
+        border-color: var(--primary-color);
+        outline: none;
+    }
+
+    .modal-body-content h5 {
+        color: #334155;
+        margin: 20px 0 10px 0;
+        border-left: 3px solid var(--primary-color);
+        padding-left: 10px;
+    }
+
+    .fac-list {
+        list-style: none;
+        padding: 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .fac-list li {
+        background: #f1f5f9;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .fac-list li i {
+        color: #10b981;
+    }
 
     @media (max-width: 600px) {
-        .fac-list { grid-template-columns: 1fr; }
-        .modal-content { padding: 20px !important; }
-        .monitor-input-grid { display: block !important; }
+        .fac-list {
+            grid-template-columns: 1fr;
+        }
+
+        .modal-content {
+            padding: 20px !important;
+        }
+
+        .monitor-input-grid {
+            display: block !important;
+        }
     }
 
     /* Pulse animation for Processing status */
@@ -240,9 +354,17 @@
     }
 
     @keyframes pulse-blue {
-        0% { box-shadow: 0 0 0 0 rgba(3, 105, 161, 0.4); }
-        70% { box-shadow: 0 0 0 6px rgba(3, 105, 161, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(3, 105, 161, 0); }
+        0% {
+            box-shadow: 0 0 0 0 rgba(3, 105, 161, 0.4);
+        }
+
+        70% {
+            box-shadow: 0 0 0 6px rgba(3, 105, 161, 0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(3, 105, 161, 0);
+        }
     }
 </style>
 
@@ -252,13 +374,13 @@
             request_id: requestId,
             section: section,
             status: status
-        }, function(res) {
-            if(res.success) {
+        }, function (res) {
+            if (res.success) {
                 showToast("Status updated successfully", "success");
                 if (res.new_status) {
                     const badge = $(`#status-badge-${requestId}`);
                     badge.text(res.new_status);
-                    
+
                     // Update classes
                     badge.removeClass('badge-processing-pulse badge-success');
                     if (res.new_status === 'Completed') badge.addClass('badge-success');
@@ -285,10 +407,10 @@
         // Admin Section
         if (roles.includes('Admin')) {
             let adminHtml = '';
-            if(req.admin_chair == 1) adminHtml += '<li><i class="fa-solid fa-chair"></i> Chair</li>';
-            if(req.admin_table == 1) adminHtml += '<li><i class="fa-solid fa-table"></i> Table</li>';
-            if(req.admin_phone == 1) adminHtml += '<li><i class="fa-solid fa-phone"></i> Land Phone</li>';
-            
+            if (req.admin_chair == 1) adminHtml += '<li><i class="fa-solid fa-chair"></i> Chair</li>';
+            if (req.admin_table == 1) adminHtml += '<li><i class="fa-solid fa-table"></i> Table</li>';
+            if (req.admin_phone == 1) adminHtml += '<li><i class="fa-solid fa-phone"></i> Land Phone</li>';
+
             if (adminHtml !== '') {
                 html += '<h5>Administration & Events</h5><ul class="fac-list">' + adminHtml + '</ul>';
                 itemsFound = true;
@@ -298,9 +420,9 @@
         // HR Section
         if (roles.includes('HR')) {
             let hrHtml = '';
-            if(req.hr_mobile == 1) hrHtml += '<li><i class="fa-solid fa-mobile-screen"></i> Mobile Phone</li>';
-            if(req.hr_sim == 1) hrHtml += '<li><i class="fa-solid fa-sim-card"></i> SIM Card</li>';
-            
+            if (req.hr_mobile == 1) hrHtml += '<li><i class="fa-solid fa-mobile-screen"></i> Mobile Phone</li>';
+            if (req.hr_sim == 1) hrHtml += '<li><i class="fa-solid fa-sim-card"></i> SIM Card</li>';
+
             if (hrHtml !== '') {
                 html += '<h5>HR Facilities</h5><ul class="fac-list">' + hrHtml + '</ul>';
                 itemsFound = true;
@@ -311,25 +433,25 @@
         if (roles.includes('ICT')) {
             let ictHtml = '';
             // Hardware
-            if(req.ict_desktop_laptop !== 'None') ictHtml += `<li><i class="fa-solid fa-laptop"></i> ${req.ict_desktop_laptop}</li>`;
-            if(req.ict_printer == 1) ictHtml += '<li><i class="fa-solid fa-print"></i> Printer Access</li>';
-            
+            if (req.ict_desktop_laptop !== 'None') ictHtml += `<li><i class="fa-solid fa-laptop"></i> ${req.ict_desktop_laptop}</li>`;
+            if (req.ict_printer == 1) ictHtml += '<li><i class="fa-solid fa-print"></i> Printer Access</li>';
+
             // Software
-            if(req.soft_smms == 1) ictHtml += '<li><i class="fa-solid fa-code-branch"></i> SMMS</li>';
-            if(req.soft_receipt == 1) ictHtml += '<li><i class="fa-solid fa-file-invoice"></i> Receipt Module</li>';
-            if(req.soft_training == 1) ictHtml += '<li><i class="fa-solid fa-graduation-cap"></i> Training Module</li>';
-            if(req.soft_ecole == 1) ictHtml += '<li><i class="fa-solid fa-school"></i> Ecole</li>';
-            if(req.soft_pronto == 1) ictHtml += `<li><i class="fa-solid fa-database"></i> Pronto (Prev User: ${req.get_pronto_previous_user || 'N/A'})</li>`;
-            if(req.soft_ims == 1) ictHtml += '<li><i class="fa-solid fa-warehouse"></i> IMS</li>';
-            if(req.soft_sap == 1) ictHtml += '<li><i class="fa-solid fa-briefcase"></i> SAP Business One</li>';
-            if(req.soft_imeet == 1) ictHtml += '<li><i class="fa-solid fa-handshake"></i> Imeet-Venue Booking</li>';
-            
+            if (req.soft_smms == 1) ictHtml += '<li><i class="fa-solid fa-code-branch"></i> SMMS</li>';
+            if (req.soft_receipt == 1) ictHtml += '<li><i class="fa-solid fa-file-invoice"></i> Receipt Module</li>';
+            if (req.soft_training == 1) ictHtml += '<li><i class="fa-solid fa-graduation-cap"></i> Training Module</li>';
+            if (req.soft_ecole == 1) ictHtml += '<li><i class="fa-solid fa-school"></i> Ecole</li>';
+            if (req.soft_pronto == 1) ictHtml += `<li><i class="fa-solid fa-database"></i> Pronto (Prev User: ${req.get_pronto_previous_user || 'N/A'})</li>`;
+            if (req.soft_ims == 1) ictHtml += '<li><i class="fa-solid fa-warehouse"></i> IMS</li>';
+            if (req.soft_sap == 1) ictHtml += '<li><i class="fa-solid fa-briefcase"></i> SAP Business One</li>';
+            if (req.soft_imeet == 1) ictHtml += '<li><i class="fa-solid fa-handshake"></i> Imeet-Venue Booking</li>';
+
             if (ictHtml !== '') {
                 html += '<h5>ICT Infrastructure & Software</h5><ul class="fac-list">' + ictHtml + '</ul>';
                 itemsFound = true;
             }
-            
-            if(req.access_copy_user) {
+
+            if (req.access_copy_user) {
                 html += `<p style="margin-top:15px; background: #fffbeb; padding: 10px; border-radius: 8px; border: 1px solid #fde68a; font-size: 0.85rem;">
                             <strong>Note:</strong> Mirror permissions from <u>${req.access_copy_user}</u>
                          </p>`;
@@ -345,46 +467,115 @@
         document.getElementById('facilityModal').style.display = 'block';
     }
 
-    function autoPopulateAsset(type, assetId) {
-        let select = (type === 'main') ? document.getElementById('ict_asset_select') : document.getElementById('ict_monitor_select');
-        let selectedOption = select.options[select.selectedIndex];
+    let html5QrCode;
+    let currentScanType = 'main';
+
+    function startScanner(type) {
+        currentScanType = type;
+        const readerDiv = document.getElementById('qr-reader');
+        const statusDiv = document.getElementById('scan_status');
+
+        readerDiv.style.display = 'block';
+        statusDiv.style.display = 'block';
+
+        html5QrCode = new Html5Qrcode("qr-reader");
+        const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+        html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess)
+            .catch(err => {
+                console.error("Error starting scanner", err);
+                showToast("Camera access failed", "error");
+            });
+    }
+
+    function stopScanner() {
+        if (html5QrCode) {
+            html5QrCode.stop().then(() => {
+                document.getElementById('qr-reader').style.display = 'none';
+                document.getElementById('scan_status').style.display = 'none';
+            }).catch(err => console.error("Failed to stop scanner", err));
+        }
+    }
+
+    function onScanSuccess(decodedText, decodedResult) {
+        // Stop scanner immediately
+        stopScanner();
         
-        if (!assetId) return;
+        console.log("Raw Scanned Text:", decodedText);
 
-        let model = selectedOption.getAttribute('data-model');
-        let sn = selectedOption.getAttribute('data-sn');
-        let code = selectedOption.getAttribute('data-code');
+        let assetId = decodedText;
+        
+        // Handle URL format: http://.../inventory/view/15 or .../15?t=...
+        if (decodedText.includes('/inventory/view/')) {
+            // Remove everything up to and including 'view/'
+            let parts = decodedText.split('/inventory/view/');
+            if (parts.length > 1) {
+                assetId = parts[1];
+                // Remove any query parameters or trailing slashes
+                assetId = assetId.split('?')[0].split('/')[0];
+            }
+        }
+        
+        // Ensure ID is numeric
+        assetId = assetId.replace(/\D/g, '');
 
+        if (!assetId) {
+            showToast("Invalid QR Code format", "error");
+            return;
+        }
+        
+        console.log("Extracted ID:", assetId);
+        showToast("QR Scanned! Fetching details...", "success");
+
+        // Fetch details
+        $.get(`<?= base_url('inventory/get-details') ?>/${assetId}`, function (res) {
+            if (res.success) {
+                populateScannedData(currentScanType, res.data);
+                showToast("Asset linked successfully", "success");
+            } else {
+                showToast("Asset not found in system", "error");
+            }
+        }).fail(function () {
+            showToast("Failed to fetch details", "error");
+        });
+    }
+
+    function populateScannedData(type, data) {
         if (type === 'main') {
-            document.getElementById('ict_model_input').value = model;
-            document.getElementById('ict_serial_input').value = sn;
-            document.getElementById('ict_asset_input').value = code;
+            document.getElementById('ict_asset_id').value = data.id;
+            document.getElementById('ict_model_input').value = data.model;
+            document.getElementById('ict_serial_input').value = data.serial_number;
+            document.getElementById('ict_asset_input').value = data.asset_code;
         } else {
-            document.getElementById('ict_monitor_model_input').value = model;
-            document.getElementById('ict_monitor_serial_input').value = sn;
-            document.getElementById('ict_monitor_asset_input').value = code;
+            document.getElementById('ict_monitor_id').value = data.id;
+            document.getElementById('ict_monitor_model_input').value = data.model;
+            document.getElementById('ict_monitor_serial_input').value = data.serial_number;
+            document.getElementById('ict_monitor_asset_input').value = data.asset_code;
         }
     }
 
     function openIctModal(req) {
         document.getElementById('ict_request_id').value = req.request_id;
         document.getElementById('ict_device_type').value = req.ict_desktop_laptop;
-        
-        document.getElementById('ict_asset_select').value = req.ict_asset_id || '';
+
+        document.getElementById('ict_asset_id').value = req.ict_asset_id || '';
         document.getElementById('ict_model_input').value = req.ict_model || '';
         document.getElementById('ict_serial_input').value = req.ict_serial_number || '';
         document.getElementById('ict_asset_input').value = req.ict_asset_code || '';
-        
-        document.getElementById('ict_monitor_select').value = req.ict_monitor_id || '';
+
+        document.getElementById('ict_monitor_id').value = req.ict_monitor_id || '';
         document.getElementById('ict_monitor_model_input').value = req.ict_monitor_model || '';
         document.getElementById('ict_monitor_serial_input').value = req.ict_monitor_serial || '';
         document.getElementById('ict_monitor_asset_input').value = req.ict_monitor_asset || '';
-        
+
         toggleMonitorField(req.ict_desktop_laptop);
         document.getElementById('ictAssetModal').style.display = 'block';
     }
 
     function closeIctModal() {
+        if (typeof html5QrCode !== 'undefined' && html5QrCode) {
+            stopScanner();
+        }
         document.getElementById('ictAssetModal').style.display = 'none';
     }
 
@@ -393,19 +584,18 @@
         group.style.display = (device === 'Desktop') ? 'block' : 'none';
     }
 
-    document.getElementById('ict_device_type').addEventListener('change', function() {
+    document.getElementById('ict_device_type').addEventListener('change', function () {
         toggleMonitorField(this.value);
     });
 
-    $('#ictAssetForm').on('submit', function(e) {
+    $('#ictAssetForm').on('submit', function (e) {
         e.preventDefault();
         const data = $(this).serialize();
-        
-        $.post("<?= base_url('onboarding/update-ict-assets') ?>", data, function(res) {
-            if(res.success) {
+
+        $.post("<?= base_url('onboarding/update-ict-assets') ?>", data, function (res) {
+            if (res.success) {
                 showToast("Hardware details saved", "success");
-                closeIctModal();
-                // Optionally reload or update row
+                closeIctModal(); 
                 setTimeout(() => location.reload(), 800);
             } else {
                 showToast("Error saving details", "error");
@@ -417,7 +607,7 @@
         document.getElementById('facilityModal').style.display = 'none';
     }
 
-    window.onclick = function(event) {
+    window.onclick = function (event) {
         if (event.target == document.getElementById('facilityModal')) {
             closeModal();
         }
@@ -428,12 +618,36 @@
 </script>
 
 <style>
-    .form-group-premium { margin-bottom: 20px; }
-    .form-group-premium label { display: block; margin-bottom: 8px; font-weight: 600; color: #475569; font-size: 0.9rem; }
-    .form-group-premium .form-control { width: 100%; padding: 10px 15px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.95rem; }
-    .form-group-premium .form-control:focus { border-color: var(--primary-color); outline: none; box-shadow: 0 0 0 3px rgba(128, 0, 0, 0.1); }
-    
-    .select-wrapper { position: relative; }
+    .form-group-premium {
+        margin-bottom: 20px;
+    }
+
+    .form-group-premium label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #475569;
+        font-size: 0.9rem;
+    }
+
+    .form-group-premium .form-control {
+        width: 100%;
+        padding: 10px 15px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 0.95rem;
+    }
+
+    .form-group-premium .form-control:focus {
+        border-color: var(--primary-color);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(128, 0, 0, 0.1);
+    }
+
+    .select-wrapper {
+        position: relative;
+    }
+
     .select-wrapper::after {
         content: '';
         position: absolute;
@@ -446,6 +660,7 @@
         transform: translateY(-70%) rotate(45deg);
         pointer-events: none;
     }
+
     .select-wrapper select {
         width: 100%;
         padding: 10px 35px 10px 15px;
@@ -455,5 +670,49 @@
         background: white;
         cursor: pointer;
     }
+
+    .btn-scan {
+        width: 100%;
+        padding: 12px;
+        background: #3b82f6;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-bottom: 15px;
+    }
+
+    .btn-scan:hover {
+        background: #2563eb;
+    }
+
+    .scanned-data-box {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 10px;
+        font-size: 0.9rem;
+    }
+
+    .scanned-label {
+        font-size: 0.75rem;
+        color: #64748b;
+        text-transform: uppercase;
+        font-weight: 700;
+        margin-bottom: 2px;
+    }
+
+    .scanned-value {
+        color: #1e293b;
+        font-weight: 600;
+    }
 </style>
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 <?= $this->endSection() ?>

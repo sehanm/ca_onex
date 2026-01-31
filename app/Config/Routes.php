@@ -43,5 +43,6 @@ $routes->group('inventory', ['filter' => 'auth'], function ($routes) {
     $routes->get('view/(:num)', 'Inventory::view/$1');
     $routes->post('update', 'Inventory::updateAsset');
     $routes->get('generate-qr/(:num)', 'Inventory::generateQR/$1');
+    $routes->get('get-details/(:num)', 'Inventory::getDetails/$1');
     $routes->get('scan', 'Inventory::scan');
 });
