@@ -134,6 +134,8 @@ class Inventory extends BaseController
 
         $url = base_url('inventory/view/' . $id);
 
+        $isRaw = $this->request->getGet('raw') === '1';
+
         try {
             // 1. Generate the Base QR Code
             $writer = new PngWriter();
@@ -146,9 +148,15 @@ class Inventory extends BaseController
                 roundBlockSizeMode: RoundBlockSizeMode::Margin
             );
             $qrResult = $writer->write($qrObj);
-            $qrImage = imagecreatefromstring($qrResult->getString());
+            if ($isRaw) {
+                // Return just the raw QR code for on-screen display
+                return $this->response
+                    ->setHeader('Content-Type', $qrResult->getMimeType())
+                    ->setBody($qrResult->getString());
+            }
 
             // 2. Setup Canvas (400x520 for a professional label look)
+            $qrImage = imagecreatefromstring($qrResult->getString());
             $width = 400;
             $height = 520;
             $canvas = imagecreatetruecolor($width, $height);
@@ -175,7 +183,7 @@ class Inventory extends BaseController
 
             // 5. Draw Serial Number (Centered)
             $serialText = "S/N: " . ($item['serial_number'] ?? 'N/A');
-            $serialBox = imagettfbbox(14, 0, $fontBold, $serialText); // Reduced font size slightly for long serials
+            $serialBox = imagettfbbox(14, 0, $fontBold, $serialText);
             $serialX = ($width - ($serialBox[2] - $serialBox[0])) / 2;
             imagettftext($canvas, 14, 0, $serialX, 390, $black, $fontBold, $serialText);
 
@@ -195,7 +203,7 @@ class Inventory extends BaseController
             imagesetthickness($canvas, 2);
             imagerectangle($canvas, 5, 5, $width - 5, $height - 5, $black);
 
-            // 7. Output the final image
+            // 8. Output the final image
             ob_start();
             imagepng($canvas);
             $finalImage = ob_get_clean();
