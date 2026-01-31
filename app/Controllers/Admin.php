@@ -6,6 +6,11 @@ use App\Controllers\BaseController;
 use App\Models\UserModel;
 use App\Models\DepartmentModel;
 use App\Models\AuditLogModel;
+use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\ErrorCorrectionLevel;
+use Endroid\QrCode\RoundBlockSizeMode;
+use Endroid\QrCode\Writer\PngWriter;
 
 class Admin extends BaseController
 {
@@ -176,12 +181,6 @@ class Admin extends BaseController
 
         $user = $this->userModel->find($id);
         if ($user) {
-            // Delete user details first due to foreign key constraints if not set to cascade, 
-            // but my migration set ON DELETE CASCADE for user_details.user_id, so deleting user is enough.
-            // Wait, strict mode might require deleting details explicitly? 
-            // The migration said: $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'CASCADE');
-            // So deleting from 'users' table is sufficient.
-            
             $this->userModel->delete($id);
             $this->logAction('User Deleted', "Deleted user: {$user['username']}");
             
@@ -189,5 +188,33 @@ class Admin extends BaseController
         }
 
         return redirect()->to('admin/users')->with('error', 'User not found');
+    }
+
+    public function generateQR($id)
+    {
+        if (!$this->checkAdmin()) return "";
+        
+        $user = $this->userModel->find($id);
+        if (!$user) return "";
+
+        // Link to user profile or quick info
+        $url = base_url('admin/users/edit/' . $id);
+        
+        try {
+            $result = Builder::create()
+                ->writer(new PngWriter())
+                ->data($url)
+                ->encoding(new Encoding('UTF-8'))
+                ->errorCorrectionLevel(ErrorCorrectionLevel::Low)
+                ->size(200)
+                ->margin(10)
+                ->build();
+            
+            return $this->response
+                ->setHeader('Content-Type', 'image/png')
+                ->setBody($result->getString());
+        } catch (\Exception $e) {
+            return $this->response->setStatusCode(500)->setBody("QR Generation Error");
+        }
     }
 }

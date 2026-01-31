@@ -41,8 +41,8 @@
 </div>
 
 <!-- Assign Manager Modal -->
-<div id="assignModal" class="modal" style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5);">
-    <div class="modal-content" style="background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 400px; border-radius: 8px;">
+<div id="assignModal" class="modal" style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); padding: 20px;">
+    <div class="modal-content" style="background-color: #fefefe; margin: 50px auto; padding: 30px; border: 1px solid #888; width: 100%; max-width: 400px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
         <h3>Assign Manager</h3>
         <p>Department: <span id="modalDeptName" style="font-weight: bold;"></span></p>
         

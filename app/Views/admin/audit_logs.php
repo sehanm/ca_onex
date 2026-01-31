@@ -15,8 +15,8 @@
                     <th>Timestamp</th>
                     <th>User</th>
                     <th>Action</th>
-                    <th>Details</th>
-                    <th>IP Address</th>
+                    <th class="hide-mobile">Details</th>
+                    <th class="hide-tablet">IP Address</th>
                 </tr>
             </thead>
             <tbody>
@@ -28,8 +28,8 @@
                         <small><?= esc($log['full_name'] ?? '-') ?></small>
                     </td>
                     <td><span class="badge badge-info"><?= esc($log['action']) ?></span></td>
-                    <td><?= esc($log['details']) ?></td>
-                    <td><?= esc($log['ip_address']) ?></td>
+                    <td class="hide-mobile"><?= esc($log['details']) ?></td>
+                    <td class="hide-tablet"><?= esc($log['ip_address']) ?></td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>

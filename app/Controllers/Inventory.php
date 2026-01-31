@@ -9,8 +9,13 @@ use App\Models\AssetModel;
 use App\Models\UserModel;
 use App\Models\DepartmentModel;
 use App\Models\UserDetailModel;
-use chillerlan\QRCode\QRCode;
-use chillerlan\QRCode\QROptions;
+use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\ErrorCorrectionLevel;
+use Endroid\QrCode\Label\LabelAlignment;
+use Endroid\QrCode\Label\Font\OpenSans;
+use Endroid\QrCode\RoundBlockSizeMode;
+use Endroid\QrCode\Writer\PngWriter;
 
 class Inventory extends BaseController
 {
@@ -123,18 +128,27 @@ class Inventory extends BaseController
     public function generateQR($id)
     {
         $item = $this->assetModel->find($id);
-        if (!$item) return "Item not found";
+        if (!$item) {
+            return $this->response->setStatusCode(404)->setBody("Asset not found");
+        }
 
-        $options = new QROptions([
-            'version'    => 5,
-            'outputType' => QRCode::OUTPUT_MARKUP_SVG,
-            'eccLevel'   => QRCode::ECC_L,
-        ]);
-
-        // Using the URL with Serial or ID is best for redirecting to edit page
         $url = base_url('inventory/view/' . $id);
-        $qrcode = new QRCode($options);
         
-        return $this->response->setHeader('Content-Type', 'image/svg+xml')->setBody($qrcode->render($url));
+        try {
+            $result = Builder::create()
+                ->writer(new PngWriter())
+                ->data($url)
+                ->encoding(new Encoding('UTF-8'))
+                ->errorCorrectionLevel(ErrorCorrectionLevel::Low)
+                ->size(200)
+                ->margin(10)
+                ->build();
+
+            return $this->response
+                ->setHeader('Content-Type', 'image/png')
+                ->setBody($result->getString());
+        } catch (\Exception $e) {
+            return $this->response->setStatusCode(500)->setBody("QR Generation Error: " . $e->getMessage());
+        }
     }
 }

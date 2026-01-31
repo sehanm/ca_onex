@@ -13,7 +13,7 @@
             <thead>
                 <tr>
                     <th>Candidate</th>
-                    <th>My Tasks Status</th>
+                    <th class="hide-mobile">My Tasks Status</th>
                     <th>Overall Status</th>
                     <th>Action</th>
                 </tr>
@@ -27,7 +27,7 @@
                             <span class="cand-meta"><?= esc($req['department_name']) ?> | <?= date('M d, Y', strtotime($req['joining_date'])) ?></span>
                         </div>
                     </td>
-                    <td>
+                    <td class="hide-mobile">
                         <div class="task-badges">
                             <?php if (in_array('Admin', $roles) && ($req['admin_chair'] || $req['admin_table'] || $req['admin_phone'])): ?>
                                 <div class="task-group">

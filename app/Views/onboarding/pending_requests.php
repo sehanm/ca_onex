@@ -13,12 +13,12 @@
             <thead>
                 <tr>
                     <th>Candidate</th>
-                    <th>Designation</th>
-                    <th>Date of Join</th>
-                    <th>Department</th>
-                    <th>Requested By</th>
+                    <th class="hide-mobile">Designation</th>
+                    <th class="hide-tablet">Date of Join</th>
+                    <th class="hide-mobile">Department</th>
+                    <th class="hide-tablet">Requested By</th>
                     <th>Status</th>
-                    <th>Date</th>
+                    <th class="hide-mobile">Date</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -28,12 +28,12 @@
                     <td>
                         <div style="font-weight: 500;"><?= esc($req['candidate_name']) ?></div>
                     </td>
-                    <td><?= esc($req['designation']) ?></td>
-                    <td>
+                    <td class="hide-mobile"><?= esc($req['designation']) ?></td>
+                    <td class="hide-tablet">
                         <?= !empty($req['joining_date']) ? date('M d, Y', strtotime($req['joining_date'])) : '-' ?>
                     </td>
-                    <td><?= esc($req['department_name']) ?></td>
-                    <td><?= esc($req['hr_name']) ?></td>
+                    <td class="hide-mobile"><?= esc($req['department_name']) ?></td>
+                    <td class="hide-tablet"><?= esc($req['hr_name']) ?></td>
                     <td>
                         <?php 
                             $statusClass = 'badge';
@@ -44,7 +44,7 @@
                         ?>
                         <span class="<?= $statusClass ?>"><?= str_replace('_', ' ', esc($req['status'])) ?></span>
                     </td>
-                    <td><?= date('M d, Y', strtotime($req['created_at'])) ?></td>
+                    <td class="hide-mobile"><?= date('M d, Y', strtotime($req['created_at'])) ?></td>
                     <td>
                         <?php if ($req['status'] === 'Pending_HOD'): ?>
                         <a href="<?= base_url('onboarding/fill-form/'.$req['id']) ?>" class="btn-primary" style="padding: 6px 12px; font-size: 0.8rem;">
