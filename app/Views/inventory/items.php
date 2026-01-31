@@ -114,10 +114,6 @@
                         </td>
                         <td class="text-end">
                             <div class="action-flex">
-                                <button onclick="downloadQR(<?= $item['id'] ?>, '<?= esc($item['serial_number']) ?>')"
-                                    class="btn-action-download" title="Download QR PNG">
-                                    <i class="fa-solid fa-download"></i>
-                                </button>
                                 <a href="<?= site_url('inventory/view/' . $item['id']) ?>" class="btn-action-view"
                                     title="Control Panel">
                                     <i class="fa-solid fa-sliders"></i>

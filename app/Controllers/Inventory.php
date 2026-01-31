@@ -32,10 +32,10 @@ class Inventory extends BaseController
     {
         $data = [
             'total_assets' => $this->assetModel->countAll(),
-            'by_status'    => $this->assetModel->select('status, COUNT(*) as count')
-                                ->groupBy('status')
-                                ->findAll(),
-            'page_title'   => 'Inventory Overview'
+            'by_status' => $this->assetModel->select('status, COUNT(*) as count')
+                ->groupBy('status')
+                ->findAll(),
+            'page_title' => 'Inventory Overview'
         ];
         return view('inventory/dashboard', $data);
     }
@@ -43,7 +43,7 @@ class Inventory extends BaseController
     public function store()
     {
         $rules = [
-            'model'         => 'required|min_length[3]',
+            'model' => 'required|min_length[3]',
             'serial_number' => 'required|is_unique[assets.serial_number]',
         ];
 
@@ -52,10 +52,10 @@ class Inventory extends BaseController
         }
 
         $data = [
-            'model'         => $this->request->getPost('model'),
+            'model' => $this->request->getPost('model'),
             'serial_number' => $this->request->getPost('serial_number'),
-            'asset_code'    => $this->request->getPost('asset_code'),
-            'status'        => 'In Store'
+            'asset_code' => $this->request->getPost('asset_code'),
+            'status' => 'In Store'
         ];
 
         $this->assetModel->insert($data);
@@ -66,10 +66,10 @@ class Inventory extends BaseController
     {
         $data = [
             'items' => $this->assetModel->select('assets.*, departments.department_name, user_details.full_name as assigned_to')
-                            ->join('departments', 'departments.id = assets.department_id', 'left')
-                            ->join('user_details', 'user_details.user_id = assets.assigned_user_id', 'left')
-                            ->orderBy('assets.created_at', 'DESC')
-                            ->findAll(),
+                ->join('departments', 'departments.id = assets.department_id', 'left')
+                ->join('user_details', 'user_details.user_id = assets.assigned_user_id', 'left')
+                ->orderBy('assets.created_at', 'DESC')
+                ->findAll(),
             'page_title' => 'Central Inventory'
         ];
         return view('inventory/items', $data);
@@ -78,17 +78,18 @@ class Inventory extends BaseController
     public function view($id)
     {
         $item = $this->assetModel->select('assets.*, departments.department_name, user_details.full_name as assigned_to')
-                        ->join('departments', 'departments.id = assets.department_id', 'left')
-                        ->join('user_details', 'user_details.user_id = assets.assigned_user_id', 'left')
-                        ->find($id);
+            ->join('departments', 'departments.id = assets.department_id', 'left')
+            ->join('user_details', 'user_details.user_id = assets.assigned_user_id', 'left')
+            ->find($id);
 
-        if (!$item) return redirect()->to('inventory/items')->with('error', 'Item not found');
+        if (!$item)
+            return redirect()->to('inventory/items')->with('error', 'Item not found');
 
         $data = [
-            'item'        => $item,
+            'item' => $item,
             'departments' => $this->deptModel->findAll(),
-            'users'       => (new UserDetailModel())->select('user_id, full_name')->findAll(),
-            'page_title'  => 'Manage Asset: ' . $item['serial_number']
+            'users' => (new UserDetailModel())->select('user_id, full_name')->findAll(),
+            'page_title' => 'Manage Asset: ' . $item['serial_number']
         ];
 
         return view('inventory/view_item', $data);
@@ -102,24 +103,25 @@ class Inventory extends BaseController
     public function updateAsset()
     {
         $id = $this->request->getPost('id');
-        if (!$id) return redirect()->back()->with('error', 'Missing asset ID');
+        if (!$id)
+            return redirect()->back()->with('error', 'Missing asset ID');
 
         $deptId = $this->request->getPost('department_id');
         $userId = $this->request->getPost('assigned_user_id');
 
         // Sanitize IDs for database (empty string to NULL)
         $newData = [
-            'status'           => $this->request->getPost('status'),
-            'department_id'    => ($deptId !== "") ? $deptId : null,
+            'status' => $this->request->getPost('status'),
+            'department_id' => ($deptId !== "") ? $deptId : null,
             'assigned_user_id' => ($userId !== "") ? $userId : null,
-            'asset_code'       => $this->request->getPost('asset_code'),
-            'notes'            => $this->request->getPost('notes'),
+            'asset_code' => $this->request->getPost('asset_code'),
+            'notes' => $this->request->getPost('notes'),
         ];
 
         if ($this->assetModel->update($id, $newData)) {
             return redirect()->back()->with('success', 'Asset record updated successfully');
         }
-        
+
         return redirect()->back()->with('error', 'Failed to update asset repository');
     }
 
@@ -131,23 +133,80 @@ class Inventory extends BaseController
         }
 
         $url = base_url('inventory/view/' . $id);
-        
+
         try {
+            // 1. Generate the Base QR Code
             $writer = new PngWriter();
-            $qrCode = new QrCode(
+            $qrObj = new QrCode(
                 data: $url,
                 encoding: new Encoding('UTF-8'),
                 errorCorrectionLevel: ErrorCorrectionLevel::Low,
-                size: 200,
-                margin: 10,
+                size: 250,
+                margin: 0,
                 roundBlockSizeMode: RoundBlockSizeMode::Margin
             );
+            $qrResult = $writer->write($qrObj);
+            $qrImage = imagecreatefromstring($qrResult->getString());
 
-            $result = $writer->write($qrCode);
+            // 2. Setup Canvas (400x520 for a professional label look)
+            $width = 400;
+            $height = 520;
+            $canvas = imagecreatetruecolor($width, $height);
+
+            // Colors
+            $white = imagecolorallocate($canvas, 255, 255, 255);
+            $black = imagecolorallocate($canvas, 0, 0, 0);
+            $gray = imagecolorallocate($canvas, 80, 80, 80);
+            $blue = imagecolorallocate($canvas, 30, 58, 138); // Corporate Blue
+
+            imagefill($canvas, 0, 0, $white);
+
+            // Font Path
+            $fontBold = ROOTPATH . 'vendor/endroid/qr-code/assets/open_sans.ttf';
+
+            // 3. Draw Header (Centered)
+            $headerText = "CA OnEx System";
+            $headerBox = imagettfbbox(22, 0, $fontBold, $headerText);
+            $headerX = ($width - ($headerBox[2] - $headerBox[0])) / 2;
+            imagettftext($canvas, 22, 0, $headerX, 60, $blue, $fontBold, $headerText);
+
+            // 4. Draw QR Code (Centered)
+            imagecopy($canvas, $qrImage, 75, 90, 0, 0, 250, 250);
+
+            // 5. Draw Serial Number (Centered)
+            $serialText = "S/N: " . ($item['serial_number'] ?? 'N/A');
+            $serialBox = imagettfbbox(14, 0, $fontBold, $serialText); // Reduced font size slightly for long serials
+            $serialX = ($width - ($serialBox[2] - $serialBox[0])) / 2;
+            imagettftext($canvas, 14, 0, $serialX, 390, $black, $fontBold, $serialText);
+
+            // 6. Draw Credits (Footer - Centered)
+            $footerLine1 = "Designed and Developed by";
+            $footerBox1 = imagettfbbox(10, 0, $fontBold, $footerLine1);
+            $footerX1 = ($width - ($footerBox1[2] - $footerBox1[0])) / 2;
+
+            $footerLine2 = "CA Sri Lanka ICTT Division";
+            $footerBox2 = imagettfbbox(11, 0, $fontBold, $footerLine2);
+            $footerX2 = ($width - ($footerBox2[2] - $footerBox2[0])) / 2;
+
+            imagettftext($canvas, 10, 0, $footerX1, 450, $gray, $fontBold, $footerLine1);
+            imagettftext($canvas, 11, 0, $footerX2, 475, $black, $fontBold, $footerLine2);
+
+            // 7. Add Border
+            imagesetthickness($canvas, 2);
+            imagerectangle($canvas, 5, 5, $width - 5, $height - 5, $black);
+
+            // 7. Output the final image
+            ob_start();
+            imagepng($canvas);
+            $finalImage = ob_get_clean();
+
+            // Cleanup
+            imagedestroy($canvas);
+            imagedestroy($qrImage);
 
             return $this->response
                 ->setHeader('Content-Type', 'image/png')
-                ->setBody($result->getString());
+                ->setBody($finalImage);
         } catch (\Exception $e) {
             return $this->response->setStatusCode(500)->setBody("QR Generation Error: " . $e->getMessage());
         }
