@@ -9,11 +9,9 @@ use App\Models\AssetModel;
 use App\Models\UserModel;
 use App\Models\DepartmentModel;
 use App\Models\UserDetailModel;
-use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Encoding\Encoding;
 use Endroid\QrCode\ErrorCorrectionLevel;
-use Endroid\QrCode\Label\LabelAlignment;
-use Endroid\QrCode\Label\Font\OpenSans;
 use Endroid\QrCode\RoundBlockSizeMode;
 use Endroid\QrCode\Writer\PngWriter;
 
@@ -135,14 +133,17 @@ class Inventory extends BaseController
         $url = base_url('inventory/view/' . $id);
         
         try {
-            $result = Builder::create()
-                ->writer(new PngWriter())
-                ->data($url)
-                ->encoding(new Encoding('UTF-8'))
-                ->errorCorrectionLevel(ErrorCorrectionLevel::Low)
-                ->size(200)
-                ->margin(10)
-                ->build();
+            $writer = new PngWriter();
+            $qrCode = new QrCode(
+                data: $url,
+                encoding: new Encoding('UTF-8'),
+                errorCorrectionLevel: ErrorCorrectionLevel::Low,
+                size: 200,
+                margin: 10,
+                roundBlockSizeMode: RoundBlockSizeMode::Margin
+            );
+
+            $result = $writer->write($qrCode);
 
             return $this->response
                 ->setHeader('Content-Type', 'image/png')

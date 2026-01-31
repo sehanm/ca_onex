@@ -6,11 +6,6 @@ use App\Controllers\BaseController;
 use App\Models\UserModel;
 use App\Models\DepartmentModel;
 use App\Models\AuditLogModel;
-use Endroid\QrCode\Builder\Builder;
-use Endroid\QrCode\Encoding\Encoding;
-use Endroid\QrCode\ErrorCorrectionLevel;
-use Endroid\QrCode\RoundBlockSizeMode;
-use Endroid\QrCode\Writer\PngWriter;
 
 class Admin extends BaseController
 {
@@ -37,14 +32,15 @@ class Admin extends BaseController
 
     public function index()
     {
-        if (!$this->checkAdmin()) return redirect()->to('dashboard')->with('error', 'Access Denied');
+        if (!$this->checkAdmin())
+            return redirect()->to('dashboard')->with('error', 'Access Denied');
 
         $data = [
             'users' => $this->userModel->select('users.*, user_details.full_name, user_details.email, r.role_name as system_role, d.department_name')
-                        ->join('user_details', 'user_details.user_id = users.id')
-                        ->join('roles r', 'r.id = users.system_role_id')
-                        ->join('departments d', 'd.id = user_details.department_id', 'left')
-                        ->findAll(),
+                ->join('user_details', 'user_details.user_id = users.id')
+                ->join('roles r', 'r.id = users.system_role_id')
+                ->join('departments d', 'd.id = user_details.department_id', 'left')
+                ->findAll(),
             'page_title' => 'User Management'
         ];
 
@@ -53,7 +49,8 @@ class Admin extends BaseController
 
     public function create()
     {
-        if (!$this->checkAdmin()) return redirect()->to('dashboard');
+        if (!$this->checkAdmin())
+            return redirect()->to('dashboard');
 
         $data = [
             'roles' => $this->db->table('roles')->where('role_type', 'system')->get()->getResultArray(),
@@ -66,11 +63,12 @@ class Admin extends BaseController
 
     public function store()
     {
-        if (!$this->checkAdmin()) return redirect()->to('dashboard');
+        if (!$this->checkAdmin())
+            return redirect()->to('dashboard');
 
         $username = $this->request->getPost('username');
         $password = $this->request->getPost('password');
-        
+
         $userData = [
             'username' => $username,
             'password' => password_hash($password, PASSWORD_DEFAULT),
@@ -78,7 +76,7 @@ class Admin extends BaseController
             'divisional_role_id' => $this->request->getPost('divisional_role'),
             'created_at' => date('Y-m-d H:i:s'),
         ];
-        
+
         $this->userModel->insert($userData);
         $userId = $this->userModel->getInsertID();
 
@@ -98,12 +96,13 @@ class Admin extends BaseController
 
     public function edit($id)
     {
-        if (!$this->checkAdmin()) return redirect()->to('dashboard');
+        if (!$this->checkAdmin())
+            return redirect()->to('dashboard');
 
         $user = $this->userModel->select('users.*, user_details.full_name, user_details.epf_number, user_details.email, user_details.department_id')
-                    ->join('user_details', 'user_details.user_id = users.id')
-                    ->where('users.id', $id)
-                    ->first();
+            ->join('user_details', 'user_details.user_id = users.id')
+            ->where('users.id', $id)
+            ->first();
 
         $data = [
             'user' => $user,
@@ -117,7 +116,8 @@ class Admin extends BaseController
 
     public function update($id)
     {
-        if (!$this->checkAdmin()) return redirect()->to('dashboard');
+        if (!$this->checkAdmin())
+            return redirect()->to('dashboard');
 
         $currentUser = $this->userModel->find($id);
         $changes = [];
@@ -126,7 +126,7 @@ class Admin extends BaseController
         if ($currentUser['system_role_id'] != $this->request->getPost('system_role')) {
             $changes[] = "System Role changed";
         }
-        
+
         // Update User Table
         $userData = [
             'system_role_id' => $this->request->getPost('system_role'),
@@ -150,14 +150,14 @@ class Admin extends BaseController
             'email' => $this->request->getPost('email'),
             'department_id' => $this->request->getPost('department'),
         ];
-        
+
         // Detailed check could be done here, simplification for now
         $this->db->table('user_details')->where('user_id', $id)->update($userDetails);
 
         if (!empty($changes)) {
             $this->logAction('User Updated', "Updated user {$currentUser['username']}: " . implode(', ', $changes));
         } else {
-             $this->logAction('User Updated', "Updated details for user {$currentUser['username']}");
+            $this->logAction('User Updated', "Updated details for user {$currentUser['username']}");
         }
 
         return redirect()->to('admin/users')->with('success', 'User updated successfully');
@@ -165,7 +165,8 @@ class Admin extends BaseController
 
     public function auditLogs()
     {
-        if (!$this->checkAdmin()) return redirect()->to('dashboard');
+        if (!$this->checkAdmin())
+            return redirect()->to('dashboard');
 
         $data = [
             'logs' => $this->auditModel->getLogs(),
@@ -177,44 +178,18 @@ class Admin extends BaseController
 
     public function delete($id)
     {
-        if (!$this->checkAdmin()) return redirect()->to('dashboard');
+        if (!$this->checkAdmin())
+            return redirect()->to('dashboard');
 
         $user = $this->userModel->find($id);
         if ($user) {
             $this->userModel->delete($id);
             $this->logAction('User Deleted', "Deleted user: {$user['username']}");
-            
+
             return redirect()->to('admin/users')->with('success', 'User deleted successfully');
         }
 
         return redirect()->to('admin/users')->with('error', 'User not found');
     }
 
-    public function generateQR($id)
-    {
-        if (!$this->checkAdmin()) return "";
-        
-        $user = $this->userModel->find($id);
-        if (!$user) return "";
-
-        // Link to user profile or quick info
-        $url = base_url('admin/users/edit/' . $id);
-        
-        try {
-            $result = Builder::create()
-                ->writer(new PngWriter())
-                ->data($url)
-                ->encoding(new Encoding('UTF-8'))
-                ->errorCorrectionLevel(ErrorCorrectionLevel::Low)
-                ->size(200)
-                ->margin(10)
-                ->build();
-            
-            return $this->response
-                ->setHeader('Content-Type', 'image/png')
-                ->setBody($result->getString());
-        } catch (\Exception $e) {
-            return $this->response->setStatusCode(500)->setBody("QR Generation Error");
-        }
-    }
 }
