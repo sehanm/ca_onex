@@ -97,6 +97,22 @@
                                     title="View Required Facilities">
                                     <i class="fa-solid fa-rectangle-list"></i>
                                 </button>
+                                <?php if (in_array('ICT', $roles) && $req['ict_desktop_laptop'] !== 'None'): ?>
+                                    <button class="btn-icon" onclick="openScanner(<?= $req['request_id'] ?>)"
+                                        title="Assign Asset (QR Scan)"
+                                        style="background: rgba(124, 58, 237, 0.1); color: #7c3aed;">
+                                        <i class="fa-solid fa-qrcode"></i>
+                                    </button>
+
+                                    <?php if (!empty($req['ict_asset_id'])): ?>
+                                        <button class="btn-icon"
+                                            onclick="viewAssignedAsset(<?= htmlspecialchars(json_encode($req)) ?>)"
+                                            title="View Assigned Asset"
+                                            style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                                            <i class="fa-solid fa-laptop"></i>
+                                        </button>
+                                    <?php endif; ?>
+                                <?php endif; ?>
                             </div>
                         </td>
                     </tr>
@@ -121,6 +137,60 @@
 
         <div style="text-align: right; margin-top: 25px;">
             <button onclick="closeModal()" class="btn-secondary">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for QR Scanner -->
+<div id="qrModal" class="modal"
+    style="display:none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; padding: 20px; background-color: rgba(0,0,0,0.6); overflow-y: auto;">
+    <div class="modal-content"
+        style="background-color: #fefefe; margin: 5% auto; padding: 25px; border-radius: 16px; width: 95%; max-width: 500px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="margin:0;">Scan Asset QR</h3>
+            <button onclick="closeScanner()"
+                style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:#64748b;">&times;</button>
+        </div>
+
+        <div id="qr-reader"
+            style="width: 100%; border-radius: 12px; overflow: hidden; background: #fafafa; border: 1px solid #e2e8f0;">
+        </div>
+
+        <div id="asset-scanned-details"
+            style="display:none; margin-top: 20px; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid #7c3aed;">
+            <h4 style="margin-top:0; color: #1e293b;"><i class="fa-solid fa-laptop"></i> Asset Details</h4>
+            <div id="scanned-info-content" style="font-size: 0.95rem; line-height: 1.6;"></div>
+            <div style="margin-top: 20px; text-align: right;">
+                <button id="confirmAssignBtn" class="btn-primary"
+                    style="width:100%; background: #7c3aed; border-color: #7c3aed;">Confirm & Assign Asset</button>
+            </div>
+        </div>
+
+        <div id="scan-feedback" style="margin-top: 15px; text-align: center; color: #64748b; font-size: 0.9rem;">
+            Place the asset QR code in front of the camera
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Assigned Asset Details -->
+<div id="assetDetailModal" class="modal"
+    style="display:none; position: fixed; z-index: 1002; left: 0; top: 0; width: 100%; height: 100%; padding: 20px; background-color: rgba(0,0,0,0.5); overflow-y: auto;">
+    <div class="modal-content"
+        style="background-color: #fefefe; margin: 10% auto; padding: 25px; border-radius: 16px; width: 95%; max-width: 450px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+        <div
+            style="display:flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px;">
+            <h3 style="margin:0; color: #1e293b;">Assigned Asset</h3>
+            <button onclick="closeAssetModal()"
+                style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:#64748b;">&times;</button>
+        </div>
+
+        <div id="asset-details-content"
+            style="background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0;">
+            <!-- Content will be injected by JS -->
+        </div>
+
+        <div style="text-align: right; margin-top: 25px;">
+            <button onclick="closeAssetModal()" class="btn-secondary">Close</button>
         </div>
     </div>
 </div>
@@ -358,6 +428,161 @@
         if (event.target == document.getElementById('facilityModal')) {
             closeModal();
         }
+        if (event.target == document.getElementById('qrModal')) {
+            closeScanner();
+        }
+        if (event.target == document.getElementById('assetDetailModal')) {
+            closeAssetModal();
+        }
+    }
+
+    function viewAssignedAsset(req) {
+        let html = `
+            <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
+                <div style="width:50px; height:50px; background:#f0fdf4; color:#10b981; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.5rem;">
+                    <i class="fa-solid fa-laptop"></i>
+                </div>
+                <div>
+                    <h4 style="margin:0; color:#1e293b;">${req.ict_model || 'Unknown Model'}</h4>
+                    <p style="margin:0; font-size:0.85rem; color:#64748b;">Assigned Asset</p>
+                </div>
+            </div>
+            
+            <div style="display:grid; gap:12px;">
+                <div style="display:flex; justify-content:space-between; border-bottom: 1px dashed #e2e8f0; padding-bottom:8px;">
+                    <span style="color:#64748b;">Serial Number:</span>
+                    <strong style="color:#1e293b;">${req.ict_serial_number || 'N/A'}</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between; border-bottom: 1px dashed #e2e8f0; padding-bottom:8px;">
+                    <span style="color:#64748b;">Asset Code:</span>
+                    <strong style="color:#1e293b;">${req.ict_asset_code || 'N/A'}</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                    <span style="color:#64748b;">ID:</span>
+                    <strong style="color:#1e293b;">#${req.ict_asset_id}</strong>
+                </div>
+            </div>
+            
+            <div style="margin-top:20px; padding:12px; background:#f1f5f9; border-radius:8px; font-size:0.85rem; color:#475569;">
+                <i class="fa-solid fa-user" style="margin-right:8px;"></i> Assigned to <strong>${req.candidate_name}</strong>
+            </div>
+        `;
+
+        document.getElementById('asset-details-content').innerHTML = html;
+        document.getElementById('assetDetailModal').style.display = 'block';
+    }
+
+    function closeAssetModal() {
+        document.getElementById('assetDetailModal').style.display = 'none';
+    }
+
+    // QR Scanner Logic
+    let html5QrCode;
+    let currentRequestId;
+
+    async function openScanner(requestId) {
+        currentRequestId = requestId;
+        document.getElementById('qrModal').style.display = 'block';
+        document.getElementById('asset-scanned-details').style.display = 'none';
+        document.getElementById('scan-feedback').innerText = "Initializing camera...";
+
+        if (html5QrCode) {
+            await html5QrCode.clear();
+        }
+
+        html5QrCode = new Html5Qrcode("qr-reader");
+        const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+        try {
+            await html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess);
+            document.getElementById('scan-feedback').innerText = "Scanning... Place QR code in frame";
+        } catch (err) {
+            console.error(err);
+            document.getElementById('scan-feedback').innerText = "Error: Camera access denied or not found.";
+            showToast("Camera access denied or not found", "error");
+        }
+    }
+
+    async function onScanSuccess(decodedText, decodedResult) {
+        console.log(`Scan result: ${decodedText}`);
+        document.getElementById('scan-feedback').innerText = "Searching for asset...";
+
+        // Stop scanning once we have a result
+        try {
+            await html5QrCode.stop();
+        } catch (e) { console.warn(e); }
+
+        // Fetch asset from backend
+        let code = decodedText;
+        if (decodedText.includes('view/')) {
+            const parts = decodedText.split('/');
+            code = parts[parts.length - 1]; // Get the ID or SKU part
+        }
+
+        $.get("<?= base_url('onboarding/get-asset-by-code') ?>", { code: code }, function (res) {
+            if (res.success) {
+                const asset = res.asset;
+                document.getElementById('scanned-info-content').innerHTML = `
+                    <p><strong>Model:</strong> ${asset.model}</p>
+                    <p><strong>Serial:</strong> ${asset.serial_number}</p>
+                    <p><strong>Asset Code:</strong> ${asset.asset_code}</p>
+                    <p><strong>Status:</strong> <span class="badge ${asset.status === 'Available' ? 'badge-success' : 'badge-warning'}">${asset.status}</span></p>
+                `;
+                document.getElementById('asset-scanned-details').style.display = 'block';
+                document.getElementById('confirmAssignBtn').onclick = () => confirmAssign(asset.id);
+                document.getElementById('scan-feedback').innerText = "Asset found!";
+                showToast("Asset information fetched", "success");
+            } else {
+                showToast(res.message || "Asset not found in system", "error");
+                document.getElementById('scan-feedback').innerText = "Asset not found. Please try another QR.";
+                // Restart scanning after a short delay
+                setTimeout(() => {
+                    openScanner(currentRequestId);
+                }, 2000);
+            }
+        });
+    }
+
+    function confirmAssign(assetId) {
+        const btn = document.getElementById('confirmAssignBtn');
+        const originalText = btn.innerText;
+        btn.disabled = true;
+        btn.innerText = "Assigning...";
+
+        $.post("<?= base_url('onboarding/assign-asset') ?>", {
+            request_id: currentRequestId,
+            asset_id: assetId
+        }, function (res) {
+            btn.disabled = false;
+            btn.innerText = originalText;
+
+            if (res.success) {
+                showToast("Asset updated successfully!", "success");
+                closeScanner();
+                // Refresh to update the "View Assigned Asset" button and details immediately
+                setTimeout(() => {
+                    window.location.reload();
+                }, 800);
+            } else {
+                showToast(res.message, "error");
+            }
+        });
+    }
+
+    function closeScanner() {
+        if (html5QrCode && html5QrCode.isScanning) {
+            html5QrCode.stop().then(() => {
+                document.getElementById('qrModal').style.display = 'none';
+            }).catch(() => {
+                document.getElementById('qrModal').style.display = 'none';
+            });
+        } else {
+            document.getElementById('qrModal').style.display = 'none';
+        }
     }
 </script>
+
+<?= $this->section('scripts') ?>
+<script src="https://unpkg.com/html5-qrcode"></script>
+<?= $this->endSection() ?>
 <?= $this->endSection() ?>

@@ -32,6 +32,8 @@ $routes->group('onboarding', ['filter' => 'auth'], function ($routes) {
     $routes->post('update-section-status', 'Onboarding::updateSectionStatus');
     $routes->get('fill-form/(:num)', 'Onboarding::fillForm/$1');
     $routes->post('save-form/(:num)', 'Onboarding::saveForm/$1');
+    $routes->get('get-asset-by-code', 'Onboarding::getAssetByCode');
+    $routes->post('assign-asset', 'Onboarding::assignAsset');
 });
 
 $routes->group('inventory', ['filter' => 'auth'], function ($routes) {

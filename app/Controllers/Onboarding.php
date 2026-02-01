@@ -8,6 +8,8 @@ use App\Models\DepartmentModel;
 use App\Models\UserModel;
 
 use App\Models\OnboardingDetailsModel;
+use App\Models\AssetModel;
+use App\Models\OnboardingAssignmentModel;
 
 class Onboarding extends BaseController
 {
@@ -15,6 +17,8 @@ class Onboarding extends BaseController
     protected $detailsModel;
     protected $departmentModel;
     protected $userModel;
+    protected $assetModel;
+    protected $assignmentModel;
     protected $db;
 
     public function __construct()
@@ -23,6 +27,8 @@ class Onboarding extends BaseController
         $this->detailsModel = new OnboardingDetailsModel();
         $this->departmentModel = new DepartmentModel();
         $this->userModel = new UserModel();
+        $this->assetModel = new AssetModel();
+        $this->assignmentModel = new OnboardingAssignmentModel();
         $this->db = \Config\Database::connect();
     }
 
@@ -384,5 +390,72 @@ class Onboarding extends BaseController
             'success' => true,
             'new_status' => $mainStatus
         ]);
+    }
+
+    public function getAssetByCode()
+    {
+        $code = $this->request->getGet('code');
+        if (!$code) {
+            return $this->response->setJSON(['success' => false, 'message' => 'No scan data provided']);
+        }
+
+        // Try to find by id (primary key), asset code, or serial number
+        $asset = $this->assetModel->groupStart()
+            ->where('id', $code)
+            ->orWhere('asset_code', $code)
+            ->orWhere('serial_number', $code)
+            ->groupEnd()
+            ->first();
+
+        if ($asset) {
+            return $this->response->setJSON(['success' => true, 'asset' => $asset]);
+        }
+
+        return $this->response->setJSON(['success' => false, 'message' => 'Asset not found']);
+    }
+
+    public function assignAsset()
+    {
+        $requestId = $this->request->getPost('request_id');
+        $assetId = $this->request->getPost('asset_id');
+
+        if (!$requestId || !$assetId) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Missing required data']);
+        }
+
+        $asset = $this->assetModel->find($assetId);
+        if (!$asset) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Asset not found']);
+        }
+
+        // Update onboarding_details
+        $data = [
+            'ict_asset_id' => $asset['id'],
+            'ict_model' => $asset['model'],
+            'ict_serial_number' => $asset['serial_number'],
+            'ict_asset_code' => $asset['asset_code']
+        ];
+
+        $this->detailsModel->where('request_id', $requestId)->set($data)->update();
+
+        // Track in onboarding_asset_assignments (Upsert logic)
+        $existingAssignment = $this->assignmentModel
+            ->where('request_id', $requestId)
+            ->where('assignment_type', 'Computer')
+            ->first();
+
+        if ($existingAssignment) {
+            $this->assignmentModel->update($existingAssignment['id'], [
+                'asset_id' => $assetId
+            ]);
+        } else {
+            $this->assignmentModel->insert([
+                'request_id' => $requestId,
+                'asset_id' => $assetId,
+                'assignment_type' => 'Computer'
+            ]);
+        }
+
+        return $this->response->setJSON(['success' => true, 'message' => 'Asset updated successfully']);
     }
 }
