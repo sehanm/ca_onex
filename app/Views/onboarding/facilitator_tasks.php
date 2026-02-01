@@ -98,10 +98,14 @@
                                     <i class="fa-solid fa-rectangle-list"></i>
                                 </button>
                                 <?php if (in_array('ICT', $roles) && $req['ict_desktop_laptop'] !== 'None'): ?>
-                                    <button class="btn-icon" onclick="openScanner(<?= $req['request_id'] ?>)"
-                                        title="Assign Asset (QR Scan)"
-                                        style="background: rgba(124, 58, 237, 0.1); color: #7c3aed;">
-                                        <i class="fa-solid fa-qrcode"></i>
+                                    <button class="btn-icon" onclick="openScanner(<?= $req['request_id'] ?>, 'camera')"
+                                        title="Scan with Camera" style="background: rgba(124, 58, 237, 0.1); color: #7c3aed;">
+                                        <i class="fa-solid fa-camera"></i>
+                                    </button>
+
+                                    <button class="btn-icon" onclick="openScanner(<?= $req['request_id'] ?>, 'usb')"
+                                        title="Use USB Scanner" style="background: rgba(30, 64, 175, 0.1); color: #1e40af;">
+                                        <i class="fa-solid fa-barcode"></i>
                                     </button>
 
                                     <?php if (!empty($req['ict_asset_id'])): ?>
@@ -147,27 +151,59 @@
     <div class="modal-content"
         style="background-color: #fefefe; margin: 5% auto; padding: 25px; border-radius: 16px; width: 95%; max-width: 500px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
         <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h3 style="margin:0;">Scan Asset QR</h3>
-            <button onclick="closeScanner()"
-                style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:#64748b;">&times;</button>
+            <div style="display:flex; align-items:center; gap:10px;">
+                <h3 id="scannerModalTitle" style="margin:0;">Asset Scanner</h3>
+            </div>
+            <div style="display:flex; gap: 10px;">
+                <button id="switchCameraBtn" onclick="switchCamera()" class="btn-icon-lite" title="Switch Camera"
+                    style="display:none; color: #7c3aed;">
+                    <i class="fa-solid fa-camera-rotate"></i>
+                </button>
+                <button onclick="closeScanner()"
+                    style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:#64748b;">&times;</button>
+            </div>
         </div>
 
-        <div id="qr-reader"
-            style="width: 100%; border-radius: 12px; overflow: hidden; background: #fafafa; border: 1px solid #e2e8f0;">
+
+        <!-- Hidden input for handheld scanners -->
+        <input type="text" id="handheldScannerInput" style="position: absolute; opacity: 0; pointer-events: none;">
+
+        <div id="camera-section" style="display:none;">
+            <div id="qr-reader"
+                style="width: 100%; border-radius: 12px; overflow: hidden; background: #fafafa; border: 1px solid #e2e8f0;">
+            </div>
+            <div id="scan-feedback" style="margin-top: 15px; text-align: center; color: #64748b; font-size: 0.9rem;">
+                Place the asset QR code in front of the camera
+            </div>
+        </div>
+
+        <div id="usb-scanner-ready"
+            style="display:none; margin-top: 10px; padding: 25px; border: 2px dashed #1e40af; border-radius: 12px; background: rgba(30, 64, 175, 0.05); text-align:center;">
+            <div class="usb-pulse"
+                style="display:inline-block; width:12px; height:12px; background:#1e40af; border-radius:50%; margin-right:12px;">
+            </div>
+            <h4 style="color:#1e40af; margin-bottom:10px;">USB Scanner Active</h4>
+            <p style="margin:0; font-size:0.9rem; color:#475569;">Please scan the barcode now</p>
+
+            <div style="margin-top:20px; border-top: 1px solid #e2e8f0; padding-top:20px;">
+                <p style="margin-bottom:10px; font-size:0.8rem; color:#64748b;">Or type Asset ID/Serial manually</p>
+                <div style="display:flex; gap:5px;">
+                    <input type="text" id="manualAssetInput" placeholder="Enter ID..."
+                        style="flex:1; padding:10px; border:1px solid #cbd5e1; border-radius:8px;">
+                    <button onclick="processScan(document.getElementById('manualAssetInput').value)" class="btn-primary"
+                        style="padding:0 20px;">Go</button>
+                </div>
+            </div>
         </div>
 
         <div id="asset-scanned-details"
-            style="display:none; margin-top: 20px; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid #7c3aed;">
+            style="display:none; margin-top: 20px; background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #7c3aed;">
             <h4 style="margin-top:0; color: #1e293b;"><i class="fa-solid fa-laptop"></i> Asset Details</h4>
             <div id="scanned-info-content" style="font-size: 0.95rem; line-height: 1.6;"></div>
             <div style="margin-top: 20px; text-align: right;">
                 <button id="confirmAssignBtn" class="btn-primary"
                     style="width:100%; background: #7c3aed; border-color: #7c3aed;">Confirm & Assign Asset</button>
             </div>
-        </div>
-
-        <div id="scan-feedback" style="margin-top: 15px; text-align: center; color: #64748b; font-size: 0.9rem;">
-            Place the asset QR code in front of the camera
         </div>
     </div>
 </div>
@@ -317,6 +353,72 @@
 
         100% {
             box-shadow: 0 0 0 0 rgba(3, 105, 161, 0);
+        }
+    }
+
+    .btn-icon-lite {
+        width: 36px;
+        height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        background: transparent;
+        border: 1px solid #e2e8f0;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-icon-lite:hover {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+    }
+
+    .mode-select-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        padding: 30px 20px;
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 16px;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .mode-select-btn i {
+        font-size: 2.5rem;
+        color: #7c3aed;
+    }
+
+    .mode-select-btn span {
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+    .mode-select-btn:hover {
+        background: #f1f5f9;
+        border-color: #7c3aed;
+        transform: translateY(-4px);
+        box-shadow: 0 10px 20px rgba(124, 58, 237, 0.1);
+    }
+
+    .usb-pulse {
+        animation: usb-glow 1.5s infinite alternate;
+    }
+
+    @keyframes usb-glow {
+        from {
+            opacity: 0.4;
+            transform: scale(0.8);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(124, 58, 237, 0.5);
         }
     }
 </style>
@@ -479,67 +581,160 @@
     // QR Scanner Logic
     let html5QrCode;
     let currentRequestId;
+    let currentFacingMode = "environment";
 
-    async function openScanner(requestId) {
+    async function openScanner(requestId, mode) {
         currentRequestId = requestId;
         document.getElementById('qrModal').style.display = 'block';
         document.getElementById('asset-scanned-details').style.display = 'none';
-        document.getElementById('scan-feedback').innerText = "Initializing camera...";
 
-        if (html5QrCode) {
-            await html5QrCode.clear();
+        const cameraSection = document.getElementById('camera-section');
+        const usbSection = document.getElementById('usb-scanner-ready');
+        const modalTitle = document.getElementById('scannerModalTitle');
+
+        if (mode === 'camera') {
+            cameraSection.style.display = 'block';
+            usbSection.style.display = 'none';
+            modalTitle.innerText = "Camera Scanner";
+            document.getElementById('scan-feedback').innerText = "Initializing camera...";
+
+            if (html5QrCode) {
+                try { await html5QrCode.clear(); } catch (e) { }
+            }
+            html5QrCode = new Html5Qrcode("qr-reader");
+            setTimeout(() => startCamera(currentFacingMode), 100);
+        } else {
+            cameraSection.style.display = 'none';
+            usbSection.style.display = 'block';
+            modalTitle.innerText = "USB Scanner";
+            setTimeout(() => document.getElementById('manualAssetInput').focus(), 100);
         }
 
-        html5QrCode = new Html5Qrcode("qr-reader");
-        const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+        // Focus management logic
+        const manualInput = document.getElementById('manualAssetInput');
+        const scannerInput = document.getElementById('handheldScannerInput');
 
+        document.getElementById('qrModal').onclick = (e) => {
+            if (e.target !== manualInput && e.target !== document.getElementById('confirmAssignBtn')) {
+                scannerInput.focus();
+            }
+        };
+
+        if (mode === 'usb' && !html5QrCode) {
+            html5QrCode = new Html5Qrcode("qr-reader");
+        }
+
+        document.addEventListener('keydown', handleGlobalKeydown);
+    }
+
+
+    async function startCamera(facingMode) {
+        const config = { fps: 10, qrbox: { width: 250, height: 250 } };
         try {
-            await html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess);
-            document.getElementById('scan-feedback').innerText = "Scanning... Place QR code in frame";
+            await html5QrCode.start({ facingMode: facingMode }, config, onScanSuccess);
+            document.getElementById('scan-feedback').innerText = "Scanning... Place code in frame";
+            document.getElementById('switchCameraBtn').style.display = 'block';
         } catch (err) {
             console.error(err);
-            document.getElementById('scan-feedback').innerText = "Error: Camera access denied or not found.";
-            showToast("Camera access denied or not found", "error");
+            document.getElementById('scan-feedback').innerText = "Camera not available. Use Handheld Scanner.";
+            document.getElementById('switchCameraBtn').style.display = 'none';
+        }
+    }
+
+    async function switchCamera() {
+        if (html5QrCode && html5QrCode.isScanning) {
+            await html5QrCode.stop();
+            currentFacingMode = currentFacingMode === "environment" ? "user" : "environment";
+            startCamera(currentFacingMode);
+        }
+    }
+
+    function handleGlobalKeydown(e) {
+        if (document.getElementById('qrModal').style.display === 'block') {
+            const scannerInput = document.getElementById('handheldScannerInput');
+            const manualInput = document.getElementById('manualAssetInput');
+
+            // Allow focus on the visible search bar
+            if (document.activeElement !== scannerInput && document.activeElement !== manualInput) {
+                manualInput.focus();
+            }
+
+            if (e.key === 'Enter') {
+                const activeEl = document.activeElement;
+                if (activeEl === scannerInput || activeEl === manualInput) {
+                    const code = activeEl.value.trim();
+                    if (code) {
+                        processScan(code);
+                        activeEl.value = "";
+                    }
+                }
+            }
         }
     }
 
     async function onScanSuccess(decodedText, decodedResult) {
         console.log(`Scan result: ${decodedText}`);
-        document.getElementById('scan-feedback').innerText = "Searching for asset...";
+        processScan(decodedText);
+    }
+
+    async function processScan(scannedText) {
+        if (!scannedText) return;
+
+        const feedback = document.getElementById('scan-feedback');
+        feedback.innerText = "Searching for asset...";
+        console.log("Processing code:", scannedText);
 
         // Stop scanning once we have a result
-        try {
-            await html5QrCode.stop();
-        } catch (e) { console.warn(e); }
+        if (html5QrCode && html5QrCode.isScanning) {
+            try {
+                await html5QrCode.stop();
+            } catch (e) { console.warn(e); }
+        }
 
         // Fetch asset from backend
-        let code = decodedText;
-        if (decodedText.includes('view/')) {
-            const parts = decodedText.split('/');
-            code = parts[parts.length - 1]; // Get the ID or SKU part
+        let code = scannedText.trim();
+        // Handle full URLs if scanned from QR (e.g., .../view/123)
+        if (code.includes('view/')) {
+            const parts = code.split('/');
+            code = parts[parts.length - 1];
         }
 
         $.get("<?= base_url('onboarding/get-asset-by-code') ?>", { code: code }, function (res) {
             if (res.success) {
                 const asset = res.asset;
                 document.getElementById('scanned-info-content').innerHTML = `
-                    <p><strong>Model:</strong> ${asset.model}</p>
-                    <p><strong>Serial:</strong> ${asset.serial_number}</p>
-                    <p><strong>Asset Code:</strong> ${asset.asset_code}</p>
-                    <p><strong>Status:</strong> <span class="badge ${asset.status === 'Available' ? 'badge-success' : 'badge-warning'}">${asset.status}</span></p>
+                    <div style="padding: 10px; background: #fff; border-radius: 8px; border: 1px solid #e2e8f0;">
+                        <p style="margin-bottom: 5px;"><strong>Model:</strong> ${asset.model}</p>
+                        <p style="margin-bottom: 5px;"><strong>Serial:</strong> ${asset.serial_number}</p>
+                        <p style="margin-bottom: 5px;"><strong>Asset Code:</strong> ${asset.asset_code}</p>
+                        <p style="margin: 0;"><strong>Status:</strong> <span class="badge ${asset.status === 'Available' ? 'badge-success' : 'badge-warning'}">${asset.status}</span></p>
+                    </div>
                 `;
                 document.getElementById('asset-scanned-details').style.display = 'block';
                 document.getElementById('confirmAssignBtn').onclick = () => confirmAssign(asset.id);
-                document.getElementById('scan-feedback').innerText = "Asset found!";
+
+                // Hide scanner views to focus on details
+                document.getElementById('camera-section').style.display = 'none';
+                document.getElementById('usb-scanner-ready').style.display = 'none';
+                document.getElementById('switchCameraBtn').style.display = 'none';
+                document.getElementById('scannerModalTitle').innerText = "Asset Found";
+
+                feedback.innerHTML = `<span style="color:#10b981;"><i class="fa-solid fa-circle-check"></i> Asset identified</span>`;
                 showToast("Asset information fetched", "success");
             } else {
+                feedback.innerHTML = `<span style="color:#ef4444;"><i class="fa-solid fa-circle-xmark"></i> Not found: <strong>${code}</strong></span>`;
                 showToast(res.message || "Asset not found in system", "error");
-                document.getElementById('scan-feedback').innerText = "Asset not found. Please try another QR.";
-                // Restart scanning after a short delay
-                setTimeout(() => {
-                    openScanner(currentRequestId);
-                }, 2000);
+
+                // Re-focus scanner if in USB mode
+                if (document.getElementById('usb-scanner-ready').style.display === 'block') {
+                    setTimeout(() => document.getElementById('handheldScannerInput').focus(), 100);
+                } else if (document.getElementById('camera-section').style.display === 'block') {
+                    feedback.innerHTML += "<br><small>Please try scanning again.</small>";
+                }
             }
+        }).fail(function () {
+            feedback.innerHTML = `<span style="color:#ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> Network error</span>`;
+            showToast("Connection failed. Check your network.", "error");
         });
     }
 
@@ -570,6 +765,7 @@
     }
 
     function closeScanner() {
+        document.removeEventListener('keydown', handleGlobalKeydown);
         if (html5QrCode && html5QrCode.isScanning) {
             html5QrCode.stop().then(() => {
                 document.getElementById('qrModal').style.display = 'none';
