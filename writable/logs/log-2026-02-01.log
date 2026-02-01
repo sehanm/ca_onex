@@ -1,0 +1,13 @@
+CRITICAL - 2026-02-01 15:55:57 --> ParseError: syntax error, unexpected token "endif"
+[Method: GET, Route: onboarding/facility-tasks]
+in APPPATH\Views\onboarding\facilitator_tasks.php on line 101.
+ 1 SYSTEMPATH\View\View.php(229): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 2 SYSTEMPATH\Common.php(1199): CodeIgniter\View\View->render('onboarding/facilitator_tasks', [], true)
+ 3 APPPATH\Controllers\Onboarding.php(303): view('onboarding/facilitator_tasks', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(935): App\Controllers\Onboarding->facilitatorTasks()
+ 5 SYSTEMPATH\CodeIgniter.php(509): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Onboarding))
+ 6 SYSTEMPATH\CodeIgniter.php(356): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+10 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp-new\\htdocs\\ca_onex\\public\\index.php')
