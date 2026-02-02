@@ -389,20 +389,9 @@
 <script>
 
     function confirmDelete(url) {
-        Swal.fire({
-            title: 'Terminate Access?',
-            text: "This user will lose all system access and their directory record will be archived.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#f43f5e',
-            cancelButtonColor: '#64748b',
-            confirmButtonText: 'Yes, terminate',
-            cancelButtonText: 'Keep Active'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = url;
-            }
-        });
+        if (confirm('Are you sure you want to terminate access? This user will lose all system access and their directory record will be archived.')) {
+            window.location.href = url;
+        }
     }
 </script>
 <?= $this->endSection() ?>

@@ -43,6 +43,14 @@ class Inventory extends BaseController
         return view('inventory/items', $data);
     }
 
+    public function scan()
+    {
+        $data = [
+            'users' => $this->userDetailModel->orderBy('full_name', 'ASC')->findAll()
+        ];
+        return view('inventory/scan', $data);
+    }
+
     public function items()
     {
         return $this->index();
@@ -112,7 +120,7 @@ class Inventory extends BaseController
             return $this->response->setStatusCode(404)->setBody("Asset not found");
         }
 
-        $url = base_url('inventory/view/' . $id);
+        $qrData = $item['serial_number'] ?? $id;
 
         $isRaw = $this->request->getGet('raw') === '1';
 
@@ -120,7 +128,7 @@ class Inventory extends BaseController
             // 1. Generate the Base QR Code
             $writer = new PngWriter();
             $qrObj = new QrCode(
-                data: $url,
+                data: $qrData,
                 encoding: new Encoding('UTF-8'),
                 errorCorrectionLevel: ErrorCorrectionLevel::Low,
                 size: 250,
@@ -207,5 +215,71 @@ class Inventory extends BaseController
             return $this->response->setJSON(['success' => true, 'data' => $item]);
         }
         return $this->response->setJSON(['success' => false, 'message' => 'Asset not found']);
+    }
+
+    public function getAssetByCode()
+    {
+        $code = $this->request->getGet('code');
+        if (empty($code)) {
+            return $this->response->setJSON(['success' => false, 'message' => 'No code provided']);
+        }
+
+        // Try searching by asset_code first, then serial_number
+        $asset = $this->assetModel->where('asset_code', $code)
+            ->orWhere('serial_number', $code)
+            ->first();
+
+        // If not found, check if it's a numeric ID (fallback)
+        if (!$asset && is_numeric($code)) {
+            $asset = $this->assetModel->find($code);
+        }
+
+        if ($asset) {
+            // Get current user if assigned
+            $assignedTo = null;
+            if ($asset['assigned_user_id']) {
+                $user = $this->userDetailModel->where('user_id', $asset['assigned_user_id'])->first();
+                $assignedTo = $user ? $user['full_name'] : 'Unknown User';
+            }
+
+            return $this->response->setJSON([
+                'success' => true,
+                'asset' => $asset,
+                'assigned_to' => $assignedTo
+            ]);
+        }
+
+        return $this->response->setJSON(['success' => false, 'message' => 'Asset not found']);
+    }
+
+    public function assignUser()
+    {
+        $assetId = $this->request->getPost('asset_id');
+        $userId = $this->request->getPost('user_id');
+
+        if (!$assetId || !$userId) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Missing parameters']);
+        }
+
+        $asset = $this->assetModel->find($assetId);
+        if (!$asset) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Asset not found']);
+        }
+
+        $data = [
+            'assigned_user_id' => $userId,
+            'status' => 'Assigned',
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
+
+        if ($this->assetModel->update($assetId, $data)) {
+            $user = $this->userDetailModel->where('user_id', $userId)->first();
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'Asset assigned successfully to ' . ($user ? $user['full_name'] : 'User'),
+            ]);
+        }
+
+        return $this->response->setJSON(['success' => false, 'message' => 'Failed to assign asset']);
     }
 }

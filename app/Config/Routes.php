@@ -45,4 +45,6 @@ $routes->group('inventory', ['filter' => 'auth'], function ($routes) {
     $routes->get('generate-qr/(:num)', 'Inventory::generateQR/$1');
     $routes->get('get-details/(:num)', 'Inventory::getDetails/$1');
     $routes->get('scan', 'Inventory::scan');
+    $routes->get('get-asset-by-code', 'Inventory::getAssetByCode');
+    $routes->post('assign-user', 'Inventory::assignUser');
 });

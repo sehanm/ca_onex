@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $this->renderSection('title') ?> - CA OnEx</title>
-    
+
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Custom CSS -->
     <link rel="stylesheet" href="<?= base_url('assets/css/style.css') ?>">
     <link rel="stylesheet" href="<?= base_url('assets/css/dashboard.css') ?>">
@@ -17,8 +18,9 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 </head>
+
 <body>
-    
+
     <div class="dashboard-container">
         <!-- Sidebar -->
         <aside class="sidebar">
@@ -28,7 +30,7 @@
                     <span>CA OnEx</span>
                 </div>
             </div>
-            
+
             <nav class="sidebar-nav">
                 <ul>
                     <li class="<?= uri_string() == 'dashboard' ? 'active' : '' ?>">
@@ -38,20 +40,20 @@
                         </a>
                     </li>
                     <?php if (session()->get('role') === 'Super Admin'): ?>
-                    <li class="<?= uri_string() == 'admin/users' ? 'active' : '' ?>">
-                        <a href="<?= base_url('admin/users') ?>">
-                            <i class="fa-solid fa-users-gear"></i>
-                            <span>User Management</span>
-                        </a>
-                    </li>
-                    <li class="<?= uri_string() == 'admin/audit-logs' ? 'active' : '' ?>">
-                        <a href="<?= base_url('admin/audit-logs') ?>">
-                            <i class="fa-solid fa-clock-rotate-left"></i>
-                            <span>Audit Logs</span>
-                        </a>
-                    </li>
+                        <li class="<?= uri_string() == 'admin/users' ? 'active' : '' ?>">
+                            <a href="<?= base_url('admin/users') ?>">
+                                <i class="fa-solid fa-users-gear"></i>
+                                <span>User Management</span>
+                            </a>
+                        </li>
+                        <li class="<?= uri_string() == 'admin/audit-logs' ? 'active' : '' ?>">
+                            <a href="<?= base_url('admin/audit-logs') ?>">
+                                <i class="fa-solid fa-clock-rotate-left"></i>
+                                <span>Audit Logs</span>
+                            </a>
+                        </li>
                     <?php endif; ?>
-                    
+
                     <li>
                         <a href="#">
                             <i class="fa-solid fa-users"></i>
@@ -71,50 +73,54 @@
                         </a>
                     </li>
                     <?php if (session()->get('role') === 'Super Admin' || session()->get('role') === 'HR Admin'): ?>
-                    <li class="<?= uri_string() == 'onboarding/create' ? 'active' : '' ?>">
-                        <a href="<?= base_url('onboarding/create') ?>">
-                            <i class="fa-solid fa-user-plus"></i>
-                            <span>Initiate Onboarding</span>
-                        </a>
-                    </li>
+                        <li class="<?= uri_string() == 'onboarding/create' ? 'active' : '' ?>">
+                            <a href="<?= base_url('onboarding/create') ?>">
+                                <i class="fa-solid fa-user-plus"></i>
+                                <span>Initiate Onboarding</span>
+                            </a>
+                        </li>
                     <?php endif; ?>
-                    <?php 
-                        $managedDepts = (new \App\Models\DepartmentModel())->where('manager_id', session()->get('id'))->findAll();
-                        $isHod = count($managedDepts) > 0;
-                        
-                        $facilitatorRoles = [];
-                        foreach ($managedDepts as $dept) {
-                            if ($dept['department_name'] == 'Administration & Events') $facilitatorRoles[] = 'Admin';
-                            if ($dept['department_name'] == 'HR') $facilitatorRoles[] = 'HR';
-                            if ($dept['department_name'] == 'ICT') $facilitatorRoles[] = 'ICT';
-                        }
-                        
-                        if ($isHod): 
-                    ?>
-                    <li class="<?= uri_string() == 'onboarding/pending' ? 'active' : '' ?>">
-                        <a href="<?= base_url('onboarding/pending') ?>">
-                            <i class="fa-solid fa-list-check"></i>
-                            <span>Onboarding Tasks</span>
-                        </a>
-                    </li>
+                    <?php
+                    $managedDepts = (new \App\Models\DepartmentModel())->where('manager_id', session()->get('id'))->findAll();
+                    $isHod = count($managedDepts) > 0;
+
+                    $facilitatorRoles = [];
+                    foreach ($managedDepts as $dept) {
+                        if ($dept['department_name'] == 'Administration & Events')
+                            $facilitatorRoles[] = 'Admin';
+                        if ($dept['department_name'] == 'HR')
+                            $facilitatorRoles[] = 'HR';
+                        if ($dept['department_name'] == 'ICT')
+                            $facilitatorRoles[] = 'ICT';
+                    }
+
+                    if ($isHod):
+                        ?>
+                        <li class="<?= uri_string() == 'onboarding/pending' ? 'active' : '' ?>">
+                            <a href="<?= base_url('onboarding/pending') ?>">
+                                <i class="fa-solid fa-list-check"></i>
+                                <span>Onboarding Tasks</span>
+                            </a>
+                        </li>
                     <?php endif; ?>
 
                     <?php if (!empty($facilitatorRoles)): ?>
-                    <li class="<?= uri_string() == 'onboarding/facility-tasks' ? 'active' : '' ?>">
-                        <a href="<?= base_url('onboarding/facility-tasks') ?>">
-                            <i class="fa-solid fa-screwdriver-wrench"></i>
-                            <span>Facility Tasks</span>
-                        </a>
-                    </li>
+                        <li class="<?= uri_string() == 'onboarding/facility-tasks' ? 'active' : '' ?>">
+                            <a href="<?= base_url('onboarding/facility-tasks') ?>">
+                                <i class="fa-solid fa-screwdriver-wrench"></i>
+                                <span>Facility Tasks</span>
+                            </a>
+                        </li>
                     <?php endif; ?>
 
                     <?php if (in_array('ICT', $facilitatorRoles) || session()->get('role') === 'Super Admin'): ?>
-                    <li class="<?= (uri_string() == 'inventory' || strpos(uri_string(), 'inventory') !== false) ? 'active' : '' ?>">
-                        <a href="<?= base_url('inventory') ?>">
-                            <i class="fa-solid fa-boxes-stacked"></i>
-                            <span>Asset Inventory</span>
-                        </a>
-                    </li>
+                        <li
+                            class="<?= (uri_string() == 'inventory' || strpos(uri_string(), 'inventory') !== false) ? 'active' : '' ?>">
+                            <a href="<?= base_url('inventory') ?>">
+                                <i class="fa-solid fa-boxes-stacked"></i>
+                                <span>Asset Inventory</span>
+                            </a>
+                        </li>
                     <?php endif; ?>
                 </ul>
             </nav>
@@ -134,7 +140,7 @@
                 <div class="toggle-sidebar">
                     <i class="fa-solid fa-bars"></i>
                 </div>
-                
+
                 <div class="user-profile">
                     <div class="user-info">
                         <span class="user-name"><?= session()->get('full_name') ?></span>
@@ -151,34 +157,12 @@
                 <?= $this->renderSection('content') ?>
             </main>
 
-            <script>
-                $(document).ready(function() {
-                    <?php if (session()->getFlashdata('success')): ?>
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success!',
-                            text: '<?= session()->getFlashdata('success') ?>',
-                            timer: 3000,
-                            showConfirmButton: false
-                        });
-                    <?php endif; ?>
-
-                    <?php if (session()->getFlashdata('error')): ?>
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: '<?= session()->getFlashdata('error') ?>'
-                        });
-                    <?php endif; ?>
-                });
-            </script>
         </div>
     </div>
 
     <!-- jQuery and DataTables JS -->
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="<?= base_url('assets/js/dashboard.js') ?>"></script>
     <script src="<?= base_url('assets/js/toast.js') ?>"></script>
     <script>
@@ -193,7 +177,7 @@
         <?php endif; ?>
 
         // Initialize DataTables
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('.datatable').DataTable({
                 "pageLength": 10,
                 "lengthChange": false,
@@ -205,4 +189,5 @@
     </script>
     <?= $this->renderSection('scripts') ?>
 </body>
+
 </html>
