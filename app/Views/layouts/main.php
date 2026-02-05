@@ -39,47 +39,42 @@
                             <span>Dashboard</span>
                         </a>
                     </li>
-                    <?php if (session()->get('role') === 'Super Admin'): ?>
-                        <li class="<?= uri_string() == 'admin/users' ? 'active' : '' ?>">
-                            <a href="<?= base_url('admin/users') ?>">
-                                <i class="fa-solid fa-users-gear"></i>
-                                <span>User Management</span>
-                            </a>
-                        </li>
-                        <li class="<?= uri_string() == 'admin/audit-logs' ? 'active' : '' ?>">
-                            <a href="<?= base_url('admin/audit-logs') ?>">
-                                <i class="fa-solid fa-clock-rotate-left"></i>
-                                <span>Audit Logs</span>
-                            </a>
-                        </li>
-                    <?php endif; ?>
 
-                    <li>
-                        <a href="#">
-                            <i class="fa-solid fa-users"></i>
-                            <span>Employees</span>
+                    <?php
+                    $isAdminOpen = (uri_string() == 'admin/users' || uri_string() == 'admin/audit-logs' || uri_string() == 'admin/departments');
+                    ?>
+                    <li class="has-submenu <?= $isAdminOpen ? 'open' : '' ?>">
+                        <a href="javascript:void(0)" class="submenu-toggle">
+                            <span class="menu-label">
+                                <i class="fa-solid fa-gears"></i>
+                                <span>Administration</span>
+                            </span>
+                            <i class="fa-solid fa-chevron-down arrow"></i>
                         </a>
+                        <ul class="submenu">
+                            <?php if (session()->get('role') === 'Super Admin'): ?>
+                                <li class="<?= uri_string() == 'admin/users' ? 'active' : '' ?>">
+                                    <a href="<?= base_url('admin/users') ?>">
+                                        <i class="fa-solid fa-users-gear"></i>
+                                        <span>User Management</span>
+                                    </a>
+                                </li>
+                                <li class="<?= uri_string() == 'admin/audit-logs' ? 'active' : '' ?>">
+                                    <a href="<?= base_url('admin/audit-logs') ?>">
+                                        <i class="fa-solid fa-clock-rotate-left"></i>
+                                        <span>Audit Logs</span>
+                                    </a>
+                                </li>
+                            <?php endif; ?>
+                            <li class="<?= uri_string() == 'admin/departments' ? 'active' : '' ?>">
+                                <a href="<?= base_url('admin/departments') ?>">
+                                    <i class="fa-solid fa-building"></i>
+                                    <span>Departments</span>
+                                </a>
+                            </li>
+                        </ul>
                     </li>
-                    <li class="<?= uri_string() == 'admin/departments' ? 'active' : '' ?>">
-                        <a href="<?= base_url('admin/departments') ?>">
-                            <i class="fa-solid fa-building"></i>
-                            <span>Departments</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                            <i class="fa-solid fa-file-contract"></i>
-                            <span>Clearance</span>
-                        </a>
-                    </li>
-                    <?php if (session()->get('role') === 'Super Admin' || session()->get('role') === 'HR Admin'): ?>
-                        <li class="<?= uri_string() == 'onboarding/create' ? 'active' : '' ?>">
-                            <a href="<?= base_url('onboarding/create') ?>">
-                                <i class="fa-solid fa-user-plus"></i>
-                                <span>Initiate Onboarding</span>
-                            </a>
-                        </li>
-                    <?php endif; ?>
+
                     <?php
                     $managedDepts = (new \App\Models\DepartmentModel())->where('manager_id', session()->get('id'))->findAll();
                     $isHod = count($managedDepts) > 0;
@@ -94,34 +89,81 @@
                             $facilitatorRoles[] = 'ICT';
                     }
 
-                    if ($isHod):
-                        ?>
-                        <li class="<?= uri_string() == 'onboarding/pending' ? 'active' : '' ?>">
-                            <a href="<?= base_url('onboarding/pending') ?>">
-                                <i class="fa-solid fa-list-check"></i>
-                                <span>Onboarding Tasks</span>
+                    $isOnboardingOpen = (uri_string() == 'onboarding/create' || uri_string() == 'onboarding/pending' || uri_string() == 'onboarding/facility-tasks');
+                    ?>
+
+                    <li class="has-submenu <?= $isOnboardingOpen ? 'open' : '' ?>">
+                        <a href="javascript:void(0)" class="submenu-toggle">
+                            <span class="menu-label">
+                                <i class="fa-solid fa-user-check"></i>
+                                <span>Onboarding</span>
+                            </span>
+                            <i class="fa-solid fa-chevron-down arrow"></i>
+                        </a>
+                        <ul class="submenu">
+                            <?php if (session()->get('role') === 'Super Admin' || session()->get('role') === 'HR Admin'): ?>
+                                <li class="<?= uri_string() == 'onboarding/create' ? 'active' : '' ?>">
+                                    <a href="<?= base_url('onboarding/create') ?>">
+                                        <i class="fa-solid fa-user-plus"></i>
+                                        <span>Initiate Onboarding</span>
+                                    </a>
+                                </li>
+                            <?php endif; ?>
+
+                            <?php if ($isHod): ?>
+                                <li class="<?= uri_string() == 'onboarding/pending' ? 'active' : '' ?>">
+                                    <a href="<?= base_url('onboarding/pending') ?>">
+                                        <i class="fa-solid fa-list-check"></i>
+                                        <span>Onboarding Tasks</span>
+                                    </a>
+                                </li>
+                            <?php endif; ?>
+
+                            <?php if (!empty($facilitatorRoles)): ?>
+                                <li class="<?= uri_string() == 'onboarding/facility-tasks' ? 'active' : '' ?>">
+                                    <a href="<?= base_url('onboarding/facility-tasks') ?>">
+                                        <i class="fa-solid fa-screwdriver-wrench"></i>
+                                        <span>Facility Tasks</span>
+                                    </a>
+                                </li>
+                            <?php endif; ?>
+                        </ul>
+                    </li>
+
+                    <?php if (in_array('ICT', $facilitatorRoles) || session()->get('role') === 'Super Admin'): 
+                        $isInventoryOpen = (strpos(uri_string(), 'inventory') !== false);
+                    ?>
+                        <li class="has-submenu <?= $isInventoryOpen ? 'open' : '' ?>">
+                            <a href="javascript:void(0)" class="submenu-toggle">
+                                <span class="menu-label">
+                                    <i class="fa-solid fa-boxes-stacked"></i>
+                                    <span>Inventory</span>
+                                </span>
+                                <i class="fa-solid fa-chevron-down arrow"></i>
                             </a>
+                            <ul class="submenu">
+                                <li class="<?= uri_string() == 'inventory' ? 'active' : '' ?>">
+                                    <a href="<?= base_url('inventory') ?>">
+                                        <i class="fa-solid fa-chart-pie"></i>
+                                        <span>Overview</span>
+                                    </a>
+                                </li>
+                                <li class="<?= uri_string() == 'inventory/items' ? 'active' : '' ?>">
+                                    <a href="<?= base_url('inventory/items') ?>">
+                                        <i class="fa-solid fa-list-ul"></i>
+                                        <span>Asset List</span>
+                                    </a>
+                                </li>
+                                <li class="<?= uri_string() == 'inventory/scan' ? 'active' : '' ?>">
+                                    <a href="<?= base_url('inventory/scan') ?>">
+                                        <i class="fa-solid fa-qrcode"></i>
+                                        <span>Scan Assets</span>
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                     <?php endif; ?>
 
-                    <?php if (!empty($facilitatorRoles)): ?>
-                        <li class="<?= uri_string() == 'onboarding/facility-tasks' ? 'active' : '' ?>">
-                            <a href="<?= base_url('onboarding/facility-tasks') ?>">
-                                <i class="fa-solid fa-screwdriver-wrench"></i>
-                                <span>Facility Tasks</span>
-                            </a>
-                        </li>
-                    <?php endif; ?>
-
-                    <?php if (in_array('ICT', $facilitatorRoles) || session()->get('role') === 'Super Admin'): ?>
-                        <li
-                            class="<?= (uri_string() == 'inventory' || strpos(uri_string(), 'inventory') !== false) ? 'active' : '' ?>">
-                            <a href="<?= base_url('inventory') ?>">
-                                <i class="fa-solid fa-boxes-stacked"></i>
-                                <span>Asset Inventory</span>
-                            </a>
-                        </li>
-                    <?php endif; ?>
                 </ul>
             </nav>
 

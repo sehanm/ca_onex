@@ -16,7 +16,19 @@ class App extends BaseConfig
      *
      * E.g., http://example.com/
      */
-    public string $baseURL = 'http://localhost:8080/';
+    public string $baseURL = 'https://devonex.casrilanka.com/';
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        // If we are in development, automatically detect the baseURL 
+        // to allow cross-device testing (like mobile)
+        if (ENVIRONMENT === 'development' && isset($_SERVER['HTTP_HOST'])) {
+            $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? "https" : "http";
+            $this->baseURL = $protocol . "://" . $_SERVER['HTTP_HOST'] . "/";
+        }
+    }
 
     /**
      * Allowed Hostnames in the Site URL other than the hostname in the baseURL.
@@ -40,7 +52,7 @@ class App extends BaseConfig
      * something else. If you have configured your web server to remove this file
      * from your site URIs, set this variable to an empty string.
      */
-    public string $indexPage = 'index.php';
+    public string $indexPage = '';
 
     /**
      * --------------------------------------------------------------------------

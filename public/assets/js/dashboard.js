@@ -19,6 +19,26 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    // Handle Submenus
+    const submenuToggles = document.querySelectorAll('.submenu-toggle');
+    submenuToggles.forEach(toggle => {
+        toggle.addEventListener('click', function (e) {
+            e.preventDefault();
+            const parentLi = this.parentElement;
+
+            // Toggle open class
+            parentLi.classList.toggle('open');
+
+            // Optional: Close other submenus
+            submenuToggles.forEach(otherToggle => {
+                const otherLi = otherToggle.parentElement;
+                if (otherLi !== parentLi) {
+                    otherLi.classList.remove('open');
+                }
+            });
+        });
+    });
+
     // Handle Window Resize
     window.addEventListener('resize', function () {
         if (window.innerWidth > 992) {
