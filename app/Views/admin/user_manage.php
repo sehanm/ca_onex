@@ -18,63 +18,53 @@
 
     <div class="card shadow-premium staff-list-card">
         <div class="table-responsive">
-            <table class="table datatable-premium">
+            <table class="table datatable datatable-premium">
                 <thead>
                     <tr>
-                        <th>Personnel</th>
-                        <th class="hide-mobile">Corporate Email</th>
-                        <th>Classification</th>
-                        <th class="hide-tablet">Department</th>
-                        <th class="text-end">Actions</th>
+                        <th>Identity</th>
+                        <th>Access Credentials</th>
+                        <th>Organization</th>
+                        <th class="text-end">Command</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($users as $user): ?>
                         <tr>
                             <td>
-                                <div class="staff-profile-cell">
+                                <div class="staff-identity-cell">
                                     <div class="avatar-circle">
                                         <?= strtoupper(substr($user['full_name'], 0, 1)) ?>
                                     </div>
-                                    <div class="staff-info">
-                                        <span class="staff-name"><?= esc($user['full_name']) ?></span>
-                                        <span class="staff-username">@<?= esc($user['username']) ?></span>
+                                    <div class="staff-details">
+                                        <div class="staff-name"><?= esc($user['full_name']) ?></div>
+                                        <div class="staff-username">@<?= esc($user['username']) ?></div>
                                     </div>
                                 </div>
                             </td>
-                            <td class="hide-mobile">
-                                <a href="mailto:<?= esc($user['email']) ?>" class="email-link">
-                                    <?= esc($user['email']) ?>
-                                </a>
+                            <td>
+                                <div class="access-info">
+                                    <span class="email-pill">
+                                        <i class="fa-solid fa-envelope"></i> <?= esc($user['email']) ?>
+                                    </span>
+                                    <span class="role-pill">
+                                        <i class="fa-solid fa-shield-halved"></i> <?= esc($user['system_role']) ?>
+                                    </span>
+                                </div>
                             </td>
                             <td>
-                                <?php
-                                $roleClass = 'role-default';
-                                if ($user['system_role'] == 'Super Admin')
-                                    $roleClass = 'role-admin';
-                                if ($user['system_role'] == 'HR Admin')
-                                    $roleClass = 'role-hr';
-                                if ($user['system_role'] == 'ICT Admin')
-                                    $roleClass = 'role-ict';
-                                ?>
-                                <span class="role-pill <?= $roleClass ?>">
-                                    <?= esc($user['system_role']) ?>
-                                </span>
-                            </td>
-                            <td class="hide-tablet">
-                                <div class="dept-label">
-                                    <i class="fa-solid fa-building"></i>
-                                    <?= esc($user['department_name'] ?? 'General') ?>
+                                <div class="org-info">
+                                    <span
+                                        class="dept-text"><?= esc($user['department_name'] ?: 'External/Unassigned') ?></span>
                                 </div>
                             </td>
                             <td class="text-end">
-                                <div class="staff-actions">
+                                <div class="action-stack">
                                     <a href="<?= site_url('admin/users/edit/' . $user['id']) ?>" class="btn-action edit"
-                                        title="Edit Profile">
+                                        title="Modify Profile">
                                         <i class="fa-solid fa-user-pen"></i>
                                     </a>
                                     <button type="button" class="btn-action delete"
-                                        onclick="confirmDelete('<?= site_url('admin/users/delete/' . $user['id']) ?>')"
+                                        onclick="confirmDeletion('<?= site_url('admin/users/delete/' . $user['id']) ?>', 'Terminate Access?', 'This user will immediately lose all system access and their directory record will be archived.')"
                                         title="Terminate Access">
                                         <i class="fa-solid fa-user-xmark"></i>
                                     </button>
@@ -142,193 +132,174 @@
         overflow: hidden;
     }
 
-    .staff-profile-cell {
+    /* Premium Table Refinement */
+    .datatable-premium {
+        border-collapse: separate !important;
+        border-spacing: 0 12px !important;
+        width: 100% !important;
+    }
+
+    .datatable-premium thead th {
+        background: transparent;
+        border: none;
+        color: #94a3b8;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 700;
+        padding: 10px 20px;
+    }
+
+    .datatable-premium tbody tr {
+        background: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+    }
+
+    .datatable-premium tbody tr:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    .datatable-premium tbody td {
+        padding: 20px !important;
+        border: none !important;
+        vertical-align: middle;
+    }
+
+    .datatable-premium tbody tr td:first-child {
+        border-radius: 16px 0 0 16px;
+    }
+
+    .datatable-premium tbody tr td:last-child {
+        border-radius: 0 16px 16px 0;
+    }
+
+    /* Identity Cell */
+    .staff-identity-cell {
         display: flex;
         align-items: center;
         gap: 15px;
     }
 
     .avatar-circle {
-        width: 42px;
-        height: 42px;
-        border-radius: 50%;
-        background: #f1f5f9;
-        color: #6366f1;
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(135deg, #800000 0%, #a00000 100%);
+        color: white;
+        border-radius: 15px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: 800;
-        font-size: 1.1rem;
-        border: 2px solid #fff;
-        box-shadow: 0 0 0 2px #eef2ff;
+        font-weight: 700;
+        font-size: 1.2rem;
+        box-shadow: 0 4px 12px rgba(128, 0, 0, 0.2);
     }
 
     .staff-name {
-        display: block;
         font-weight: 700;
         color: #1e293b;
-        font-size: 0.95rem;
+        font-size: 1rem;
     }
 
     .staff-username {
-        font-size: 0.8rem;
         color: #94a3b8;
+        font-size: 0.8rem;
         font-weight: 500;
     }
 
-    .email-link {
-        color: #64748b;
-        text-decoration: none;
-        font-size: 0.9rem;
-        transition: color 0.2s;
+    /* Access Pill */
+    .access-info {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
     }
 
-    .email-link:hover {
-        color: #6366f1;
-    }
-
-    .role-pill {
-        padding: 6px 14px;
-        border-radius: 50px;
-        font-size: 0.75rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .role-admin {
-        background: #fef2f2;
-        color: #dc2626;
-        border: 1px solid #fee2e2;
-    }
-
-    .role-hr {
-        background: #fdf2f8;
-        color: #db2777;
-        border: 1px solid #fce7f3;
-    }
-
-    .role-ict {
-        background: #f5f3ff;
-        color: #7c3aed;
-        border: 1px solid #ede9fe;
-    }
-
-    .role-default {
-        background: #f8fafc;
-        color: #64748b;
-        border: 1px solid #f1f5f9;
-    }
-
-    .dept-label {
+    .email-pill {
+        color: #475569;
+        font-size: 0.85rem;
         display: flex;
         align-items: center;
         gap: 8px;
+    }
+
+    .email-pill i {
+        color: #94a3b8;
+    }
+
+    .role-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #f1f5f9;
+        color: #475569;
+        padding: 4px 12px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        width: fit-content;
+    }
+
+    .role-pill i {
+        color: #800000;
+    }
+
+    /* Org Info */
+    .dept-text {
         color: #64748b;
+        font-weight: 600;
         font-size: 0.85rem;
     }
 
-    .dept-label i {
-        color: #cbd5e1;
-    }
-
-    .user-qr-wrapper {
-        position: relative;
-        width: 44px;
-        height: 44px;
-        margin: 0 auto;
-        padding: 4px;
-        background: white;
-        border: 1px solid #f1f5f9;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    .user-qr-thumb {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-    }
-
-    .qr-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.4);
-        border-radius: 9px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        opacity: 0;
-        transition: 0.2s;
-        font-size: 0.9rem;
-    }
-
-    .user-qr-wrapper:hover {
-        transform: scale(1.15) rotate(5deg);
-        border-color: #6366f1;
-    }
-
-    .user-qr-wrapper:hover .qr-overlay {
-        opacity: 1;
-    }
-
-    .staff-actions {
+    /* Actions */
+    .action-stack {
         display: flex;
         gap: 8px;
         justify-content: flex-end;
     }
 
     .btn-action {
-        width: 36px;
-        height: 36px;
+        width: 40px;
+        height: 40px;
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 10px;
-        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        border: none;
         transition: all 0.2s;
         cursor: pointer;
-        background: white;
-    }
-
-    .btn-action.edit {
-        color: #64748b;
         text-decoration: none;
     }
 
+    .btn-action.edit {
+        background: #f1f5f9;
+        color: #64748b;
+    }
+
     .btn-action.edit:hover {
-        background: #f8fafc;
-        color: #6366f1;
-        border-color: #6366f1;
+        background: #e2e8f0;
+        color: #1e293b;
         transform: translateY(-2px);
     }
 
     .btn-action.delete {
-        color: #f43f5e;
-        border: none;
+        background: #fff1f2;
+        color: #e11d48;
     }
 
     .btn-action.delete:hover {
-        background: #fff1f2;
-        color: #e11d48;
+        background: #e11d48;
+        color: white;
         transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3);
     }
 
-    /* Responsiveness */
-    @media (max-width: 992px) {
-        .hide-tablet {
-            display: none !important;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .hide-mobile {
-            display: none !important;
+    /* Hidden elements on mobile */
+    @media (max-width: 768px) {
+        .avatar-circle {
+            width: 32px;
+            height: 32px;
+            font-size: 0.8rem;
         }
 
         .page-header-premium {
@@ -350,12 +321,6 @@
             padding: 15px 10px;
         }
 
-        .avatar-circle {
-            width: 32px;
-            height: 32px;
-            font-size: 0.8rem;
-        }
-
         .staff-name {
             font-size: 0.85rem;
         }
@@ -367,12 +332,6 @@
         .role-pill {
             padding: 4px 8px;
             font-size: 0.65rem;
-        }
-
-        .user-qr-wrapper {
-            width: 36px;
-            height: 36px;
-            padding: 2px;
         }
 
         /* DataTables tweaks */
@@ -387,11 +346,6 @@
 
 <?= $this->section('scripts') ?>
 <script>
-
-    function confirmDelete(url) {
-        if (confirm('Are you sure you want to terminate access? This user will lose all system access and their directory record will be archived.')) {
-            window.location.href = url;
-        }
-    }
+    // Local scripts removed as functionality moved to layout
 </script>
 <?= $this->endSection() ?>

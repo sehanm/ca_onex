@@ -130,9 +130,9 @@
                         </ul>
                     </li>
 
-                    <?php if (in_array('ICT', $facilitatorRoles) || session()->get('role') === 'Super Admin'): 
+                    <?php if (in_array('ICT', $facilitatorRoles) || session()->get('role') === 'Super Admin'):
                         $isInventoryOpen = (strpos(uri_string(), 'inventory') !== false);
-                    ?>
+                        ?>
                         <li class="has-submenu <?= $isInventoryOpen ? 'open' : '' ?>">
                             <a href="javascript:void(0)" class="submenu-toggle">
                                 <span class="menu-label">
@@ -202,21 +202,180 @@
         </div>
     </div>
 
+    <!-- Global Premium Delete Modal -->
+    <div id="globalDeleteModal" class="premium-modal">
+        <div class="modal-overlay" onclick="closeGlobalDeleteModal()"></div>
+        <div class="modal-content-wrapper">
+            <div class="modal-icon-header">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 id="globalDeleteTitle">Confirm Action</h3>
+            <p id="globalDeleteText">Are you sure you want to proceed with this deletion? This action cannot be
+                reversed.</p>
+            <div class="modal-actions">
+                <button type="button" class="btn-modal-cancel" onclick="closeGlobalDeleteModal()">Cancel</button>
+                <a id="globalDeleteConfirmBtn" href="#" class="btn-modal-confirm">Delete Permanently</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Premium Modal Styles -->
+    <style>
+        .premium-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .premium-modal.active {
+            display: flex;
+        }
+
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(4px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content-wrapper {
+            background: white;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 24px;
+            padding: 40px 30px;
+            position: relative;
+            z-index: 10001;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            animation: scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .modal-icon-header {
+            width: 70px;
+            height: 70px;
+            background: #fff1f2;
+            color: #e11d48;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 25px;
+            transform: rotate(-5deg);
+        }
+
+        .modal-content-wrapper h3 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 12px;
+        }
+
+        .modal-content-wrapper p {
+            color: #64748b;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .modal-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn-modal-confirm {
+            background: #e11d48;
+            color: white;
+            padding: 14px;
+            border-radius: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-modal-confirm:hover {
+            background: #be123c;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(225, 29, 72, 0.3);
+            color: white;
+        }
+
+        .btn-modal-cancel {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 14px;
+            border-radius: 14px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-modal-cancel:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+    </style>
+
     <!-- jQuery and DataTables JS -->
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="<?= base_url('assets/js/dashboard.js') ?>"></script>
     <script src="<?= base_url('assets/js/toast.js') ?>"></script>
     <script>
-        <?php if (session()->getFlashdata('error')): ?>
-            showToast("<?= esc(session()->getFlashdata('error')) ?>", 'error');
-        <?php endif; ?>
-        <?php if (session()->getFlashdata('success')): ?>
-            showToast("<?= esc(session()->getFlashdata('success')) ?>", 'success');
-        <?php endif; ?>
-        <?php if (session()->getFlashdata('msg')): ?>
-            showToast("<?= esc(session()->getFlashdata('msg')) ?>", 'info');
-        <?php endif; ?>
+        // Global Confirmation Function
+        function confirmDeletion(url, title = "Confirm Deletion", text = "Are you sure you want to proceed? This action cannot be reversed.") {
+            const modal = document.getElementById('globalDeleteModal');
+            document.getElementById('globalDeleteTitle').innerText = title;
+            document.getElementById('globalDeleteText').innerText = text;
+            document.getElementById('globalDeleteConfirmBtn').href = url;
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeGlobalDeleteModal() {
+            const modal = document.getElementById('globalDeleteModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
 
         // Initialize DataTables
         $(document).ready(function () {
