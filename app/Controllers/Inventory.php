@@ -32,15 +32,19 @@ class Inventory extends BaseController
 
     public function index()
     {
-        $items = $this->assetModel->select('assets.*, departments.department_name, user_details.full_name as assigned_to')
-            ->join('departments', 'departments.id = assets.department_id', 'left')
-            ->join('user_details', 'user_details.user_id = assets.assigned_user_id', 'left')
-            ->findAll();
-
+        // Stats for Dashboard
         $data = [
-            'items' => $items
+            'total_assets' => $this->assetModel->countAllResults(),
+            'by_status' => $this->assetModel->select('status, COUNT(*) as count')->groupBy('status')->findAll(),
+            'by_type' => $this->assetModel->select('type, COUNT(*) as count')->groupBy('type')->findAll(),
+            'by_dept' => $this->assetModel->select('IFNULL(departments.department_name, "Unassigned") as department, COUNT(*) as count')
+                ->join('departments', 'departments.id = assets.department_id', 'left')
+                ->groupBy('assets.department_id')
+                ->findAll(),
+            'page_title' => 'Inventory Overview'
         ];
-        return view('inventory/items', $data);
+
+        return view('inventory/dashboard', $data);
     }
 
     public function scan()
@@ -53,7 +57,16 @@ class Inventory extends BaseController
 
     public function items()
     {
-        return $this->index();
+        $items = $this->assetModel->select('assets.*, departments.department_name, user_details.full_name as assigned_to')
+            ->join('departments', 'departments.id = assets.department_id', 'left')
+            ->join('user_details', 'user_details.user_id = assets.assigned_user_id', 'left')
+            ->findAll();
+
+        $data = [
+            'items' => $items,
+            'page_title' => 'Asset Repository'
+        ];
+        return view('inventory/items', $data);
     }
 
     public function view($id)
