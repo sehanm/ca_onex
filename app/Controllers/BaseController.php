@@ -48,4 +48,31 @@ abstract class BaseController extends Controller
         $auditModel = new \App\Models\AuditLogModel();
         $auditModel->log($action, $details);
     }
+
+    protected function sendUserCreationEmail($emailAddress, $fullName, $username, $password)
+    {
+        $email = \Config\Services::email();
+        $email->setTo($emailAddress);
+        $email->setSubject('Account Created - CA ONEX');
+
+        $message = "
+            <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 10px;'>
+                <h2 style='color: #800000;'>Welcome to CA ONEX, $fullName!</h2>
+                <p>An account has been created for you in the CA ONEX system.</p>
+                <div style='background-color: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;'>
+                    <p style='margin: 0;'><strong>Username:</strong> $username</p>
+                    <p style='margin: 10px 0 0 0;'><strong>Password:</strong> $password</p>
+                    <p style='margin: 15px 0 0 0; font-size: 0.9rem; color: #6b7280;'><em>Please change your password after logging in for security.</em></p>
+                </div>
+                <p>Please log in to your dashboard to get started.</p>
+                <a href='" . base_url() . "' style='display: inline-block; background-color: #800000; color: #ffffff; padding: 12px 25px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 10px;'>Go to Dashboard</a>
+                <hr style='border: 0; border-top: 1px solid #e5e7eb; margin: 30px 0;'>
+                <p style='color: #6b7280; font-size: 0.85rem;'>This is an automated message, please do not reply.</p>
+                <p style='color: #6b7280; font-size: 0.85rem;'>2026&copy;CA OnEx System. All Rights Reserved!<br>Designed and Developed by ICT Division CA Sri Lanka</p>
+            </div>
+        ";
+
+        $email->setMessage($message);
+        return $email->send();
+    }
 }

@@ -50,8 +50,8 @@
                 <div class="form-group">
                     <label>System Role</label>
                     <select name="system_role" class="form-control" required>
-                        <?php foreach($roles as $role): ?>
-                        <option value="<?= $role['id'] ?>"><?= $role['role_name'] ?></option>
+                        <?php foreach ($roles as $role): ?>
+                            <option value="<?= $role['id'] ?>"><?= $role['role_name'] ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -60,8 +60,8 @@
                 <div class="form-group">
                     <label>Divisional Role</label>
                     <select name="divisional_role" class="form-control">
-                        <?php foreach($div_roles as $role): ?>
-                        <option value="<?= $role['id'] ?>"><?= $role['role_name'] ?></option>
+                        <?php foreach ($div_roles as $role): ?>
+                            <option value="<?= $role['id'] ?>"><?= $role['role_name'] ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -72,13 +72,41 @@
             <label>Department</label>
             <select name="department" class="form-control">
                 <option value="">Select Department</option>
-                <?php foreach($departments as $dept): ?>
-                <option value="<?= $dept['id'] ?>"><?= $dept['department_name'] ?></option>
+                <?php foreach ($departments as $dept): ?>
+                    <option value="<?= $dept['id'] ?>"><?= $dept['department_name'] ?></option>
                 <?php endforeach; ?>
             </select>
+        </div>
+
+        <div class="form-group" style="margin-top: 25px; margin-bottom: 25px;">
+            <div class="switch-group">
+                <label class="switch">
+                    <input type="checkbox" name="send_email" id="sendEmailToggle" value="1" checked>
+                    <span class="slider"></span>
+                </label>
+                <div class="switch-label">
+                    <span class="switch-title">Send Confirmation Email</span>
+                    <span class="switch-desc">Informing the user about their account creation via <strong
+                            id="displayEmail">the email above</strong>.</span>
+                </div>
+            </div>
         </div>
 
         <button type="submit" class="btn-primary">Create User</button>
     </form>
 </div>
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script>
+    $(document).ready(function() {
+        const emailInput = $('input[name="email"]');
+        const displayEmail = $('#displayEmail');
+        
+        emailInput.on('input', function() {
+            const val = $(this).val().trim();
+            displayEmail.text(val ? val : 'the email above');
+        });
+    });
+</script>
 <?= $this->endSection() ?>

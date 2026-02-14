@@ -91,7 +91,18 @@ class Admin extends BaseController
 
         $this->logAction('User Created', "Created user $username");
 
-        return redirect()->to('admin/users')->with('success', 'User created successfully');
+        // Send email if toggled
+        $emailSent = false;
+        if ($this->request->getPost('send_email') == '1') {
+            $emailSent = $this->sendUserCreationEmail($userDetails['email'], $userDetails['full_name'], $username, $password);
+        }
+
+        $msg = 'User created successfully';
+        if ($this->request->getPost('send_email') == '1') {
+            $msg .= $emailSent ? ' and confirmation email sent.' : ' but failed to send confirmation email.';
+        }
+
+        return redirect()->to('admin/users')->with('success', $msg);
     }
 
     public function edit($id)
