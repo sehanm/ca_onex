@@ -121,7 +121,8 @@ class Onboarding extends BaseController
                 if ($initiatorEmail && $initiatorEmail !== $hodEmail && !in_array($initiatorEmail, $ccs))
                     $ccs[] = $initiatorEmail;
 
-                if ($hodEmail) {
+                // Only send if toggle is ON
+                if ($hodEmail && $this->request->getPost('send_email') == '1') {
                     $this->sendOnboardingInitiateEmail($hodEmail, $ccs, $candidateData, $initiatorName);
                 }
             } catch (\Exception $e) {
