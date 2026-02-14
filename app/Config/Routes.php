@@ -48,3 +48,13 @@ $routes->group('inventory', ['filter' => 'auth'], function ($routes) {
     $routes->get('get-asset-by-code', 'Inventory::getAssetByCode');
     $routes->post('assign-user', 'Inventory::assignUser');
 });
+
+$routes->group('accessories', ['filter' => 'auth'], function ($routes) {
+    $routes->get('/', 'Accessories::index');
+    $routes->get('items', 'Accessories::items');
+    $routes->post('store', 'Accessories::store');
+    $routes->post('assign', 'Accessories::assign');
+    $routes->post('return', 'Accessories::returnToStock');
+    $routes->post('update-status', 'Accessories::updateStatus');
+    $routes->get('delete/(:num)', 'Accessories::delete/$1');
+});

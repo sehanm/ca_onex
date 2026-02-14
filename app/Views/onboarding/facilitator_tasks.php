@@ -3,8 +3,11 @@
 <?= $this->section('title') ?>Facilitator Dashboard<?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
-<div class="page-header">
-    <h2>Facilitator Task Queue</h2>
+<div class="page-header-premium">
+    <div class="header-main">
+        <h2 class="title-gradient">Facilitator Task Queue</h2>
+        <p class="subtitle">Real-time management of onboarding facilities and assets.</p>
+    </div>
 </div>
 
 <div class="card facilitator-card">

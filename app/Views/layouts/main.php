@@ -12,8 +12,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="<?= base_url('assets/css/style.css') ?>">
-    <link rel="stylesheet" href="<?= base_url('assets/css/dashboard.css') ?>">
+    <link rel="stylesheet" href="<?= base_url('assets/css/style.css') ?>?v=<?= time() ?>">
+    <link rel="stylesheet" href="<?= base_url('assets/css/dashboard.css') ?>?v=<?= time() ?>">
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
@@ -158,6 +158,31 @@
                                     <a href="<?= base_url('inventory/scan') ?>">
                                         <i class="fa-solid fa-qrcode"></i>
                                         <span>Scan Assets</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <?php $isAccOpen = (strpos(uri_string(), 'accessories') !== false); ?>
+                        <li class="has-submenu <?= $isAccOpen ? 'open' : '' ?>">
+                            <a href="javascript:void(0)" class="submenu-toggle">
+                                <span class="menu-label">
+                                    <i class="fa-solid fa-keyboard"></i>
+                                    <span>Accessories</span>
+                                </span>
+                                <i class="fa-solid fa-chevron-down arrow"></i>
+                            </a>
+                            <ul class="submenu">
+                                <li class="<?= uri_string() == 'accessories' ? 'active' : '' ?>">
+                                    <a href="<?= base_url('accessories') ?>">
+                                        <i class="fa-solid fa-chart-line"></i>
+                                        <span>Overview</span>
+                                    </a>
+                                </li>
+                                <li class="<?= uri_string() == 'accessories/items' ? 'active' : '' ?>">
+                                    <a href="<?= base_url('accessories/items') ?>">
+                                        <i class="fa-solid fa-layer-group"></i>
+                                        <span>Stock Management</span>
                                     </a>
                                 </li>
                             </ul>
