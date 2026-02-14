@@ -85,7 +85,50 @@ class Onboarding extends BaseController
 
         if ($this->onboardingModel->insert($data)) {
             $this->logAction('Onboarding Initiated', "Initiated onboarding for {$data['candidate_name']}");
-            // Ideally send email to HOD here
+
+            // Send Email Notifications
+            try {
+                // 1. Get HOD Details
+                $hod = $this->userModel->getUserByIdWithDetails($data['hod_user_id']);
+                $hodEmail = $hod['email'] ?? null;
+
+                // 2. Get Initiator (HR Admin) Details
+                $initiator = $this->userModel->getUserByIdWithDetails(session()->get('id'));
+                $initiatorEmail = $initiator['email'] ?? null;
+                $initiatorName = session()->get('full_name');
+
+                // 3. Get HR HOD Email (Manager of HR department)
+                $hrDept = $this->departmentModel->where('department_name', 'HR')->first();
+                $hrHodEmail = null;
+                if ($hrDept && !empty($hrDept['manager_id'])) {
+                    $hrHod = $this->userModel->getUserByIdWithDetails($hrDept['manager_id']);
+                    $hrHodEmail = $hrHod['email'] ?? null;
+                }
+
+                // Prepare Content Data
+                $dept = $this->departmentModel->find($data['department_id']);
+                $candidateData = [
+                    'candidate_name' => $data['candidate_name'],
+                    'designation' => $data['designation'],
+                    'joining_date' => $data['joining_date'],
+                    'department_name' => $dept['department_name'] ?? 'Unknown'
+                ];
+
+                // CC List: HR HOD + Initiator
+                $ccs = [];
+                if ($hrHodEmail && $hrHodEmail !== $hodEmail)
+                    $ccs[] = $hrHodEmail;
+                if ($initiatorEmail && $initiatorEmail !== $hodEmail && !in_array($initiatorEmail, $ccs))
+                    $ccs[] = $initiatorEmail;
+
+                if ($hodEmail) {
+                    $this->sendOnboardingInitiateEmail($hodEmail, $ccs, $candidateData, $initiatorName);
+                }
+            } catch (\Exception $e) {
+                // Log and continue
+                log_message('error', 'Onboarding Email Error: ' . $e->getMessage());
+            }
+
             return redirect()->to('dashboard')->with('success', 'Onboarding request initiated successfully. Sent to HOD for approval.');
         } else {
             return redirect()->back()->withInput()->with('error', 'Failed to create request.');
