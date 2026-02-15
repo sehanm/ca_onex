@@ -57,4 +57,5 @@ $routes->group('accessories', ['filter' => 'auth'], function ($routes) {
     $routes->post('return', 'Accessories::returnToStock');
     $routes->post('update-status', 'Accessories::updateStatus');
     $routes->get('delete/(:num)', 'Accessories::delete/$1');
+    $routes->get('generate-qr/(:num)', 'Accessories::generateQR/$1');
 });

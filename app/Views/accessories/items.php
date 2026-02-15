@@ -102,6 +102,14 @@
                         </td>
                         <td class="text-end">
                             <div class="action-flex">
+                                <a href="<?= base_url('accessories/generate-qr/' . $item['id']) ?>" target="_blank"
+                                    class="btn-action-qr" title="View QR Label">
+                                    <i class="fa-solid fa-qrcode"></i>
+                                </a>
+                                <a href="<?= base_url('accessories/generate-qr/' . $item['id']) ?>?download=1"
+                                    class="btn-action-download" title="Download QR Label">
+                                    <i class="fa-solid fa-download"></i>
+                                </a>
                                 <button class="btn-action-view" onclick='openStatusModal(<?= json_encode($item) ?>)'
                                     title="Status History/Update">
                                     <i class="fa-solid fa-rotate-right"></i>
@@ -215,7 +223,8 @@
             <input type="hidden" name="id" id="status_id">
             <div class="form-group-premium">
                 <label>Update Status</label>
-                <select name="status" id="status_select" class="form-control" onchange="toggleStatusUser(this.value)" required>
+                <select name="status" id="status_select" class="form-control" onchange="toggleStatusUser(this.value)"
+                    required>
                     <option value="Stock">ICT Stock</option>
                     <option value="Assigned">Assigned</option>
                     <option value="Damaged">Damaged</option>
@@ -280,6 +289,46 @@
         background: #e2e8f0;
         color: #1e293b;
         transform: translateY(-1px);
+    }
+
+    .btn-action-qr {
+        width: 38px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        color: #6366f1;
+        background: #eef2ff;
+        border: 1px solid #e0e7ff;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+
+    .btn-action-qr:hover {
+        background: #6366f1;
+        color: white;
+        transform: scale(1.05);
+    }
+
+    .btn-action-download {
+        width: 38px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        color: #10b981;
+        background: #ecfdf5;
+        border: 1px solid #d1fae5;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+
+    .btn-action-download:hover {
+        background: #10b981;
+        color: white;
+        transform: scale(1.05);
     }
 
     .form-grid {

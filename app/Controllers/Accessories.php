@@ -6,6 +6,11 @@ use App\Controllers\BaseController;
 use App\Models\AccessoryModel;
 use App\Models\UserDetailModel;
 use App\Models\DepartmentModel;
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\ErrorCorrectionLevel;
+use Endroid\QrCode\RoundBlockSizeMode;
+use Endroid\QrCode\Writer\PngWriter;
 
 class Accessories extends BaseController
 {
@@ -139,5 +144,111 @@ class Accessories extends BaseController
             return redirect()->to('accessories/items')->with('success', 'Accessory removed from directory');
         }
         return redirect()->to('accessories/items')->with('error', 'Failed to remove accessory');
+    }
+
+    public function generateQR($id)
+    {
+        $item = $this->accessoryModel->find($id);
+        if (!$item) {
+            return $this->response->setStatusCode(404)->setBody("Accessory not found");
+        }
+
+        // Use asset_code for QR data, fallback to id
+        $qrData = $item['asset_code'] ?? $id;
+
+        $isRaw = $this->request->getGet('raw') === '1';
+
+        try {
+            // 1. Generate the Base QR Code
+            $writer = new PngWriter();
+            $qrObj = new QrCode(
+                data: $qrData,
+                encoding: new Encoding('UTF-8'),
+                errorCorrectionLevel: ErrorCorrectionLevel::Low,
+                size: 250,
+                margin: 0,
+                roundBlockSizeMode: RoundBlockSizeMode::Margin
+            );
+            $qrResult = $writer->write($qrObj);
+            if ($isRaw) {
+                // Return just the raw QR code for on-screen display
+                return $this->response
+                    ->setHeader('Content-Type', $qrResult->getMimeType())
+                    ->setBody($qrResult->getString());
+            }
+
+            // 2. Setup Canvas (400x520 for a professional label look)
+            $qrImage = imagecreatefromstring($qrResult->getString());
+            $width = 400;
+            $height = 520;
+            $canvas = imagecreatetruecolor($width, $height);
+
+            // Colors
+            $white = imagecolorallocate($canvas, 255, 255, 255);
+            $black = imagecolorallocate($canvas, 0, 0, 0);
+            $gray = imagecolorallocate($canvas, 80, 80, 80);
+            $blue = imagecolorallocate($canvas, 30, 58, 138); // Corporate Blue
+
+            imagefill($canvas, 0, 0, $white);
+
+            // Font Path
+            $fontBold = ROOTPATH . 'vendor/endroid/qr-code/assets/open_sans.ttf';
+
+            // 3. Draw Header (Centered)
+            $headerText = "CA OnEx System";
+            $headerBox = imagettfbbox(22, 0, $fontBold, $headerText);
+            $headerX = ($width - ($headerBox[2] - $headerBox[0])) / 2;
+            imagettftext($canvas, 22, 0, $headerX, 60, $blue, $fontBold, $headerText);
+
+            // 4. Draw QR Code (Centered)
+            imagecopy($canvas, $qrImage, 75, 90, 0, 0, 250, 250);
+
+            // 5. Draw Asset Code / Model (Centered)
+            $modelText = $item['brand'] . " " . $item['model'];
+            $modelBox = imagettfbbox(12, 0, $fontBold, $modelText);
+            $modelX = ($width - ($modelBox[2] - $modelBox[0])) / 2;
+            imagettftext($canvas, 12, 0, $modelX, 390, $black, $fontBold, $modelText);
+
+            $assetText = "Code: " . ($item['asset_code'] ?? 'N/A');
+            $assetBox = imagettfbbox(14, 0, $fontBold, $assetText);
+            $assetX = ($width - ($assetBox[2] - $assetBox[0])) / 2;
+            imagettftext($canvas, 14, 0, $assetX, 420, $blue, $fontBold, $assetText);
+
+            // 6. Draw Credits (Footer - Centered)
+            $footerLine1 = "Designed and Developed by";
+            $footerBox1 = imagettfbbox(10, 0, $fontBold, $footerLine1);
+            $footerX1 = ($width - ($footerBox1[2] - $footerBox1[0])) / 2;
+
+            $footerLine2 = "CA Sri Lanka ICT Division";
+            $footerBox2 = imagettfbbox(11, 0, $fontBold, $footerLine2);
+            $footerX2 = ($width - ($footerBox2[2] - $footerBox2[0])) / 2;
+
+            imagettftext($canvas, 10, 0, $footerX1, 470, $gray, $fontBold, $footerLine1);
+            imagettftext($canvas, 11, 0, $footerX2, 495, $black, $fontBold, $footerLine2);
+
+            // 7. Add Border
+            imagesetthickness($canvas, 2);
+            imagerectangle($canvas, 5, 5, $width - 5, $height - 5, $black);
+
+            // 8. Output the final image
+            ob_start();
+            imagepng($canvas);
+            $finalImage = ob_get_clean();
+
+            // Cleanup
+            imagedestroy($canvas);
+            imagedestroy($qrImage);
+
+            $response = $this->response->setHeader('Content-Type', 'image/png');
+
+            if ($this->request->getGet('download') === '1') {
+                $filename = "QR_ACC_" . str_replace(['/', '\\', ' '], '_', $item['asset_code'] ?? $id) . ".png";
+                $response->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '"');
+            }
+
+            return $response->setBody($finalImage);
+        } catch (\Exception $e) {
+            return $this->response->setStatusCode(500)->setBody("QR Generation Error: " . $e->getMessage());
+        }
     }
 }
