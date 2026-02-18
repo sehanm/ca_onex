@@ -74,6 +74,7 @@ class Admin extends BaseController
             'password' => password_hash($password, PASSWORD_DEFAULT),
             'system_role_id' => $this->request->getPost('system_role'),
             'divisional_role_id' => $this->request->getPost('divisional_role'),
+            'force_password_change' => 1,
             'created_at' => date('Y-m-d H:i:s'),
         ];
 
@@ -149,6 +150,7 @@ class Admin extends BaseController
         $newPass = $this->request->getPost('password');
         if (!empty($newPass)) {
             $userData['password'] = password_hash($newPass, PASSWORD_DEFAULT);
+            $userData['force_password_change'] = 1;
             $changes[] = "Password changed";
         }
 
