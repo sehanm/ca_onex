@@ -6,6 +6,7 @@ use App\Controllers\BaseController;
 use App\Models\AccessoryModel;
 use App\Models\UserDetailModel;
 use App\Models\DepartmentModel;
+use App\Models\HardwareRequestModel;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Encoding\Encoding;
 use Endroid\QrCode\ErrorCorrectionLevel;
@@ -17,12 +18,16 @@ class Accessories extends BaseController
     protected $accessoryModel;
     protected $userDetailModel;
     protected $departmentModel;
+    protected $hardwareRequestModel;
+    protected $db;
 
     public function __construct()
     {
         $this->accessoryModel = new AccessoryModel();
         $this->userDetailModel = new UserDetailModel();
         $this->departmentModel = new DepartmentModel();
+        $this->hardwareRequestModel = new HardwareRequestModel();
+        $this->db = \Config\Database::connect();
     }
 
     public function index()
@@ -82,34 +87,96 @@ class Accessories extends BaseController
         $id = $this->request->getPost('accessory_id');
         $userId = $this->request->getPost('user_id');
 
-        if (
-            $this->accessoryModel->update($id, [
-                'assigned_user_id' => $userId,
-                'status' => 'Assigned',
-                'updated_at' => date('Y-m-d H:i:s')
-            ])
-        ) {
-            return redirect()->back()->with('success', 'Accessory assigned successfully');
+        $item = $this->accessoryModel->find($id);
+        if (!$item) {
+            return redirect()->back()->with('error', 'Accessory not found');
         }
 
-        return redirect()->back()->with('error', 'Failed to assign accessory');
+        // Update Accessory Status
+        $this->db->transStart();
+
+        $this->accessoryModel->update($id, [
+            'assigned_user_id' => $userId,
+            'status' => 'Assigned',
+            'updated_at' => date('Y-m-d H:i:s')
+        ]);
+
+        // Check for a pending hardware request for this user and category
+        $pendingRequest = $this->hardwareRequestModel
+            ->where('user_id', $userId)
+            ->where('item_type', 'accessory')
+            ->where('category', $item['category'])
+            ->where('status', 'pending')
+            ->orderBy('created_at', 'ASC')
+            ->first();
+
+        if ($pendingRequest) {
+            $this->hardwareRequestModel->update($pendingRequest['id'], [
+                'status' => 'assigned',
+                'assigned_item_id' => $id,
+                'admin_id' => session()->get('id'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
+        } else {
+            // Optional: Create a "system-generated" request for tracking if none exists
+            $this->hardwareRequestModel->save([
+                'user_id' => $userId,
+                'item_type' => 'accessory',
+                'category' => $item['category'],
+                'requirement_type' => 'fixed',
+                'reason' => 'Direct assignment from Accessories module',
+                'status' => 'assigned',
+                'assigned_item_id' => $id,
+                'admin_id' => session()->get('id'),
+                'request_date' => date('Y-m-d H:i:s')
+            ]);
+        }
+
+        $this->db->transComplete();
+
+        if ($this->db->transStatus() === false) {
+            return redirect()->back()->with('error', 'Failed to assign accessory');
+        }
+
+        return redirect()->back()->with('success', 'Accessory assigned and stock updated');
     }
 
     public function returnToStock()
     {
         $id = $this->request->getPost('id');
 
-        if (
-            $this->accessoryModel->update($id, [
-                'assigned_user_id' => null,
-                'status' => 'Stock',
+        $this->db->transStart();
+
+        // 1. Update Accessory Status
+        $this->accessoryModel->update($id, [
+            'assigned_user_id' => null,
+            'status' => 'Stock',
+            'updated_at' => date('Y-m-d H:i:s')
+        ]);
+
+        // 2. Find and update the active hardware request
+        $activeRequest = $this->hardwareRequestModel
+            ->where('assigned_item_id', $id)
+            ->where('item_type', 'accessory')
+            ->where('status', 'assigned')
+            ->orderBy('updated_at', 'DESC')
+            ->first();
+
+        if ($activeRequest) {
+            $this->hardwareRequestModel->update($activeRequest['id'], [
+                'status' => 'returned',
+                'return_date' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s')
-            ])
-        ) {
-            return redirect()->back()->with('success', 'Accessory returned to stock');
+            ]);
         }
 
-        return redirect()->back()->with('error', 'Failed to return accessory');
+        $this->db->transComplete();
+
+        if ($this->db->transStatus() === false) {
+            return redirect()->back()->with('error', 'Failed to return accessory');
+        }
+
+        return redirect()->back()->with('success', 'Accessory returned to stock and request closed');
     }
 
     public function updateStatus()
@@ -117,6 +184,13 @@ class Accessories extends BaseController
         $id = $this->request->getPost('id');
         $status = $this->request->getPost('status');
         $userId = $this->request->getPost('user_id');
+
+        $item = $this->accessoryModel->find($id);
+        if (!$item) {
+            return redirect()->back()->with('error', 'Accessory not found.');
+        }
+
+        $this->db->transStart();
 
         $data = [
             'status' => $status,
@@ -126,16 +200,68 @@ class Accessories extends BaseController
         // Sync assignment with status
         if ($status !== 'Assigned') {
             $data['assigned_user_id'] = null;
+
+            // If it was assigned before and now it's not, mark request as returned if it's back to stock
+            if ($item['status'] === 'Assigned' && ($status === 'Stock' || $status === 'Damaged')) {
+                $activeRequest = $this->hardwareRequestModel
+                    ->where('assigned_item_id', $id)
+                    ->where('item_type', 'accessory')
+                    ->where('status', 'assigned')
+                    ->first();
+
+                if ($activeRequest) {
+                    $this->hardwareRequestModel->update($activeRequest['id'], [
+                        'status' => ($status === 'Stock' ? 'returned' : 'rejected'),
+                        'return_date' => date('Y-m-d H:i:s'),
+                        'updated_at' => date('Y-m-d H:i:s')
+                    ]);
+                }
+            }
         } elseif (!empty($userId)) {
             $data['assigned_user_id'] = $userId;
+
+            // If newly assigned via status update
+            if ($item['status'] !== 'Assigned') {
+                $pendingRequest = $this->hardwareRequestModel
+                    ->where('user_id', $userId)
+                    ->where('item_type', 'accessory')
+                    ->where('category', $item['category'])
+                    ->where('status', 'pending')
+                    ->first();
+
+                if ($pendingRequest) {
+                    $this->hardwareRequestModel->update($pendingRequest['id'], [
+                        'status' => 'assigned',
+                        'assigned_item_id' => $id,
+                        'admin_id' => session()->get('id'),
+                        'updated_at' => date('Y-m-d H:i:s')
+                    ]);
+                } else {
+                    $this->hardwareRequestModel->save([
+                        'user_id' => $userId,
+                        'item_type' => 'accessory',
+                        'category' => $item['category'],
+                        'requirement_type' => 'fixed',
+                        'reason' => 'Status update to Assigned',
+                        'status' => 'assigned',
+                        'assigned_item_id' => $id,
+                        'admin_id' => session()->get('id'),
+                        'request_date' => date('Y-m-d H:i:s')
+                    ]);
+                }
+            }
         }
 
-        if ($this->accessoryModel->update($id, $data)) {
-            $msg = ($status === 'Stock') ? 'Accessory returned to stock.' : 'Operational status synchronized successfully.';
-            return redirect()->back()->with('success', $msg);
+        $this->accessoryModel->update($id, $data);
+
+        $this->db->transComplete();
+
+        if ($this->db->transStatus() === false) {
+            return redirect()->back()->with('error', 'Failed to synchronize hardware status.');
         }
 
-        return redirect()->back()->with('error', 'Failed to synchronize hardware status.');
+        $msg = ($status === 'Stock') ? 'Accessory returned to stock.' : 'Operational status synchronized successfully.';
+        return redirect()->back()->with('success', $msg);
     }
 
     public function delete($id)

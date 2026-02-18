@@ -59,3 +59,17 @@ $routes->group('accessories', ['filter' => 'auth'], function ($routes) {
     $routes->get('delete/(:num)', 'Accessories::delete/$1');
     $routes->get('generate-qr/(:num)', 'Accessories::generateQR/$1');
 });
+
+$routes->group('hardware-requests', ['filter' => 'auth'], function ($routes) {
+    $routes->get('/', 'HardwareRequests::index');
+    $routes->get('create', 'HardwareRequests::create');
+    $routes->post('store', 'HardwareRequests::store');
+    $routes->get('overview', 'HardwareRequests::overview');
+    $routes->get('manage', 'HardwareRequests::admin_index');
+    $routes->get('scanner', 'HardwareRequests::scanner');
+    $routes->post('process-scan', 'HardwareRequests::process_scan');
+    $routes->get('item-details', 'HardwareRequests::item_details');
+    $routes->post('reject', 'HardwareRequests::reject');
+    $routes->get('pending-json', 'HardwareRequests::pending_json');
+    $routes->get('scanner-data', 'HardwareRequests::scanner_data');
+});

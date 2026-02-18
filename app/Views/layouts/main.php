@@ -39,6 +39,13 @@
                             <span>Dashboard</span>
                         </a>
                     </li>
+                    <li
+                        class="<?= uri_string() == 'hardware-requests' || uri_string() == 'hardware-requests/create' ? 'active' : '' ?>">
+                        <a href="<?= base_url('hardware-requests') ?>">
+                            <i class="fa-solid fa-laptop-medical"></i>
+                            <span>My Requests</span>
+                        </a>
+                    </li>
 
                     <?php
                     $isAdminOpen = (uri_string() == 'admin/users' || uri_string() == 'admin/audit-logs' || uri_string() == 'admin/departments');
@@ -183,6 +190,37 @@
                                     <a href="<?= base_url('accessories/items') ?>">
                                         <i class="fa-solid fa-layer-group"></i>
                                         <span>Stock Management</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <?php $isReqOpen = (strpos(uri_string(), 'hardware-requests/manage') !== false || strpos(uri_string(), 'hardware-requests/scanner') !== false); ?>
+                        <li class="has-submenu <?= $isReqOpen ? 'open' : '' ?>">
+                            <a href="javascript:void(0)" class="submenu-toggle">
+                                <span class="menu-label">
+                                    <i class="fa-solid fa-file-signature"></i>
+                                    <span>Request Fulfillment</span>
+                                </span>
+                                <i class="fa-solid fa-chevron-down arrow"></i>
+                            </a>
+                            <ul class="submenu">
+                                <li class="<?= uri_string() == 'hardware-requests/overview' ? 'active' : '' ?>">
+                                    <a href="<?= base_url('hardware-requests/overview') ?>">
+                                        <i class="fa-solid fa-chart-pie"></i>
+                                        <span>Overview</span>
+                                    </a>
+                                </li>
+                                <li class="<?= uri_string() == 'hardware-requests/manage' ? 'active' : '' ?>">
+                                    <a href="<?= base_url('hardware-requests/manage') ?>">
+                                        <i class="fa-solid fa-list-check"></i>
+                                        <span>Manage Tasks</span>
+                                    </a>
+                                </li>
+                                <li class="<?= uri_string() == 'hardware-requests/scanner' ? 'active' : '' ?>">
+                                    <a href="<?= base_url('hardware-requests/scanner') ?>">
+                                        <i class="fa-solid fa-qrcode"></i>
+                                        <span>Scanner (Assign/Return)</span>
                                     </a>
                                 </li>
                             </ul>
@@ -411,6 +449,17 @@
                     "search": "Filter records:"
                 }
             });
+
+            // Handle Flash Messages with Toasts
+            <?php if (session()->getFlashdata('success')): ?>
+                showToast("<?= esc(session()->getFlashdata('success')) ?>", 'success');
+            <?php endif; ?>
+            <?php if (session()->getFlashdata('error')): ?>
+                showToast("<?= esc(session()->getFlashdata('error')) ?>", 'error');
+            <?php endif; ?>
+            <?php if (session()->getFlashdata('msg')): ?>
+                showToast("<?= esc(session()->getFlashdata('msg')) ?>", 'info');
+            <?php endif; ?>
         });
     </script>
     <?= $this->renderSection('scripts') ?>
