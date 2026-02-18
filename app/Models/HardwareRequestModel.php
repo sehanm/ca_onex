@@ -15,6 +15,7 @@ class HardwareRequestModel extends Model
         'item_type',
         'category',
         'requirement_type',
+        'due_date',
         'reason',
         'status',
         'assigned_item_id',

@@ -48,8 +48,13 @@ class HardwareRequests extends BaseController
             'item_type' => 'required',
             'category' => 'required',
             'requirement_type' => 'required',
+            'due_date' => 'permit_empty',
             'reason' => 'required'
         ];
+
+        if ($this->request->getPost('requirement_type') === 'temporary') {
+            $rules['due_date'] = 'required|valid_date';
+        }
 
         if (!$this->validate($rules)) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
@@ -60,6 +65,7 @@ class HardwareRequests extends BaseController
             'item_type' => $this->request->getPost('item_type'),
             'category' => $this->request->getPost('category'),
             'requirement_type' => $this->request->getPost('requirement_type'),
+            'due_date' => $this->request->getPost('due_date') ?: null,
             'reason' => $this->request->getPost('reason'),
             'status' => 'pending',
             'request_date' => date('Y-m-d H:i:s')

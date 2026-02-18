@@ -3,86 +3,146 @@
 
 <?= $this->section('content') ?>
 <div class="page-header-premium mb-4">
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <h2 class="fw-bold text-dark mb-1">My Requests</h2>
-            <p class="text-muted small mb-0">Track your hardware assignment status.</p>
-        </div>
-        <a href="<?= base_url('hardware-requests/create') ?>" class="btn btn-dark d-flex align-items-center gap-2">
-            <i class="fa-solid fa-plus"></i> New Request
+    <div class="header-main">
+        <h2 class="title-gradient">My Itemes Requests</h2>
+        <p class="subtitle">Track your assigned assets and pending requests.</p>
+    </div>
+    <div class="header-actions">
+        <a href="<?= base_url('hardware-requests/create') ?>" class="btn-premium">
+            <i class="fa-solid fa-plus me-2"></i> New Request
         </a>
     </div>
 </div>
 
-<div class="card border-0 shadow-sm" style="border-radius: 12px;">
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table align-middle mb-0">
-                <thead class="bg-light text-muted small text-uppercase">
-                    <tr>
-                        <th class="ps-4 py-3 border-0">Item Details</th>
-                        <th class="py-3 border-0">Type</th>
-                        <th class="py-3 border-0">Reason</th>
-                        <th class="py-3 border-0">Status</th>
-                        <th class="pe-4 text-end py-3 border-0">Date</th>
+<div class="card shadow-premium border-0"
+    style="border-radius: 20px; overflow: hidden; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px);">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0 datatable datatable-premium">
+            <thead>
+                <tr>
+                    <th class="ps-4">Hardware Item</th>
+                    <th>Type</th>
+                    <th>Request Status</th>
+                    <th class="text-end pe-4">Submission Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($requests as $request): ?>
+                    <tr class="request-row-hover">
+                        <td class="ps-4">
+                            <div class="item-id-cell py-2">
+                                <div class="item-icon-box"
+                                    style="width: 45px; height: 45px; font-size: 1.1rem; background: #f8fafc; border: 1px solid #e2e8f0;">
+                                    <i class="fa-solid <?= $request['item_type'] == 'asset' ? 'fa-laptop-code' : 'fa-plug-circle-bolt' ?>"
+                                        style="color: <?= $request['item_type'] == 'asset' ? '#6366f1' : '#8b5cf6' ?>;"></i>
+                                </div>
+                                <div class="item-primary-info">
+                                    <span class="item-model"><?= esc($request['category']) ?></span>
+                                    <span class="item-code d-flex align-items-center gap-2">
+                                        <?= ucfirst($request['item_type']) ?>
+                                        <?php if ($request['requirement_type'] === 'temporary' && $request['due_date']): ?>
+                                            <span class="badge"
+                                                style="background: rgba(245, 158, 11, 0.1); color: #b45309; font-size: 0.65rem;">
+                                                <i class="fa-solid fa-hourglass-half me-1"></i>Due
+                                                <?= date('M d', strtotime($request['due_date'])) ?>
+                                            </span>
+                                        <?php endif; ?>
+                                    </span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="req-type-pill <?= $request['requirement_type'] ?>">
+                                <i
+                                    class="fa-solid <?= $request['requirement_type'] === 'permanent' ? 'fa-infinity' : 'fa-calendar-day' ?> small me-1"></i>
+                                <?= ucfirst($request['requirement_type'] ?: 'Standard') ?>
+                            </div>
+                        </td>
+                        <td>
+                            <?php
+                            $statusMap = match ($request['status']) {
+                                'assigned' => ['bg' => '#ecfdf5', 'text' => '#059669', 'label' => 'Active Item', 'icon' => 'fa-check-circle'],
+                                'pending' => ['bg' => '#fffbeb', 'text' => '#d97706', 'label' => 'Processing', 'icon' => 'fa-spinner fa-spin'],
+                                'rejected' => ['bg' => '#fef2f2', 'text' => '#dc2626', 'label' => 'Declined', 'icon' => 'fa-circle-xmark'],
+                                'returned' => ['bg' => '#f1f5f9', 'text' => '#475569', 'label' => 'Returned', 'icon' => 'fa-rotate-left'],
+                                default => ['bg' => '#f8fafc', 'text' => '#64748b', 'label' => 'Unknown', 'icon' => 'fa-circle-question']
+                            };
+                            ?>
+                            <span class="status-pill-premium"
+                                style="background: <?= $statusMap['bg'] ?>; color: <?= $statusMap['text'] ?>;">
+                                <i class="fa-solid <?= $statusMap['icon'] ?> me-1"></i>
+                                <?= $statusMap['label'] ?>
+                            </span>
+                        </td>
+                        <td class="text-end pe-4">
+                            <div class="d-flex flex-column align-items-end">
+                                <span class="fw-bold text-dark"
+                                    style="font-size: 0.85rem;"><?= date('M d, Y', strtotime($request['created_at'])) ?></span>
+                                <span class="text-muted small"
+                                    style="font-size: 0.7rem;"><?= date('H:i', strtotime($request['created_at'])) ?></span>
+                            </div>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($requests as $request): ?>
-                        <tr style="border-bottom: 1px solid #f3f4f6;">
-                            <td class="ps-4 py-3">
-                                <div class="d-flex align-items-center gap-3">
-                                    <div class="rounded-3 d-flex align-items-center justify-content-center bg-light text-secondary"
-                                        style="width: 40px; height: 40px;">
-                                        <i
-                                            class="fa-solid <?= $request['item_type'] == 'asset' ? 'fa-laptop' : 'fa-plug' ?>"></i>
-                                    </div>
-                                    <div>
-                                        <div class="fw-bold text-dark"><?= esc($request['category']) ?></div>
-                                        <div class="text-muted small"><?= ucfirst($request['item_type']) ?></div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <span class="badge bg-light text-dark border fw-normal">
-                                    <?= ucfirst($request['requirement_type']) ?>
-                                </span>
-                            </td>
-                            <td>
-                                <div class="text-muted small text-truncate" style="max-width: 250px;">
-                                    <?= esc($request['reason']) ?>
-                                </div>
-                            </td>
-                            <td>
-                                <?php
-                                $statusConfig = match ($request['status']) {
-                                    'assigned' => ['color' => '#10b981', 'label' => 'Active'],
-                                    'pending' => ['color' => '#f59e0b', 'label' => 'Pending'],
-                                    'rejected' => ['color' => '#ef4444', 'label' => 'Rejected'],
-                                    'returned' => ['color' => '#6b7280', 'label' => 'Returned'],
-                                    default => ['color' => '#9ca3af', 'label' => 'Unknown']
-                                };
-                                ?>
-                                <div class="d-flex align-items-center gap-2">
-                                    <div
-                                        style="width: 8px; height: 8px; border-radius: 50%; background-color: <?= $statusConfig['color'] ?>;">
-                                    </div>
-                                    <span class="text-dark small fw-bold"><?= $statusConfig['label'] ?></span>
-                                </div>
-                            </td>
-                            <td class="pe-4 text-end text-muted small">
-                                <?= date('M d, Y', strtotime($request['created_at'])) ?>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                    <?php if (empty($requests)): ?>
-                        <tr>
-                            <td colspan="5" class="text-center py-5 text-muted">No requests found.</td>
-                        </tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-        </div>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
     </div>
 </div>
+
+<style>
+    .request-row-hover {
+        transition: all 0.2s;
+    }
+
+    .request-row-hover:hover {
+        background: rgba(248, 250, 252, 0.8);
+    }
+
+    .status-pill-premium {
+        padding: 6px 14px;
+        border-radius: 100px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .req-type-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 10px;
+        background: #f1f5f9;
+        color: #475569;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        border: 1px solid #e2e8f0;
+    }
+
+    .req-type-pill.permanent {
+        color: var(--c-primary);
+        border-color: rgba(99, 102, 241, 0.2);
+        background: rgba(99, 102, 241, 0.05);
+    }
+
+    .req-type-pill.temporary {
+        color: #d97706;
+        border-color: rgba(245, 158, 11, 0.2);
+        background: rgba(245, 158, 11, 0.05);
+    }
+
+    .datatable-premium thead th {
+        background: #f8fafc;
+        border-bottom: 2px solid #e2e8f0;
+        color: #64748b;
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding-top: 15px;
+        padding-bottom: 15px;
+    }
+</style>
 <?= $this->endSection() ?>

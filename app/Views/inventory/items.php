@@ -12,8 +12,8 @@
         <a href="<?= base_url('inventory/scan') ?>" class="btn-premium-outline">
             <i class="fa-solid fa-qrcode"></i> Quick Scan
         </a>
-        <button class="btn-primary" onclick="openModal('createAssetModal')">
-            <i class="fa-solid fa-plus"></i> Register New Asset
+        <button class="btn-premium" onclick="openModal('createAssetModal')">
+            <i class="fa-solid fa-plus me-2"></i> Register New Asset
         </button>
     </div>
 </div>

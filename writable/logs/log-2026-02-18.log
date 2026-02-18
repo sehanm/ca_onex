@@ -1,0 +1,90 @@
+CRITICAL - 2026-02-18 22:41:32 --> CodeIgniter\Exceptions\RuntimeException: View themes, no current section.
+[Method: GET, Route: hardware-requests]
+in SYSTEMPATH\View\View.php on line 430.
+ 1 APPPATH\Views\hardware_requests\index.php(128): CodeIgniter\View\View->endSection()
+ 2 SYSTEMPATH\View\View.php(226): include('C:\\xampp-new\\htdocs\\ca_onex\\app\\Views\\hardware_requests\\index.php')
+ 3 SYSTEMPATH\View\View.php(229): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1199): CodeIgniter\View\View->render('hardware_requests/index', [], true)
+ 5 APPPATH\Controllers\HardwareRequests.php(34): view('hardware_requests/index', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(935): App\Controllers\HardwareRequests->index()
+ 7 SYSTEMPATH\CodeIgniter.php(509): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\HardwareRequests))
+ 8 SYSTEMPATH\CodeIgniter.php(356): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+12 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp-new\\htdocs\\ca_onex\\public\\index.php')
+CRITICAL - 2026-02-18 22:41:40 --> CodeIgniter\Exceptions\RuntimeException: View themes, no current section.
+[Method: GET, Route: hardware-requests]
+in SYSTEMPATH\View\View.php on line 430.
+ 1 APPPATH\Views\hardware_requests\index.php(128): CodeIgniter\View\View->endSection()
+ 2 SYSTEMPATH\View\View.php(226): include('C:\\xampp-new\\htdocs\\ca_onex\\app\\Views\\hardware_requests\\index.php')
+ 3 SYSTEMPATH\View\View.php(229): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1199): CodeIgniter\View\View->render('hardware_requests/index', [], true)
+ 5 APPPATH\Controllers\HardwareRequests.php(34): view('hardware_requests/index', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(935): App\Controllers\HardwareRequests->index()
+ 7 SYSTEMPATH\CodeIgniter.php(509): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\HardwareRequests))
+ 8 SYSTEMPATH\CodeIgniter.php(356): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+12 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp-new\\htdocs\\ca_onex\\public\\index.php')
+CRITICAL - 2026-02-18 22:42:27 --> CodeIgniter\Exceptions\RuntimeException: View themes, no current section.
+[Method: GET, Route: hardware-requests]
+in SYSTEMPATH\View\View.php on line 430.
+ 1 APPPATH\Views\hardware_requests\index.php(128): CodeIgniter\View\View->endSection()
+ 2 SYSTEMPATH\View\View.php(226): include('C:\\xampp-new\\htdocs\\ca_onex\\app\\Views\\hardware_requests\\index.php')
+ 3 SYSTEMPATH\View\View.php(229): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1199): CodeIgniter\View\View->render('hardware_requests/index', [], true)
+ 5 APPPATH\Controllers\HardwareRequests.php(34): view('hardware_requests/index', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(935): App\Controllers\HardwareRequests->index()
+ 7 SYSTEMPATH\CodeIgniter.php(509): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\HardwareRequests))
+ 8 SYSTEMPATH\CodeIgniter.php(356): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+12 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp-new\\htdocs\\ca_onex\\public\\index.php')
+CRITICAL - 2026-02-18 22:43:17 --> CodeIgniter\Exceptions\RuntimeException: View themes, no current section.
+[Method: GET, Route: hardware-requests]
+in SYSTEMPATH\View\View.php on line 430.
+ 1 APPPATH\Views\hardware_requests\index.php(128): CodeIgniter\View\View->endSection()
+ 2 SYSTEMPATH\View\View.php(226): include('C:\\xampp-new\\htdocs\\ca_onex\\app\\Views\\hardware_requests\\index.php')
+ 3 SYSTEMPATH\View\View.php(229): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1199): CodeIgniter\View\View->render('hardware_requests/index', [], true)
+ 5 APPPATH\Controllers\HardwareRequests.php(34): view('hardware_requests/index', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(935): App\Controllers\HardwareRequests->index()
+ 7 SYSTEMPATH\CodeIgniter.php(509): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\HardwareRequests))
+ 8 SYSTEMPATH\CodeIgniter.php(356): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+12 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp-new\\htdocs\\ca_onex\\public\\index.php')
+CRITICAL - 2026-02-18 22:44:38 --> CodeIgniter\Exceptions\RuntimeException: View themes, no current section.
+[Method: GET, Route: hardware-requests]
+in SYSTEMPATH\View\View.php on line 430.
+ 1 APPPATH\Views\hardware_requests\index.php(128): CodeIgniter\View\View->endSection()
+ 2 SYSTEMPATH\View\View.php(226): include('C:\\xampp-new\\htdocs\\ca_onex\\app\\Views\\hardware_requests\\index.php')
+ 3 SYSTEMPATH\View\View.php(229): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1199): CodeIgniter\View\View->render('hardware_requests/index', [], true)
+ 5 APPPATH\Controllers\HardwareRequests.php(34): view('hardware_requests/index', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(935): App\Controllers\HardwareRequests->index()
+ 7 SYSTEMPATH\CodeIgniter.php(509): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\HardwareRequests))
+ 8 SYSTEMPATH\CodeIgniter.php(356): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+12 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp-new\\htdocs\\ca_onex\\public\\index.php')
+CRITICAL - 2026-02-18 22:45:03 --> CodeIgniter\Exceptions\RuntimeException: View themes, no current section.
+[Method: GET, Route: hardware-requests]
+in SYSTEMPATH\View\View.php on line 430.
+ 1 APPPATH\Views\hardware_requests\index.php(128): CodeIgniter\View\View->endSection()
+ 2 SYSTEMPATH\View\View.php(226): include('C:\\xampp-new\\htdocs\\ca_onex\\app\\Views\\hardware_requests\\index.php')
+ 3 SYSTEMPATH\View\View.php(229): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1199): CodeIgniter\View\View->render('hardware_requests/index', [], true)
+ 5 APPPATH\Controllers\HardwareRequests.php(34): view('hardware_requests/index', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(935): App\Controllers\HardwareRequests->index()
+ 7 SYSTEMPATH\CodeIgniter.php(509): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\HardwareRequests))
+ 8 SYSTEMPATH\CodeIgniter.php(356): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+12 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp-new\\htdocs\\ca_onex\\public\\index.php')
