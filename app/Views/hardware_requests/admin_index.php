@@ -59,13 +59,15 @@
                                         style="font-size: 0.9rem;"><?= esc($request['category']) ?></span>
                                     <span class="small text-muted d-flex align-items-center gap-1">
                                         <?= ucfirst($request['item_type']) ?>
-                                        <span class="opacity-25 mx-1">|</span>
-                                        <?= ucfirst($request['requirement_type']) ?>
-                                        <?php if ($request['requirement_type'] === 'temporary' && $request['due_date']): ?>
-                                            <span class="badge bg-warning-subtle text-warning border-0 ms-1"
-                                                style="font-size: 0.6rem;">
-                                                DUE <?= date('M d', strtotime($request['due_date'])) ?>
-                                            </span>
+                                        <?php if ($request['requirement_type'] === 'temporary'): ?>
+                                            <span class="opacity-25 mx-1">|</span>
+                                            <span class="text-warning fw-bold" style="font-size: 0.75rem;">Temporary</span>
+                                            <?php if ($request['due_date']): ?>
+                                                <span class="badge bg-warning-subtle text-warning border-0 ms-1"
+                                                    style="font-size: 0.6rem;">
+                                                    DUE <?= date('M d', strtotime($request['due_date'])) ?>
+                                                </span>
+                                            <?php endif; ?>
                                         <?php endif; ?>
                                     </span>
                                 </div>

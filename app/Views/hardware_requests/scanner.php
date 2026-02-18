@@ -794,7 +794,8 @@
                             <span class="req-category">${req.category}</span>
                         </div>
                         <div class="req-badges">
-                            <span class="req-badge badge-info">${req.requirement_type}</span>
+                            ${req.requirement_type === 'temporary' ?
+                    `<span class="req-badge badge-info">Temporary</span>` : ''}
                             ${req.requirement_type === 'temporary' && req.due_date ?
                     `<span class="req-badge" style="background:#fff7ed; color:#c2410c;">
                                     <i class="fa-solid fa-calendar-day me-1"></i>Due: ${new Date(req.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}

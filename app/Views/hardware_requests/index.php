@@ -52,11 +52,12 @@
                             </div>
                         </td>
                         <td>
-                            <div class="req-type-pill <?= $request['requirement_type'] ?>">
-                                <i
-                                    class="fa-solid <?= $request['requirement_type'] === 'permanent' ? 'fa-infinity' : 'fa-calendar-day' ?> small me-1"></i>
-                                <?= ucfirst($request['requirement_type'] ?: 'Standard') ?>
-                            </div>
+                            <?php if ($request['requirement_type'] === 'temporary'): ?>
+                                <div class="req-type-pill temporary">
+                                    <i class="fa-solid fa-calendar-day small me-1"></i>
+                                    Temporary
+                                </div>
+                            <?php endif; ?>
                         </td>
                         <td>
                             <?php
