@@ -21,8 +21,8 @@ class Departments extends BaseController
 
     private function checkAccess()
     {
-        $role = session()->get('role');
-        return ($role === 'Super Admin' || $role === 'HR Admin');
+        $roles = (array)(session()->get('roles') ?: [session()->get('role')]);
+        return (in_array('Super Admin', $roles) || in_array('HR Admin', $roles));
     }
 
     public function index()
@@ -34,9 +34,11 @@ class Departments extends BaseController
                                 ->join('users', 'users.id = departments.manager_id', 'left')
                                 ->join('user_details', 'user_details.user_id = users.id', 'left')
                                 ->findAll(),
-            'users' => $this->userModel->select('users.id, user_details.full_name, r.role_name')
+            'users' => $this->userModel->select('users.id, user_details.full_name, GROUP_CONCAT(r.role_name SEPARATOR ", ") as role_name')
                         ->join('user_details', 'user_details.user_id = users.id')
-                        ->join('roles r', 'r.id = users.system_role_id', 'left')
+                        ->join('user_roles ur', 'ur.user_id = users.id', 'left')
+                        ->join('roles r', 'r.id = ur.role_id', 'left')
+                        ->groupBy('users.id')
                         ->findAll(),
             'page_title' => 'Manage Departments'
         ];

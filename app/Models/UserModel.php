@@ -12,7 +12,7 @@ class UserModel extends Model
     protected $returnType = 'array';
     protected $useSoftDeletes = false;
     protected $protectFields = true;
-    protected $allowedFields = ['username', 'password', 'system_role_id', 'divisional_role_id', 'force_password_change'];
+    protected $allowedFields = ['username', 'password', 'force_password_change'];
 
     protected bool $allowEmptyInserts = false;
 
@@ -41,20 +41,46 @@ class UserModel extends Model
 
     public function getUserWithDetails($username)
     {
-        return $this->select('users.*, user_details.full_name, user_details.email, r.role_name as system_role')
+        $user = $this->select('users.*, user_details.full_name, user_details.email')
             ->join('user_details', 'user_details.user_id = users.id')
-            ->join('roles r', 'r.id = users.system_role_id')
             ->where('users.username', $username)
             ->first();
+
+        if ($user) {
+            $user['roles'] = $this->db->table('user_roles')
+                ->select('roles.*')
+                ->join('roles', 'roles.id = user_roles.role_id')
+                ->where('user_roles.user_id', $user['id'])
+                ->get()
+                ->getResultArray();
+                
+            // For backward compatibility and session
+            $systemRoles = array_values(array_filter($user['roles'], fn($r) => $r['role_type'] == 'system'));
+            $user['system_role'] = !empty($systemRoles) ? $systemRoles[0]['role_name'] : 'User';
+        }
+
+        return $user;
     }
 
     public function getUserByIdWithDetails($id)
     {
-        return $this->select('users.*, user_details.full_name, user_details.email, r.role_name as system_role, d.department_name')
+        $user = $this->select('users.*, user_details.full_name, user_details.epf_number, user_details.email, d.department_name, user_details.department_id')
             ->join('user_details', 'user_details.user_id = users.id')
-            ->join('roles r', 'r.id = users.system_role_id')
             ->join('departments d', 'd.id = user_details.department_id', 'left')
             ->where('users.id', $id)
             ->first();
+
+        if ($user) {
+            $user['roles'] = $this->db->table('user_roles')
+                ->select('roles.*')
+                ->join('roles', 'roles.id = user_roles.role_id')
+                ->where('user_roles.user_id', $user['id'])
+                ->get()
+                ->getResultArray();
+            
+            $user['role_ids'] = array_column($user['roles'], 'id');
+        }
+
+        return $user;
     }
 }

@@ -1,0 +1,43 @@
+CRITICAL - 2026-03-28 12:07:56 --> ErrorException: Undefined array key "system_role_id"
+[Method: GET, Route: admin/users/edit/8]
+in APPPATH\Views\admin\user_edit.php on line 54.
+ 1 APPPATH\Views\admin\user_edit.php(54): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "system_role_id"', 'C:\\xampp-new\\htdocs\\ca_onex\\app\\Views\\admin\\user_edit.php', 54)
+ 2 SYSTEMPATH\View\View.php(226): include('C:\\xampp-new\\htdocs\\ca_onex\\app\\Views\\admin\\user_edit.php')
+ 3 SYSTEMPATH\View\View.php(229): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1199): CodeIgniter\View\View->render('admin/user_edit', [], true)
+ 5 APPPATH\Controllers\Admin.php(126): view('admin/user_edit', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(935): App\Controllers\Admin->edit('8')
+ 7 SYSTEMPATH\CodeIgniter.php(509): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin))
+ 8 SYSTEMPATH\CodeIgniter.php(356): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+12 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp-new\\htdocs\\ca_onex\\public\\index.php')
+CRITICAL - 2026-03-28 12:08:09 --> ErrorException: Undefined array key "system_role_id"
+[Method: GET, Route: admin/users/edit/8]
+in APPPATH\Views\admin\user_edit.php on line 54.
+ 1 APPPATH\Views\admin\user_edit.php(54): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "system_role_id"', 'C:\\xampp-new\\htdocs\\ca_onex\\app\\Views\\admin\\user_edit.php', 54)
+ 2 SYSTEMPATH\View\View.php(226): include('C:\\xampp-new\\htdocs\\ca_onex\\app\\Views\\admin\\user_edit.php')
+ 3 SYSTEMPATH\View\View.php(229): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1199): CodeIgniter\View\View->render('admin/user_edit', [], true)
+ 5 APPPATH\Controllers\Admin.php(126): view('admin/user_edit', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(935): App\Controllers\Admin->edit('8')
+ 7 SYSTEMPATH\CodeIgniter.php(509): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin))
+ 8 SYSTEMPATH\CodeIgniter.php(356): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+12 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp-new\\htdocs\\ca_onex\\public\\index.php')
+CRITICAL - 2026-03-28 12:19:32 --> CodeIgniter\Database\Exceptions\DataException: There is no data to update.
+[Method: POST, Route: admin/users/update/8]
+in SYSTEMPATH\BaseModel.php on line 993.
+ 1 SYSTEMPATH\BaseModel.php(993): CodeIgniter\Database\Exceptions\DataException::forEmptyDataset('update')
+ 2 SYSTEMPATH\Model.php(860): CodeIgniter\BaseModel->update([...], [])
+ 3 APPPATH\Controllers\Admin.php(171): CodeIgniter\Model->update('8', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(935): App\Controllers\Admin->update('8')
+ 5 SYSTEMPATH\CodeIgniter.php(509): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin))
+ 6 SYSTEMPATH\CodeIgniter.php(356): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+10 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp-new\\htdocs\\ca_onex\\public\\index.php')

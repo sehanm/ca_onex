@@ -24,7 +24,8 @@ class Admin extends BaseController
 
     private function checkAdmin()
     {
-        if (session()->get('role') !== 'Super Admin') {
+        $roles = session()->get('roles') ?: [session()->get('role')];
+        if (!in_array('Super Admin', (array)$roles)) {
             return false;
         }
         return true;
@@ -35,12 +36,23 @@ class Admin extends BaseController
         if (!$this->checkAdmin())
             return redirect()->to('dashboard')->with('error', 'Access Denied');
 
+        $users = $this->userModel->select('users.*, user_details.full_name, user_details.email, d.department_name')
+            ->join('user_details', 'user_details.user_id = users.id')
+            ->join('departments d', 'd.id = user_details.department_id', 'left')
+            ->findAll();
+
+        foreach ($users as &$user) {
+            $user['roles'] = $this->db->table('user_roles')
+                ->select('roles.role_name, roles.role_type')
+                ->join('roles', 'roles.id = user_roles.role_id')
+                ->where('user_roles.user_id', $user['id'])
+                ->get()
+                ->getResultArray();
+            $user['role_names'] = implode(', ', array_column($user['roles'], 'role_name'));
+        }
+
         $data = [
-            'users' => $this->userModel->select('users.*, user_details.full_name, user_details.email, r.role_name as system_role, d.department_name')
-                ->join('user_details', 'user_details.user_id = users.id')
-                ->join('roles r', 'r.id = users.system_role_id')
-                ->join('departments d', 'd.id = user_details.department_id', 'left')
-                ->findAll(),
+            'users' => $users,
             'page_title' => 'User Management'
         ];
 
@@ -72,14 +84,26 @@ class Admin extends BaseController
         $userData = [
             'username' => $username,
             'password' => password_hash($password, PASSWORD_DEFAULT),
-            'system_role_id' => $this->request->getPost('system_role'),
-            'divisional_role_id' => $this->request->getPost('divisional_role'),
             'force_password_change' => 1,
             'created_at' => date('Y-m-d H:i:s'),
         ];
 
         $this->userModel->insert($userData);
         $userId = $this->userModel->getInsertID();
+
+        // Save Roles
+        $systemRoles = (array) $this->request->getPost('system_role');
+        $divisionalRoles = (array) $this->request->getPost('divisional_role');
+        $allRoles = array_merge($systemRoles, $divisionalRoles);
+        
+        foreach ($allRoles as $roleId) {
+            if (!empty($roleId)) {
+                $this->db->table('user_roles')->insert([
+                    'user_id' => $userId,
+                    'role_id' => $roleId
+                ]);
+            }
+        }
 
         $userDetails = [
             'user_id' => $userId,
@@ -111,10 +135,7 @@ class Admin extends BaseController
         if (!$this->checkAdmin())
             return redirect()->to('dashboard');
 
-        $user = $this->userModel->select('users.*, user_details.full_name, user_details.epf_number, user_details.email, user_details.department_id')
-            ->join('user_details', 'user_details.user_id = users.id')
-            ->where('users.id', $id)
-            ->first();
+        $user = $this->userModel->getUserByIdWithDetails($id);
 
         $data = [
             'user' => $user,
@@ -134,17 +155,8 @@ class Admin extends BaseController
         $currentUser = $this->userModel->find($id);
         $changes = [];
 
-        // Check for role change
-        if ($currentUser['system_role_id'] != $this->request->getPost('system_role')) {
-            $changes[] = "System Role changed";
-        }
-
         // Update User Table
-        $userData = [
-            'system_role_id' => $this->request->getPost('system_role'),
-            'divisional_role_id' => $this->request->getPost('divisional_role'),
-            'updated_at' => date('Y-m-d H:i:s'),
-        ];
+        $userData = [];
 
         // Check password change
         $newPass = $this->request->getPost('password');
@@ -154,7 +166,26 @@ class Admin extends BaseController
             $changes[] = "Password changed";
         }
 
-        $this->userModel->update($id, $userData);
+        if (!empty($userData)) {
+            $this->userModel->update($id, $userData);
+        }
+
+        // Update Roles
+        $systemRoles = (array) $this->request->getPost('system_role');
+        $divisionalRoles = (array) $this->request->getPost('divisional_role');
+        $newRoles = array_filter(array_merge($systemRoles, $divisionalRoles));
+        
+        // Remove old roles
+        $this->db->table('user_roles')->where('user_id', $id)->delete();
+        
+        // Add new roles
+        foreach ($newRoles as $roleId) {
+            $this->db->table('user_roles')->insert([
+                'user_id' => $id,
+                'role_id' => $roleId
+            ]);
+        }
+        $changes[] = "Roles updated";
 
         // Update Details
         $userDetails = [
@@ -164,7 +195,6 @@ class Admin extends BaseController
             'department_id' => $this->request->getPost('department'),
         ];
 
-        // Detailed check could be done here, simplification for now
         $this->db->table('user_details')->where('user_id', $id)->update($userDetails);
 
         if (!empty($changes)) {

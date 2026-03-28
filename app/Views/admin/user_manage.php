@@ -46,9 +46,18 @@
                                     <span class="email-pill">
                                         <i class="fa-solid fa-envelope"></i> <?= esc($user['email']) ?>
                                     </span>
-                                    <span class="role-pill">
-                                        <i class="fa-solid fa-shield-halved"></i> <?= esc($user['system_role']) ?>
-                                    </span>
+                                    <div class="roles-container">
+                                        <?php if (!empty($user['roles'])): ?>
+                                            <?php foreach ($user['roles'] as $role): ?>
+                                                <span class="role-badge <?= $role['role_type'] === 'system' ? 'badge-system' : 'badge-divisional' ?>">
+                                                    <i class="fa-solid <?= $role['role_type'] === 'system' ? 'fa-shield-halved' : 'fa-briefcase' ?>"></i>
+                                                    <?= esc($role['role_name']) ?>
+                                                </span>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <span class="role-badge badge-none">No Roles</span>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
                             </td>
                             <td>
@@ -208,11 +217,11 @@
         font-weight: 500;
     }
 
-    /* Access Pill */
+    /* Access Pill & Role Badges */
     .access-info {
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 8px;
     }
 
     .email-pill {
@@ -227,21 +236,49 @@
         color: #94a3b8;
     }
 
-    .role-pill {
+    .roles-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 4px;
+    }
+
+    .role-badge {
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        background: #f1f5f9;
-        color: #475569;
         padding: 4px 12px;
         border-radius: 50px;
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         font-weight: 700;
-        width: fit-content;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
     }
 
-    .role-pill i {
+    .badge-system {
+        background: #f1f5f9;
+        color: #475569;
+        border: 1px solid #e2e8f0;
+    }
+
+    .badge-system i {
         color: #800000;
+    }
+
+    .badge-divisional {
+        background: #ecfdf5;
+        color: #059669;
+        border: 1px solid #d1fae5;
+    }
+
+    .badge-divisional i {
+        color: #10b981;
+    }
+
+    .badge-none {
+        background: #f8fafc;
+        color: #94a3b8;
+        font-style: italic;
     }
 
     /* Org Info */
@@ -329,9 +366,9 @@
             font-size: 0.7rem;
         }
 
-        .role-pill {
+        .role-badge {
             padding: 4px 8px;
-            font-size: 0.65rem;
+            font-size: 0.6rem;
         }
 
         /* DataTables tweaks */

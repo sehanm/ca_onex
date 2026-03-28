@@ -34,8 +34,8 @@ class Onboarding extends BaseController
 
     public function create()
     {
-        $role = session()->get('role');
-        if ($role !== 'Super Admin' && $role !== 'HR Admin') {
+        $userRoles = (array)(session()->get('roles') ?: [session()->get('role')]);
+        if (!in_array('Super Admin', $userRoles) && !in_array('HR Admin', $userRoles)) {
             return redirect()->to('dashboard')->with('error', 'Access Denied: HR Admin only.');
         }
 
@@ -44,9 +44,11 @@ class Onboarding extends BaseController
                 ->join('users', 'users.id = departments.manager_id', 'left')
                 ->join('user_details', 'user_details.user_id = users.id', 'left')
                 ->findAll(),
-            'users' => $this->userModel->select('users.id, user_details.full_name, r.role_name')
+            'users' => $this->userModel->select('users.id, user_details.full_name, GROUP_CONCAT(r.role_name SEPARATOR ", ") as role_name')
                 ->join('user_details', 'user_details.user_id = users.id')
-                ->join('roles r', 'r.id = users.system_role_id OR r.id = users.divisional_role_id') // Get role name
+                ->join('user_roles ur', 'ur.user_id = users.id', 'left')
+                ->join('roles r', 'r.id = ur.role_id', 'left')
+                ->groupBy('users.id')
                 ->findAll(),
             'page_title' => 'Initiate Onboarding'
         ];
@@ -56,8 +58,8 @@ class Onboarding extends BaseController
 
     public function store()
     {
-        $role = session()->get('role');
-        if ($role !== 'Super Admin' && $role !== 'HR Admin') {
+        $userRoles = (array)(session()->get('roles') ?: [session()->get('role')]);
+        if (!in_array('Super Admin', $userRoles) && !in_array('HR Admin', $userRoles)) {
             return redirect()->to('dashboard')->with('error', 'Access Denied: HR Admin only.');
         }
 
@@ -166,8 +168,9 @@ class Onboarding extends BaseController
             return redirect()->to('dashboard')->with('error', 'Request not found.');
         }
 
+        $userRoles = (array)(session()->get('roles') ?: [session()->get('role')]);
         // Strict check: Only assigned HOD can fill
-        if ($request['hod_user_id'] != $userId && session()->get('role') !== 'Super Admin') {
+        if ($request['hod_user_id'] != $userId && !in_array('Super Admin', $userRoles)) {
             return redirect()->to('dashboard')->with('error', 'Access Denied: You are not the assigned HOD.');
         }
 
@@ -184,7 +187,8 @@ class Onboarding extends BaseController
         $userId = session()->get('id');
         $request = $this->onboardingModel->find($id);
 
-        if (!$request || ($request['hod_user_id'] != $userId && session()->get('role') !== 'Super Admin')) {
+        $userRoles = (array)(session()->get('roles') ?: [session()->get('role')]);
+        if (!$request || ($request['hod_user_id'] != $userId && !in_array('Super Admin', $userRoles))) {
             return redirect()->to('dashboard')->with('error', 'Access Denied.');
         }
 
@@ -277,7 +281,7 @@ class Onboarding extends BaseController
     public function facilitatorTasks()
     {
         $userId = session()->get('id');
-        $userRole = session()->get('role');
+        $userRoles = (array)(session()->get('roles') ?: [session()->get('role')]);
 
         $roles = $this->checkFacilitatorAccess();
 
@@ -292,7 +296,7 @@ class Onboarding extends BaseController
             ->join('user_details ud', 'ud.user_id = onboarding_requests.hod_user_id', 'left');
 
         // Restriction logic: Only show requests that have items for the facilitator's roles
-        if ($userRole !== 'Super Admin') {
+        if (!in_array('Super Admin', $userRoles)) {
             $query->groupStart();
             $orUsed = false;
 
@@ -351,7 +355,7 @@ class Onboarding extends BaseController
     private function checkFacilitatorAccess()
     {
         $userId = session()->get('id');
-        $userRole = session()->get('role');
+        $userRoles = (array)(session()->get('roles') ?: [session()->get('role')]);
 
         $managedDepts = $this->departmentModel->where('manager_id', $userId)->findAll();
         $roles = [];
@@ -365,7 +369,7 @@ class Onboarding extends BaseController
         }
 
         // Super Admin gets all facilitator roles by default
-        if ($userRole === 'Super Admin') {
+        if (in_array('Super Admin', $userRoles)) {
             return ['Admin', 'HR', 'ICT'];
         }
 
@@ -499,6 +503,9 @@ class Onboarding extends BaseController
                 'assignment_type' => 'Computer'
             ]);
         }
+
+        $request = $this->onboardingModel->find($requestId);
+        $this->logAction('Onboarding Asset Assigned', "Assigned asset {$asset['asset_code']} to onboarding candidate: {$request['candidate_name']}");
 
         return $this->response->setJSON(['success' => true, 'message' => 'Asset updated successfully']);
     }

@@ -17,6 +17,8 @@
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    
+    <?= $this->renderSection('styles') ?>
 </head>
 
 <body>
@@ -59,7 +61,10 @@
                             <i class="fa-solid fa-chevron-down arrow"></i>
                         </a>
                         <ul class="submenu">
-                            <?php if (session()->get('role') === 'Super Admin'): ?>
+                            <?php 
+                            $userRoles = (array)(session()->get('roles') ?: [session()->get('role')]);
+                            if (in_array('Super Admin', $userRoles)): 
+                            ?>
                                 <li class="<?= uri_string() == 'admin/users' ? 'active' : '' ?>">
                                     <a href="<?= base_url('admin/users') ?>">
                                         <i class="fa-solid fa-users-gear"></i>
@@ -108,7 +113,7 @@
                             <i class="fa-solid fa-chevron-down arrow"></i>
                         </a>
                         <ul class="submenu">
-                            <?php if (session()->get('role') === 'Super Admin' || session()->get('role') === 'HR Admin'): ?>
+                            <?php if (in_array('Super Admin', $userRoles) || in_array('HR Admin', $userRoles)): ?>
                                 <li class="<?= uri_string() == 'onboarding/create' ? 'active' : '' ?>">
                                     <a href="<?= base_url('onboarding/create') ?>">
                                         <i class="fa-solid fa-user-plus"></i>
@@ -137,7 +142,7 @@
                         </ul>
                     </li>
 
-                    <?php if (in_array('ICT', $facilitatorRoles) || session()->get('role') === 'Super Admin'):
+                    <?php if (in_array('ICT', $facilitatorRoles) || in_array('Super Admin', $userRoles)):
                         $isInventoryOpen = (strpos(uri_string(), 'inventory') !== false);
                         ?>
                         <li class="has-submenu <?= $isInventoryOpen ? 'open' : '' ?>">
@@ -249,7 +254,7 @@
                 <div class="user-profile">
                     <div class="user-info">
                         <span class="user-name"><?= session()->get('full_name') ?></span>
-                        <span class="user-role"><?= session()->get('role') ?></span>
+                        <span class="user-role"><?= esc(is_array(session()->get('roles')) ? implode(', ', session()->get('roles')) : session()->get('role')) ?></span>
                     </div>
                     <div class="user-avatar">
                         <?= strtoupper(substr(session()->get('full_name'), 0, 1)) ?>

@@ -47,6 +47,8 @@ abstract class BaseController extends Controller
     {
         $auditModel = new \App\Models\AuditLogModel();
         $auditModel->log($action, $details);
+        // Set a global flag to prevent the AuditFilter from logging this request again
+        $GLOBALS['MANUAL_AUDIT_LOGGED'] = true;
     }
 
     protected function sendUserCreationEmail($emailAddress, $fullName, $username, $password)

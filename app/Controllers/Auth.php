@@ -33,6 +33,7 @@ class Auth extends BaseController
                     'username' => $user['username'],
                     'full_name' => $user['full_name'],
                     'role' => $user['system_role'],
+                    'roles' => array_column($user['roles'], 'role_name'),
                     'isLoggedIn' => TRUE,
                     'force_password_change' => $user['force_password_change']
                 ];
@@ -45,9 +46,11 @@ class Auth extends BaseController
 
                 return redirect()->to('/dashboard')->with('success', 'Successfully logged');
             } else {
+                $this->logAction('Login Failed', "Invalid password attempt for user: $username");
                 return redirect()->back()->with('error', 'Invalid password.');
             }
         } else {
+            $this->logAction('Login Failed', "Attempt with unknown username: $username");
             return redirect()->back()->with('error', 'Username not found.');
         }
     }

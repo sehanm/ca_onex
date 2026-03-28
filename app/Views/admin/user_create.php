@@ -47,23 +47,33 @@
 
         <div class="row">
             <div class="col">
-                <div class="form-group">
-                    <label>System Role</label>
-                    <select name="system_role" class="form-control" required>
+                <div class="form-group role-selection-group">
+                    <label class="group-label">System Role Access</label>
+                    <div class="checkbox-grid">
                         <?php foreach ($roles as $role): ?>
-                            <option value="<?= $role['id'] ?>"><?= $role['role_name'] ?></option>
+                            <label class="checkbox-pill">
+                                <input type="checkbox" name="system_role[]" value="<?= $role['id'] ?>">
+                                <span class="pill-btn">
+                                    <i class="fa-solid fa-shield-halved"></i> <?= esc($role['role_name']) ?>
+                                </span>
+                            </label>
                         <?php endforeach; ?>
-                    </select>
+                    </div>
                 </div>
             </div>
             <div class="col">
-                <div class="form-group">
-                    <label>Divisional Role</label>
-                    <select name="divisional_role" class="form-control">
+                <div class="form-group role-selection-group">
+                    <label class="group-label">Divisional Role Access</label>
+                    <div class="checkbox-grid">
                         <?php foreach ($div_roles as $role): ?>
-                            <option value="<?= $role['id'] ?>"><?= $role['role_name'] ?></option>
+                            <label class="checkbox-pill">
+                                <input type="checkbox" name="divisional_role[]" value="<?= $role['id'] ?>">
+                                <span class="pill-btn">
+                                    <i class="fa-solid fa-briefcase"></i> <?= esc($role['role_name']) ?>
+                                </span>
+                            </label>
                         <?php endforeach; ?>
-                    </select>
+                    </div>
                 </div>
             </div>
         </div>
@@ -109,4 +119,93 @@
         });
     });
 </script>
+
+<?= $this->section('styles') ?>
+<style>
+    .role-selection-group {
+        background: #f8fafc;
+        padding: 20px;
+        border-radius: 16px;
+        border: 1px solid #f1f5f9;
+        height: 100%;
+    }
+
+    .group-label {
+        font-weight: 800;
+        color: #1e293b;
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+        display: block;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .checkbox-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .checkbox-pill {
+        cursor: pointer;
+        position: relative;
+    }
+
+    .checkbox-pill input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+    }
+
+    .pill-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 18px;
+        background: white;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #64748b;
+        transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        user-select: none;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .pill-btn i {
+        color: #94a3b8;
+        transition: all 0.2s;
+    }
+
+    .checkbox-pill:hover .pill-btn {
+        border-color: #6366f1;
+        color: #6366f1;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+    }
+
+    .checkbox-pill input:checked + .pill-btn {
+        background: #6366f1;
+        border-color: #6366f1;
+        color: white;
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    }
+
+    .checkbox-pill input:checked + .pill-btn i {
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        .checkbox-grid {
+            flex-direction: column;
+        }
+        .pill-btn {
+            width: 100%;
+        }
+    }
+</style>
+<?= $this->endSection() ?>
 <?= $this->endSection() ?>

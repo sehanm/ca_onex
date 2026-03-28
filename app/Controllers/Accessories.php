@@ -79,6 +79,7 @@ class Accessories extends BaseController
             'notes' => $this->request->getPost('notes')
         ]);
 
+        $this->logAction('Accessory Added', "Added {$this->request->getPost('category')} model {$this->request->getPost('model')}");
         return redirect()->to('accessories/items')->with('success', 'Accessory added successfully');
     }
 
@@ -138,6 +139,7 @@ class Accessories extends BaseController
             return redirect()->back()->with('error', 'Failed to assign accessory');
         }
 
+        $this->logAction('Accessory Assigned', "Assigned accessory {$item['asset_code']} to user ID $userId");
         return redirect()->back()->with('success', 'Accessory assigned and stock updated');
     }
 
@@ -176,6 +178,7 @@ class Accessories extends BaseController
             return redirect()->back()->with('error', 'Failed to return accessory');
         }
 
+        $this->logAction('Accessory Returned', "Returned accessory ID $id to stock");
         return redirect()->back()->with('success', 'Accessory returned to stock and request closed');
     }
 
@@ -261,12 +264,14 @@ class Accessories extends BaseController
         }
 
         $msg = ($status === 'Stock') ? 'Accessory returned to stock.' : 'Operational status synchronized successfully.';
+        $this->logAction('Accessory Status Updated', "Updated status of accessory ID $id to $status");
         return redirect()->back()->with('success', $msg);
     }
 
     public function delete($id)
     {
         if ($this->accessoryModel->delete($id)) {
+            $this->logAction('Accessory Deleted', "Removed accessory ID $id");
             return redirect()->to('accessories/items')->with('success', 'Accessory removed from directory');
         }
         return redirect()->to('accessories/items')->with('error', 'Failed to remove accessory');

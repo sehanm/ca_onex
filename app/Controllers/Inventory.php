@@ -105,6 +105,7 @@ class Inventory extends BaseController
             'purchased_date' => date('Y-m-d')
         ]);
 
+        $this->logAction('Asset Created', "Created {$this->request->getPost('type')} model {$this->request->getPost('model')}");
         return redirect()->to('inventory')->with('success', 'Asset created successfully');
     }
 
@@ -121,6 +122,7 @@ class Inventory extends BaseController
         ];
 
         if ($this->assetModel->update($id, $data)) {
+            $this->logAction('Asset Updated', "Updated asset ID $id (Code: {$data['asset_code']})");
             return redirect()->back()->with('success', 'Asset updated successfully');
         }
         return redirect()->back()->with('error', 'Failed to update asset repository');
@@ -287,6 +289,7 @@ class Inventory extends BaseController
 
         if ($this->assetModel->update($assetId, $data)) {
             $user = $this->userDetailModel->where('user_id', $userId)->first();
+            $this->logAction('Asset Assigned', "Assigned asset ID $assetId to user ID $userId");
             return $this->response->setJSON([
                 'success' => true,
                 'message' => 'Asset assigned successfully to ' . ($user ? $user['full_name'] : 'User'),

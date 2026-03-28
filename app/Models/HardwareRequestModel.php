@@ -21,7 +21,8 @@ class HardwareRequestModel extends Model
         'assigned_item_id',
         'request_date',
         'return_date',
-        'admin_id'
+        'admin_id',
+        'remarks'
     ];
 
     protected $useTimestamps = true;

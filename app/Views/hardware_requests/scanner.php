@@ -729,9 +729,9 @@
         const input = document.getElementById('scanInput');
         input.focus();
 
-        // Keep focus on scan input unless typing in search
+        // Keep focus on scan input unless typing in search or remarks
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('input, button, .request-item')) {
+            if (!e.target.closest('input, textarea, button, .request-item')) {
                 input.focus();
             }
         });
@@ -877,6 +877,9 @@
 
     function displayScanResult(item, type) {
         const area = document.getElementById('resultArea');
+        const statusNormalized = (item.status || '').toLowerCase();
+        const isAssigned = statusNormalized === 'assigned';
+        
         area.innerHTML = `
             <div class="result-card-premium">
                 <div class="res-header">
@@ -897,7 +900,7 @@
                 <div class="res-body">
                     <div class="res-data-group">
                         <label>Item Status</label>
-                        <div class="res-data-value" style="color:${item.status === 'Assigned' ? 'var(--c-danger)' : 'var(--c-success)'}">
+                        <div class="res-data-value" style="color:${isAssigned ? 'var(--c-danger)' : 'var(--c-success)'}">
                             ${item.status}
                         </div>
                     </div>
@@ -922,9 +925,13 @@
         `;
 
         const btnContainer = document.getElementById('actionButtonContainer');
-        if (item.status.toLowerCase() === 'assigned') {
+        if (isAssigned) {
             // Suggest Return
             btnContainer.innerHTML = `
+                <div class="mb-4" style="text-align: left;">
+                    <label style="display: block; font-size: 0.7rem; font-weight: 800; color: var(--c-slate); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">Remarks (Optional)</label>
+                    <textarea id="actionRemarks" style="width: 100%; border-radius: 12px; border: 1px solid var(--c-border); padding: 12px; font-size: 0.9rem; outline: none; background: #f8fafc; transition: 0.3s; resize: none;" rows="2" placeholder="Note condition, missing cables, etc..."></textarea>
+                </div>
                 <button class="btn-action-large btn-return" onclick="executeAction('return')">
                     <i class="fa-solid fa-rotate-left"></i> Confirm Return to Stock
                 </button>
@@ -935,6 +942,10 @@
         } else {
             // Suggest Assign
             btnContainer.innerHTML = `
+                <div class="mb-4" style="text-align: left;">
+                    <label style="display: block; font-size: 0.7rem; font-weight: 800; color: var(--c-slate); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">Remarks (Optional)</label>
+                    <textarea id="actionRemarks" style="width: 100%; border-radius: 12px; border: 1px solid var(--c-border); padding: 12px; font-size: 0.9rem; outline: none; background: #f8fafc; transition: 0.3s; resize: none;" rows="2" placeholder="Note new assignment details, accessories included..."></textarea>
+                </div>
                 <button class="btn-action-large btn-assign" id="btnFulfill" onclick="executeAction('assign')">
                     <i class="fa-solid fa-check-circle"></i> Fulfill Selected Request
                 </button>
@@ -967,7 +978,8 @@
     }
 
     function executeAction(action) {
-        const payload = { qr_data: scannedItem.asset_code, action: action };
+        const remarksVal = document.getElementById('actionRemarks') ? document.getElementById('actionRemarks').value.trim() : '';
+        const payload = { qr_data: scannedItem.asset_code, action: action, remarks: remarksVal };
 
         if (action === 'assign') {
             if (!selectedRequestId) {

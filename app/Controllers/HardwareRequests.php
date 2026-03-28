@@ -71,6 +71,8 @@ class HardwareRequests extends BaseController
             'request_date' => date('Y-m-d H:i:s')
         ]);
 
+        $this->logAction('Hardware Request Submitted', "Requested {$this->request->getPost('category')} ({$this->request->getPost('item_type')})");
+
         return redirect()->to('hardware-requests')->with('success', 'Hardware request submitted successfully');
     }
 
@@ -113,13 +115,30 @@ class HardwareRequests extends BaseController
         $qrData = $this->request->getPost('qr_data');
         $requestId = $this->request->getPost('request_id');
         $action = $this->request->getPost('action'); // 'assign' or 'return'
+        $remarks = $this->request->getPost('remarks');
 
-        // 1. Identify the item from QR data (asset_code)
-        $item = $this->accessoryModel->where('asset_code', $qrData)->first();
+        // 1. Identify the item from QR data
+        // Try Accessory
+        $item = $this->accessoryModel->where('asset_code', $qrData)
+            ->orWhere('serial_number', $qrData)
+            ->first();
+            
+        if (!$item && is_numeric($qrData)) {
+            $item = $this->accessoryModel->find($qrData);
+        }
+        
         $type = 'accessory';
 
         if (!$item) {
-            $item = $this->assetModel->where('asset_code', $qrData)->first();
+            // Try Asset
+            $item = $this->assetModel->where('asset_code', $qrData)
+                ->orWhere('serial_number', $qrData)
+                ->first();
+                
+            if (!$item && is_numeric($qrData)) {
+                $item = $this->assetModel->find($qrData);
+            }
+            
             $type = 'asset';
         }
 
@@ -128,9 +147,9 @@ class HardwareRequests extends BaseController
         }
 
         if ($action === 'assign') {
-            return $this->handle_assign($item, $type, $requestId);
+            return $this->handle_assign($item, $type, $requestId, $remarks);
         } elseif ($action === 'return') {
-            return $this->handle_return($item, $type);
+            return $this->handle_return($item, $type, $remarks);
         }
 
         return $this->response->setJSON(['status' => 'error', 'message' => 'Invalid Action']);
@@ -146,7 +165,16 @@ class HardwareRequests extends BaseController
         $item = $this->accessoryModel->select('accessories.*, user_details.full_name as assigned_to_name')
             ->join('user_details', 'user_details.user_id = accessories.assigned_user_id', 'left')
             ->where('asset_code', $code)
+            ->orWhere('serial_number', $code)
             ->first();
+            
+        if (!$item && is_numeric($code)) {
+            $item = $this->accessoryModel->select('accessories.*, user_details.full_name as assigned_to_name')
+                ->join('user_details', 'user_details.user_id = accessories.assigned_user_id', 'left')
+                ->where('accessories.id', $code)
+                ->first();
+        }
+            
         $type = 'accessory';
 
         if (!$item) {
@@ -154,7 +182,16 @@ class HardwareRequests extends BaseController
             $item = $this->assetModel->select('assets.*, user_details.full_name as assigned_to_name')
                 ->join('user_details', 'user_details.user_id = assets.assigned_user_id', 'left')
                 ->where('asset_code', $code)
+                ->orWhere('serial_number', $code)
                 ->first();
+                
+            if (!$item && is_numeric($code)) {
+                $item = $this->assetModel->select('assets.*, user_details.full_name as assigned_to_name')
+                    ->join('user_details', 'user_details.user_id = assets.assigned_user_id', 'left')
+                    ->where('assets.id', $code)
+                    ->first();
+            }
+                
             $type = 'asset';
         }
 
@@ -227,14 +264,14 @@ class HardwareRequests extends BaseController
         ]);
     }
 
-    private function handle_assign($item, $type, $requestId)
+    private function handle_assign($item, $type, $requestId, $remarks = null)
     {
         $request = $this->requestModel->find($requestId);
         if (!$request)
             return $this->response->setJSON(['status' => 'error', 'message' => 'Request not found']);
 
         // Check if item is available
-        if ($item['status'] !== 'Stock' && $item['status'] !== 'Available') {
+        if ($item['status'] !== 'Stock' && $item['status'] !== 'Available' && $item['status'] !== 'In Store') {
             return $this->response->setJSON(['status' => 'error', 'message' => 'Item is already ' . $item['status']]);
         }
 
@@ -243,6 +280,7 @@ class HardwareRequests extends BaseController
             'status' => 'assigned',
             'assigned_item_id' => $item['id'],
             'admin_id' => session()->get('id'),
+            'remarks' => $remarks,
             'updated_at' => date('Y-m-d H:i:s')
         ]);
 
@@ -259,10 +297,12 @@ class HardwareRequests extends BaseController
             ]);
         }
 
+        $this->logAction('Hardware Assigned', "Assigned item {$item['asset_code']} to user ID {$request['user_id']} with remarks: " . ($remarks ?: 'None'));
+
         return $this->response->setJSON(['status' => 'success', 'message' => 'Item assigned successfully']);
     }
 
-    private function handle_return($item, $type)
+    private function handle_return($item, $type, $remarks = null)
     {
         // 1. Find the active request/assignment for this item
         $request = $this->requestModel->where('assigned_item_id', $item['id'])
@@ -275,6 +315,7 @@ class HardwareRequests extends BaseController
             $this->requestModel->update($request['id'], [
                 'status' => 'returned',
                 'return_date' => date('Y-m-d H:i:s'),
+                'remarks' => $remarks,
                 'updated_at' => date('Y-m-d H:i:s')
             ]);
         }
@@ -292,6 +333,8 @@ class HardwareRequests extends BaseController
             ]);
         }
 
+        $this->logAction('Hardware Returned', "Item {$item['asset_code']} returned to stock with remarks: " . ($remarks ?: 'None'));
+
         return $this->response->setJSON(['status' => 'success', 'message' => 'Item returned and added to stock']);
     }
 
@@ -303,6 +346,7 @@ class HardwareRequests extends BaseController
             'admin_id' => session()->get('id'),
             'updated_at' => date('Y-m-d H:i:s')
         ]);
+        $this->logAction('Hardware Request Rejected', "Rejected request ID: $requestId");
         return redirect()->back()->with('success', 'Request rejected.');
     }
 
