@@ -26,9 +26,13 @@ class OnboardingDetailsModel extends Model
         'ict_desktop_laptop', 'ict_printer', 'ict_asset_id',
         'ict_model', 'ict_serial_number', 'ict_asset_code', 'ict_monitor_id',
         'ict_monitor_model', 'ict_monitor_serial', 'ict_monitor_asset',
+        'ict_os_install', 'ict_admin_pass_change', 'ict_comp_name_change', 
+        'ict_updated_comp_name', 'ict_domain_add',
         // Software
         'soft_smms', 'soft_receipt', 'soft_training', 'soft_ecole', 
         'soft_pronto', 'pronto_previous_user',
+        'soft_eset', 'soft_office365', 'soft_chrome', 'soft_pdf_reader', 
+        'soft_vlc', 'soft_winrar', 'soft_zoom',
         'soft_ims', 'soft_sap', 'soft_imeet',
         'access_copy_user', 'ict_status',
         'created_at', 'updated_at'

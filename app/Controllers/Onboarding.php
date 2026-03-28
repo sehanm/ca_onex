@@ -239,6 +239,11 @@ class Onboarding extends BaseController
             // ICT
             'ict_desktop_laptop' => $this->request->getPost('ict_desktop_laptop'),
             'ict_printer' => $this->request->getPost('ict_printer') ? 1 : 0,
+            'ict_os_install' => $this->request->getPost('ict_os_install') ? 1 : 0,
+            'ict_admin_pass_change' => $this->request->getPost('ict_admin_pass_change') ? 1 : 0,
+            'ict_comp_name_change' => $this->request->getPost('ict_comp_name_change') ? 1 : 0,
+            'ict_updated_comp_name' => $this->request->getPost('ict_updated_comp_name'),
+            'ict_domain_add' => $this->request->getPost('ict_domain_add') ? 1 : 0,
 
             // Software
             'soft_smms' => $this->request->getPost('soft_smms') ? 1 : 0,
@@ -250,6 +255,13 @@ class Onboarding extends BaseController
             'soft_ims' => $this->request->getPost('soft_ims') ? 1 : 0,
             'soft_sap' => $this->request->getPost('soft_sap') ? 1 : 0,
             'soft_imeet' => $this->request->getPost('soft_imeet') ? 1 : 0,
+            'soft_eset' => $this->request->getPost('soft_eset') ? 1 : 0,
+            'soft_office365' => $this->request->getPost('soft_office365') ? 1 : 0,
+            'soft_chrome' => $this->request->getPost('soft_chrome') ? 1 : 0,
+            'soft_pdf_reader' => $this->request->getPost('soft_pdf_reader') ? 1 : 0,
+            'soft_vlc' => $this->request->getPost('soft_vlc') ? 1 : 0,
+            'soft_winrar' => $this->request->getPost('soft_winrar') ? 1 : 0,
+            'soft_zoom' => $this->request->getPost('soft_zoom') ? 1 : 0,
 
             'access_copy_user' => $this->request->getPost('access_copy_user'),
 
@@ -257,10 +269,16 @@ class Onboarding extends BaseController
             'admin_status' => ($this->request->getPost('admin_chair') || $this->request->getPost('admin_table') || $this->request->getPost('admin_phone')) ? 'Pending' : 'Completed',
             'hr_status' => ($this->request->getPost('hr_mobile') || $this->request->getPost('hr_sim')) ? 'Pending' : 'Completed',
             'ict_status' => ($this->request->getPost('ict_desktop_laptop') !== 'None' || $this->request->getPost('ict_printer') ||
+                $this->request->getPost('ict_os_install') || $this->request->getPost('ict_admin_pass_change') ||
+                $this->request->getPost('ict_domain_add') || $this->request->getPost('ict_comp_name_change') ||
                 $this->request->getPost('soft_smms') || $this->request->getPost('soft_receipt') ||
                 $this->request->getPost('soft_training') || $this->request->getPost('soft_ecole') ||
                 $this->request->getPost('soft_pronto') || $this->request->getPost('soft_ims') ||
-                $this->request->getPost('soft_sap') || $this->request->getPost('soft_imeet')) ? 'Pending' : 'Completed',
+                $this->request->getPost('soft_sap') || $this->request->getPost('soft_imeet') ||
+                $this->request->getPost('soft_eset') || $this->request->getPost('soft_office365') ||
+                $this->request->getPost('soft_chrome') || $this->request->getPost('soft_pdf_reader') ||
+                $this->request->getPost('soft_vlc') || $this->request->getPost('soft_winrar') ||
+                $this->request->getPost('soft_zoom') || !empty($this->request->getPost('access_copy_user'))) ? 'Pending' : 'Completed',
         ];
 
         // Save details (Upsert)
@@ -374,6 +392,51 @@ class Onboarding extends BaseController
         }
 
         return $roles;
+    }
+
+    public function saveIctTasks()
+    {
+        $roles = $this->checkFacilitatorAccess();
+        if (!in_array('ICT', $roles)) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Access Denied: ICT Facilitator only.']);
+        }
+
+        $requestId = $this->request->getPost('request_id');
+        if (!$requestId) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Invalid Request ID.']);
+        }
+
+        $modules = (array)$this->request->getPost('soft_modules');
+        
+        $data = [
+            'ict_os_install' => $this->request->getPost('ict_os_install') ? 1 : 0,
+            'ict_admin_pass_change' => $this->request->getPost('ict_admin_pass_change') ? 1 : 0,
+            'ict_comp_name_change' => $this->request->getPost('ict_comp_name_change') ? 1 : 0,
+            'ict_updated_comp_name' => $this->request->getPost('ict_updated_comp_name'),
+            'ict_domain_add' => $this->request->getPost('ict_domain_add') ? 1 : 0,
+            
+            'soft_eset' => $this->request->getPost('soft_eset') ? 1 : 0,
+            'soft_office365' => $this->request->getPost('soft_office365') ? 1 : 0,
+            'soft_chrome' => $this->request->getPost('soft_chrome') ? 1 : 0,
+            'soft_pdf_reader' => $this->request->getPost('soft_pdf_reader') ? 1 : 0,
+            'soft_vlc' => $this->request->getPost('soft_vlc') ? 1 : 0,
+            'soft_winrar' => $this->request->getPost('soft_winrar') ? 1 : 0,
+            'soft_zoom' => $this->request->getPost('soft_zoom') ? 1 : 0,
+
+            // Multi-selected modules mapping
+            'soft_smms' => in_array('soft_smms', $modules) ? 1 : 0,
+            'soft_receipt' => in_array('soft_receipt', $modules) ? 1 : 0,
+            'soft_training' => in_array('soft_training', $modules) ? 1 : 0,
+            'soft_ecole' => in_array('soft_ecole', $modules) ? 1 : 0,
+            'soft_sap' => in_array('soft_sap', $modules) ? 1 : 0,
+            'soft_pronto' => in_array('soft_pronto', $modules) ? 1 : 0,
+            'soft_ims' => in_array('soft_ims', $modules) ? 1 : 0,
+            'soft_imeet' => in_array('soft_imeet', $modules) ? 1 : 0,
+        ];
+
+        $this->detailsModel->where('request_id', $requestId)->set($data)->update();
+
+        return $this->response->setJSON(['success' => true]);
     }
 
     public function updateSectionStatus()

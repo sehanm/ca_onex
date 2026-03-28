@@ -101,6 +101,13 @@
                                     <i class="fa-solid fa-rectangle-list"></i>
                                 </button>
                                 <?php if (in_array('ICT', $roles) && $req['ict_desktop_laptop'] !== 'None'): ?>
+                                    <button class="btn-icon"
+                                        onclick="openIctTasksModal(<?= htmlspecialchars(json_encode($req)) ?>)"
+                                        title="Fill/Update ICT Tasks"
+                                        style="background: rgba(124, 58, 237, 0.1); color: #7c3aed;">
+                                        <i class="fa-solid fa-list-check"></i>
+                                    </button>
+
                                     <button class="btn-icon" onclick="openScanner(<?= $req['request_id'] ?>, 'camera')"
                                         title="Scan with Camera" style="background: rgba(124, 58, 237, 0.1); color: #7c3aed;">
                                         <i class="fa-solid fa-camera"></i>
@@ -211,28 +218,260 @@
     </div>
 </div>
 
-<!-- Modal for Assigned Asset Details -->
-<div id="assetDetailModal" class="modal"
-    style="display:none; position: fixed; z-index: 1002; left: 0; top: 0; width: 100%; height: 100%; padding: 20px; background-color: rgba(0,0,0,0.5); overflow-y: auto;">
+<!-- Modal for ICT Tasks Fill -->
+<div id="ictTasksModal" class="modal"
+    style="display:none; position: fixed; z-index: 1003; left: 0; top: 0; width: 100%; height: 100%; padding: 20px; background-color: rgba(0,0,0,0.6); overflow-y: auto;">
     <div class="modal-content"
-        style="background-color: #fefefe; margin: 10% auto; padding: 25px; border-radius: 16px; width: 95%; max-width: 450px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+        style="background-color: #fefefe; margin: 2% auto; padding: 30px; border-radius: 20px; width: 100%; max-width: 650px; box-shadow: 0 15px 50px rgba(0,0,0,0.3);">
         <div
-            style="display:flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px;">
-            <h3 style="margin:0; color: #1e293b;">Assigned Asset</h3>
-            <button onclick="closeAssetModal()"
+            style="display:flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 20px; margin-bottom: 20px;">
+            <h3 style="margin:0; color: #1e293b;"><i class="fa-solid fa-laptop-code"
+                    style="color:#7c3aed; margin-right:10px;"></i> ICT Facility Task Checklist</h3>
+            <button onclick="closeIctTasksModal()"
                 style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:#64748b;">&times;</button>
         </div>
 
-        <div id="asset-details-content"
-            style="background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0;">
-            <!-- Content will be injected by JS -->
-        </div>
+        <form id="ictTasksForm">
+            <?= csrf_field() ?>
+            <input type="hidden" name="request_id" id="ict_task_request_id">
 
+            <div class="modal-section-title">Hardware Setup Checklist</div>
+            <div class="checkbox-grid-modal">
+                <label class="checkbox-pill-premium">
+                    <input type="checkbox" name="ict_os_install" value="1">
+                    <span class="pill-btn-premium"><i class="fa-solid fa-window-restore"></i> Install OS</span>
+                </label>
+
+                <label class="checkbox-pill-premium">
+                    <input type="checkbox" name="ict_admin_pass_change" value="1">
+                    <span class="pill-btn-premium"><i class="fa-solid fa-key"></i> Admin Pass</span>
+                </label>
+
+                <label class="checkbox-pill-premium">
+                    <input type="checkbox" name="ict_domain_add" value="1">
+                    <span class="pill-btn-premium"><i class="fa-solid fa-network-wired"></i> Domain</span>
+                </label>
+
+                <div class="pill-group-container">
+                    <label class="checkbox-pill-premium">
+                        <input type="checkbox" name="ict_comp_name_change" id="modal_ict_comp_name_change" value="1">
+                        <span class="pill-btn-premium"><i class="fa-solid fa-pen-to-square"></i> Comp Name</span>
+                    </label>
+                    <div id="modal_comp_name_field" style="display:none; margin-top: 10px;">
+                        <input type="text" name="ict_updated_comp_name" class="fac-input"
+                            placeholder="Enter updated name...">
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-section-title">Base Software Checklist</div>
+            <div class="checkbox-grid-modal">
+                <label class="checkbox-pill-premium">
+                    <input type="checkbox" name="soft_eset" value="1">
+                    <span class="pill-btn-premium"><i class="fa-solid fa-shield-virus"></i> ESET</span>
+                </label>
+                <label class="checkbox-pill-premium">
+                    <input type="checkbox" name="soft_office365" value="1">
+                    <span class="pill-btn-premium"><i class="fa-solid fa-file-word"></i> Office 365</span>
+                </label>
+                <label class="checkbox-pill-premium">
+                    <input type="checkbox" name="soft_chrome" value="1">
+                    <span class="pill-btn-premium"><i class="fa-brands fa-chrome"></i> Chrome</span>
+                </label>
+                <label class="checkbox-pill-premium">
+                    <input type="checkbox" name="soft_pdf_reader" value="1">
+                    <span class="pill-btn-premium"><i class="fa-solid fa-file-pdf"></i> PDF Reader</span>
+                </label>
+                <label class="checkbox-pill-premium">
+                    <input type="checkbox" name="soft_vlc" value="1">
+                    <span class="pill-btn-premium"><i class="fa-solid fa-play"></i> VLC</span>
+                </label>
+                <label class="checkbox-pill-premium">
+                    <input type="checkbox" name="soft_winrar" value="1">
+                    <span class="pill-btn-premium"><i class="fa-solid fa-file-zipper"></i> Winrar</span>
+                </label>
+                <label class="checkbox-pill-premium">
+                    <input type="checkbox" name="soft_zoom" value="1">
+                    <span class="pill-btn-premium"><i class="fa-solid fa-video"></i> Zoom</span>
+                </label>
+            </div>
+
+            <div class="modal-section-title">System Modules Access</div>
+            <div class="checkbox-grid-modal">
+                <label class="checkbox-pill-premium">
+                    <input type="checkbox" name="soft_modules[]" value="soft_smms">
+                    <span class="pill-btn-premium"><i class="fa-solid fa-code-branch"></i> SMMS</span>
+                </label>
+                <label class="checkbox-pill-premium">
+                    <input type="checkbox" name="soft_modules[]" value="soft_receipt">
+                    <span class="pill-btn-premium"><i class="fa-solid fa-file-invoice"></i> Receipt Module</span>
+                </label>
+                <label class="checkbox-pill-premium">
+                    <input type="checkbox" name="soft_modules[]" value="soft_training">
+                    <span class="pill-btn-premium"><i class="fa-solid fa-graduation-cap"></i> Training Module</span>
+                </label>
+                <label class="checkbox-pill-premium">
+                    <input type="checkbox" name="soft_modules[]" value="soft_ecole">
+                    <span class="pill-btn-premium"><i class="fa-solid fa-school"></i> Ecole</span>
+                </label>
+                <label class="checkbox-pill-premium">
+                    <input type="checkbox" name="soft_modules[]" value="soft_sap">
+                    <span class="pill-btn-premium"><i class="fa-solid fa-briefcase"></i> SAP B1</span>
+                </label>
+                <label class="checkbox-pill-premium">
+                    <input type="checkbox" name="soft_modules[]" value="soft_pronto">
+                    <span class="pill-btn-premium"><i class="fa-solid fa-database"></i> Pronto</span>
+                </label>
+                <label class="checkbox-pill-premium">
+                    <input type="checkbox" name="soft_modules[]" value="soft_ims">
+                    <span class="pill-btn-premium"><i class="fa-solid fa-warehouse"></i> IMS</span>
+                </label>
+                <label class="checkbox-pill-premium">
+                    <input type="checkbox" name="soft_modules[]" value="soft_imeet">
+                    <span class="pill-btn-premium"><i class="fa-solid fa-handshake"></i> iMeet</span>
+                </label>
+            </div>
+
+            <div style="margin-top: 30px; display: flex; gap: 10px; justify-content: flex-end;">
+                <button type="button" onclick="closeIctTasksModal()" class="btn-secondary"
+                    style="padding: 10px 25px;">Cancel</button>
+                <button type="submit" class="btn-primary"
+                    style="padding: 10px 35px; background: #7c3aed; border-color: #7c3aed;">Save Checklist</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal for Assigned Asset Details -->
+<div id="assetDetailModal" class="modal"
+    style="display:none; position: fixed; z-index: 1004; left: 0; top: 0; width: 100%; height: 100%; padding: 20px; background-color: rgba(0,0,0,0.6); overflow-y: auto;">
+    <div class="modal-content"
+        style="background-color: #fefefe; margin: 10% auto; padding: 30px; border-radius: 20px; width: 100%; max-width: 450px; box-shadow: 0 15px 50px rgba(0,0,0,0.3);">
+        <div
+            style="display:flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 20px;">
+            <h3 style="margin:0; color: #1e293b;">Asset Information</h3>
+            <button onclick="closeAssetModal()"
+                style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:#64748b;">&times;</button>
+        </div>
+        <div id="asset-details-content">
+            <!-- Dynamic Content -->
+        </div>
         <div style="text-align: right; margin-top: 25px;">
             <button onclick="closeAssetModal()" class="btn-secondary">Close</button>
         </div>
     </div>
 </div>
+
+<style>
+    .modal-section-title {
+        font-size: 0.85rem;
+        font-weight: 800;
+        color: #1e293b;
+        text-transform: uppercase;
+        margin: 25px 0 15px 0;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #f1f5f9;
+        letter-spacing: 1px;
+    }
+
+    .fac-input {
+        width: 100%;
+        padding: 10px 15px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        color: #1e293b;
+        transition: all 0.2s;
+    }
+
+    .fac-input:focus {
+        border-color: #7c3aed;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+    }
+
+    .fac-multi-select {
+        width: 100%;
+        min-height: 120px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 12px;
+        font-size: 0.95rem;
+        color: #1e293b;
+        transition: all 0.2s;
+    }
+
+    .fac-multi-select:focus {
+        border-color: #7c3aed;
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
+    }
+
+    .checkbox-grid-modal {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 5px;
+    }
+
+    .checkbox-pill-premium {
+        cursor: pointer;
+        position: relative;
+    }
+
+    .checkbox-pill-premium input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+    }
+
+    .pill-btn-premium {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 18px;
+        background: #fff;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: #64748b;
+        transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        user-select: none;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    }
+
+    .pill-btn-premium i {
+        color: #94a3b8;
+        transition: all 0.2s;
+    }
+
+    .checkbox-pill-premium:hover .pill-btn-premium {
+        border-color: #7c3aed;
+        color: #7c3aed;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(124, 58, 237, 0.1);
+    }
+
+    .checkbox-pill-premium input:checked+.pill-btn-premium {
+        background: #7c3aed;
+        border-color: #7c3aed;
+        color: #fff;
+        box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+    }
+
+    .checkbox-pill-premium input:checked+.pill-btn-premium i {
+        color: #fff;
+    }
+
+    .pill-group-container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+</style>
 
 <style>
     .cand-info {
@@ -490,22 +729,45 @@
         // ICT Section
         if (roles.includes('ICT')) {
             let ictHtml = '';
+            // Setup Tasks
+            let tasksHtml = '';
+            if (req.ict_os_install == 1) tasksHtml += '<li><i class="fa-solid fa-circle-check"></i> OS Installed</li>';
+            if (req.ict_admin_pass_change == 1) tasksHtml += '<li><i class="fa-solid fa-circle-check"></i> Admin Pass Changed</li>';
+            if (req.ict_domain_add == 1) tasksHtml += '<li><i class="fa-solid fa-circle-check"></i> Added to Domain</li>';
+            if (req.ict_comp_name_change == 1) tasksHtml += `<li><i class="fa-solid fa-circle-check"></i> Comp Name: ${req.ict_updated_comp_name || 'Done'}</li>`;
+
+            if (tasksHtml !== '') {
+                html += '<h5>ICT Setup Tasks</h5><ul class="fac-list">' + tasksHtml + '</ul>';
+            }
+
             // Hardware
-            if (req.ict_desktop_laptop !== 'None') ictHtml += `<li><i class="fa-solid fa-laptop"></i> ${req.ict_desktop_laptop}</li>`;
-            if (req.ict_printer == 1) ictHtml += '<li><i class="fa-solid fa-print"></i> Printer Access</li>';
+            let hwHtml = '';
+            if (req.ict_desktop_laptop !== 'None') hwHtml += `<li><i class="fa-solid fa-laptop"></i> ${req.ict_desktop_laptop}</li>`;
+            if (req.ict_printer == 1) hwHtml += '<li><i class="fa-solid fa-print"></i> Printer Access</li>';
+            if (hwHtml !== '') html += '<h5>ICT Hardware</h5><ul class="fac-list">' + hwHtml + '</ul>';
 
             // Software
-            if (req.soft_smms == 1) ictHtml += '<li><i class="fa-solid fa-code-branch"></i> SMMS</li>';
-            if (req.soft_receipt == 1) ictHtml += '<li><i class="fa-solid fa-file-invoice"></i> Receipt Module</li>';
-            if (req.soft_training == 1) ictHtml += '<li><i class="fa-solid fa-graduation-cap"></i> Training Module</li>';
-            if (req.soft_ecole == 1) ictHtml += '<li><i class="fa-solid fa-school"></i> Ecole</li>';
-            if (req.soft_pronto == 1) ictHtml += `<li><i class="fa-solid fa-database"></i> Pronto (Prev User: ${req.get_pronto_previous_user || 'N/A'})</li>`;
-            if (req.soft_ims == 1) ictHtml += '<li><i class="fa-solid fa-warehouse"></i> IMS</li>';
-            if (req.soft_sap == 1) ictHtml += '<li><i class="fa-solid fa-briefcase"></i> SAP Business One</li>';
-            if (req.soft_imeet == 1) ictHtml += '<li><i class="fa-solid fa-handshake"></i> Imeet-Venue Booking</li>';
+            let softHtml = '';
+            if (req.soft_eset == 1) softHtml += '<li><i class="fa-solid fa-shield-virus"></i> ESET Security</li>';
+            if (req.soft_office365 == 1) softHtml += '<li><i class="fa-solid fa-file-word"></i> Office 365</li>';
+            if (req.soft_chrome == 1) softHtml += '<li><i class="fa-brands fa-chrome"></i> Google Chrome</li>';
+            if (req.soft_pdf_reader == 1) softHtml += '<li><i class="fa-solid fa-file-pdf"></i> PDF Reader</li>';
+            if (req.soft_vlc == 1) softHtml += '<li><i class="fa-solid fa-play"></i> VLC</li>';
+            if (req.soft_winrar == 1) softHtml += '<li><i class="fa-solid fa-file-zipper"></i> Winrar</li>';
+            if (req.soft_zoom == 1) softHtml += '<li><i class="fa-solid fa-video"></i> Zoom</li>';
 
-            if (ictHtml !== '') {
-                html += '<h5>ICT Infrastructure & Software</h5><ul class="fac-list">' + ictHtml + '</ul>';
+            // Modules
+            if (req.soft_smms == 1) softHtml += '<li><i class="fa-solid fa-code-branch"></i> SMMS</li>';
+            if (req.soft_receipt == 1) softHtml += '<li><i class="fa-solid fa-file-invoice"></i> Receipt Module</li>';
+            if (req.soft_training == 1) softHtml += '<li><i class="fa-solid fa-graduation-cap"></i> Training Module</li>';
+            if (req.soft_ecole == 1) softHtml += '<li><i class="fa-solid fa-school"></i> Ecole</li>';
+            if (req.soft_pronto == 1) softHtml += `<li><i class="fa-solid fa-database"></i> Pronto (Prev User: ${req.pronto_previous_user || 'N/A'})</li>`;
+            if (req.soft_ims == 1) softHtml += '<li><i class="fa-solid fa-warehouse"></i> IMS</li>';
+            if (req.soft_sap == 1) softHtml += '<li><i class="fa-solid fa-briefcase"></i> SAP Business One</li>';
+            if (req.soft_imeet == 1) softHtml += '<li><i class="fa-solid fa-handshake"></i> Imeet-Venue Booking</li>';
+
+            if (softHtml !== '') {
+                html += '<h5>Software Access</h5><ul class="fac-list">' + softHtml + '</ul>';
                 itemsFound = true;
             }
 
@@ -779,6 +1041,84 @@
             document.getElementById('qrModal').style.display = 'none';
         }
     }
+
+    // ICT Tasks Modal JS
+    function openIctTasksModal(req) {
+        document.getElementById('ict_task_request_id').value = req.request_id;
+
+        // Reset form
+        const form = document.getElementById('ictTasksForm');
+        form.reset();
+
+        // Pre-fill
+        form.querySelector('[name="ict_os_install"]').checked = (req.ict_os_install == 1);
+        form.querySelector('[name="ict_admin_pass_change"]').checked = (req.ict_admin_pass_change == 1);
+        form.querySelector('[name="ict_domain_add"]').checked = (req.ict_domain_add == 1);
+        form.querySelector('[name="ict_comp_name_change"]').checked = (req.ict_comp_name_change == 1);
+        form.querySelector('[name="ict_updated_comp_name"]').value = req.ict_updated_comp_name || '';
+
+        if (req.ict_comp_name_change == 1) document.getElementById('modal_comp_name_field').style.display = 'block';
+        else document.getElementById('modal_comp_name_field').style.display = 'none';
+
+        form.querySelector('[name="soft_eset"]').checked = (req.soft_eset == 1);
+        form.querySelector('[name="soft_office365"]').checked = (req.soft_office365 == 1);
+        form.querySelector('[name="soft_chrome"]').checked = (req.soft_chrome == 1);
+        form.querySelector('[name="soft_pdf_reader"]').checked = (req.soft_pdf_reader == 1);
+        form.querySelector('[name="soft_vlc"]').checked = (req.soft_vlc == 1);
+        form.querySelector('[name="soft_winrar"]').checked = (req.soft_winrar == 1);
+        form.querySelector('[name="soft_zoom"]').checked = (req.soft_zoom == 1);
+
+        // Modules checkbox grid
+        const moduleCheckboxes = form.querySelectorAll('[name="soft_modules[]"]');
+        moduleCheckboxes.forEach(cb => {
+            cb.checked = (req[cb.value] == 1);
+        });
+
+        document.getElementById('ictTasksModal').style.display = 'block';
+    }
+
+    function closeIctTasksModal() {
+        document.getElementById('ictTasksModal').style.display = 'none';
+    }
+
+    document.getElementById('modal_ict_comp_name_change').addEventListener('change', function () {
+        document.getElementById('modal_comp_name_field').style.display = this.checked ? 'block' : 'none';
+    });
+
+    document.getElementById('ictTasksForm').onsubmit = function (e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerText;
+
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Saving...";
+
+        $.ajax({
+            url: "<?= base_url('onboarding/save-ict-tasks') ?>",
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (res) {
+                if (res.success) {
+                    showToast("ICT Tasks saved successfully", "success");
+                    closeIctTasksModal();
+                    setTimeout(() => window.location.reload(), 800);
+                } else {
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = originalText;
+                    showToast(res.message || "Error saving tasks", "error");
+                }
+            },
+            error: function (xhr) {
+                submitBtn.disabled = false;
+                submitBtn.innerText = originalText;
+                showToast("Server error. Please check if your session is active.", "error");
+                console.error(xhr);
+            }
+        });
+    };
 </script>
 
 <?= $this->section('scripts') ?>
